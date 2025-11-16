@@ -202,7 +202,7 @@ public class CarDTO {
             String categorie, Integer kilometrage, String immatriculation, String carburant,
             String imagePrincipaleURL, String boite, Double prixJournalier, String ville,
             String description, StatutApprobationVoiture statutApprobation, String disponible,
-            ProprietaireDto proprietaire,MultipartFile[] images) {
+            Long proprietaireId, ProprietaireDto proprietaire, MultipartFile[] images) {
   this.id = id;
   this.marque = marque;
   this.modele = modele;
@@ -220,9 +220,11 @@ public class CarDTO {
   this.description = description;
   this.statutApprobation = statutApprobation;
   this.disponible = disponible;
+  this.proprietaireId = proprietaireId;
   this.proprietaire = proprietaire;
-  this.images=images;
+  this.images = images;
 }
+
 	public CarDTO(Long id, String marque, String modele, Integer annee, String boite, String ville, String imagePrincipaleURL) {
 	    this.id = id;
 	    this.marque = marque;
