@@ -1,0 +1,169 @@
+/* Icône de notification */
+.notification-icon {
+    position: relative;
+    cursor: pointer;
+    font-size: 24px;
+    color: #fff; /* Icône blanche par défaut */
+    transition: color 0.3s ease;
+}
+
+/* Lorsque l'icône est cliquée, la couleur devient rouge */
+.notification-icon i.clicked {
+    color: #FF0000; /* Icône rouge après clic */
+}
+
+/* Badge de notification (le cercle avec le nombre de notifications non lues) */
+.notification-icon .badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #FF0000; /* Badge rouge */
+    color: white;
+    font-size: 12px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 18px;
+    display: none; /* Par défaut, cacher le badge */
+}
+  .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 8px;
+        }
+        
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close-modal:hover {
+            color: black;
+        }
+        
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            border-color: #999;
+        }
+        
+        .preview-image {
+            max-width: 100px;
+            max-height: 100px;
+            margin: 5px;
+            border-radius: 4px;
+        }
+        
+        .btn-add {
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .btn-add:hover {
+            background-color: #0b5ed7;
+        }
+
+/* Conteneur de la notification */
+.notification-dropdown {
+    display: none;
+    position: absolute;
+    top: 50px; /* Positionner en dessous de l'icône de notification */
+    right: 0;
+    width: 300px;
+    background-color: white; /* Fond blanc pour le menu des notifications */
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    max-height: 300px;
+    overflow-y: auto;
+    border-radius: 5px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.notification-dropdown.show {
+    display: block;
+    opacity: 1;
+}
+
+/* Animation pour la fermeture des notifications */
+.notification-dropdown .fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+/* Les alertes dans le menu de notification */
+.alert {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    position: relative;
+    color: #000; /* Texte noir */
+}
+
+/* Style pour les alertes */
+.alert-info {
+    background-color: #F8D7DA; /* Rouge clair */
+    border-left: 5px solid #FF0000; /* Bordure rouge */
+}
+
+.alert-warning {
+    background-color: #FFF3CD; /* Jaune clair */
+    border-left: 5px solid #FF8000; /* Bordure orange */
+}
+
+.alert-success {
+    background-color: #D4EDDA; /* Vert clair */
+    border-left: 5px solid #28A745; /* Bordure verte */
+}
+
+.alert .close {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 16px;
+    color: #888;
+    cursor: pointer;
+}
+
+.alert .close:hover {
+    color: #000;
+}
+.notif{
+	margin-left:10px;
+}

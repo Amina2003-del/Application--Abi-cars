@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation de Réservation</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Confirmation de Réservation</h2>
+        <p th:if="${message}" th:text="${message}"></p>
+        <a href="/Voitures/car-booking">Retourner à la réservation</a>
+    </div>
+</body>
+</html>

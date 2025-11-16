@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord - Gestion des Messages</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome pour les icônes -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Flag-icon-css pour les drapeaux -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet">
+           <link rel="stylesheet" th:href="@{/assets/css/messageowner.css}">
+
+   
+</head>
+<body>
+    <!-- Barre de navigation (Style Tailwind) -->
+    <nav class="navbar-custom-tailwind" th:fragment="navbar">
+    <div class="navbar-left">
+        <span class="brand">ABIcars</span>
+    </div>
+    <div class="navbar-right">
+        <!-- Bouton menu hamburger pour responsive (visible seulement sur mobile) -->
+        <div class="nav-icon-btn mobile-menu-toggle" id="mobileMenuToggle">
+            <i class="fas fa-bars"></i>
+        </div>
+        
+        <div class="nav-icon-btn" id="alertsIconCustom">
+            <!-- Contenu des alertes si besoin -->
+        </div>
+        <div class="nav-icon-btn" id="languageSwitchCustom">
+            <span class="flag-icon flag-icon-fr"></span>
+        </div>
+        <div class="user-profile" id="userProfileCustom"> <!-- Utilisation du style user-profile -->
+            <i class="fas fa-user-circle"></i> <!-- Icône Font Awesome plus stylée -->
+            <span th:text="${currentUser != null ? currentUser.firstName + ' ' + currentUser.lastName : 'Invité'}"></span>
+            <i class="fas fa-chevron-down fa-xs"></i>
+        </div>
+        <div class="dropdown-menu-custom" id="userDropdownCustom">
+            <a href="#" id="showUserProfile">
+                <i class="fas fa-user-edit"></i>Mon profil
+            </a>
+          <a th:href="@{/Siteoffeciel/index}" >
+  <i class="fas fa-sign-out-alt"></i>Se déconnecter
+</a>
+        </div>
+    </div>
+</nav>
+
+<div class="dropdown-menu-custom" id="userDropdownCustom">
+    <a href="#" id="showUserProfile" data-bs-toggle="modal" data-bs-target="#userModal"><i class="fas fa-user-edit"></i> Mon profil</a>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userModalLabel">Profil Utilisateur</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body user-info">
+                <form id="userProfileForm">
+                    <div class="form-group">
+                        <label for="firstName">Prénom</label>
+                        <input type="text" class="form-control" id="firstName" name="firstName">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Nom</label>
+                        <input type="text" class="form-control" id="lastName" name="lastName">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Téléphone</label>
+                        <input type="tel" class="form-control" id="phone" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email">
+                    </div>
+                    <div class="form-group position-relative">
+                        <label for="password">Nouveau mot de passe</label>
+                        <input type="password" class="form-control" id="password" name="password">
+                        <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-primary" id="saveProfile">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Modal pour les alertes (Style non-Bootstrap personnalisé) -->
+    <div class="modal-custom-non-bootstrap" id="alertsModalCustom">
+        <div class="modal-header-custom-non-bootstrap">
+            <h3>Notifications Récentes</h3>
+            <span class="close-btn" id="closeAlertsModalCustom">×</span>
+        </div>
+        <div class="modal-body-custom-non-bootstrap">
+            <div class="alert-item">
+                <div>
+                    <span class="alert-title">Maintenance Urgente</span>
+                    <p class="text-sm text-gray-600">Voiture #XYZ à vérifier.</p>
+                </div>
+                <div class="text-right">
+                    <span class="alert-time">10 min</span>
+                    <span class="alert-status ml-2">Urgent</span>
+                </div>
+            </div>
+             <div class="alert-item">
+                <div>
+                    <span class="alert-title">Nouveau Message</span>
+                    <p class="text-sm text-gray-600">De Jean Dupont.</p>
+                </div>
+                <div class="text-right">
+                    <span class="alert-time">30 min</span>
+                    <span class="alert-status ml-2" style="background-color: #0d6efd;">Nouveau</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barre latérale (Style Tailwind) -->
+    <aside id="sidebarCustom" class="sidebar-custom-tailwind sidebar-expanded">
+        <div class="sidebar-header">
+            <div class="brand-logo-wrapper">
+                <i class="fas fa-tachometer-alt brand-icon"></i>
+                <span class="brand-text" id="sidebarBrandText">Tableau Bord</span>
+            </div>
+            <button id="toggleSidebarCustom" class="toggle-btn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="/Owner/message" class="sidebar-item active">
+                <i class="fas fa-envelope menu-icon text-sky-400"></i>
+                <span class="sidebar-text">Messages</span>
+            </a>
+            <a href="/Owner/clientespace" class="sidebar-item">
+                <i class="fas fa-users menu-icon text-fuchsia-400"></i>
+                <span class="sidebar-text">Clients</span>
+            </a>
+            <a href="/Owner/litige" class="sidebar-item">
+                <i class="fas fa-gavel menu-icon text-rose-500"></i>
+                <span class="sidebar-text">Litiges</span>
+            </a>
+            <a href="/Owner/voitures" class="sidebar-item">
+                <i class="fas fa-car-side menu-icon text-emerald-500"></i>
+                <span class="sidebar-text">Voitures</span>
+            </a>
+            <a href="/Owner/reservation" class="sidebar-item">
+                <i class="fas fa-calendar-check menu-icon text-amber-500"></i>
+                <span class="sidebar-text">Réservations</span>
+            </a>
+            <a href="/Owner/notifications" class="sidebar-item">
+                <i class="fas fa-bell menu-icon text-violet-500"></i>
+                <span class="sidebar-text">Notifications</span>
+            </a>
+                 <a href="/Owner/entretiens" class="sidebar-item">
+    <i class="fas fa-wrench menu-icon text-orange-400"></i>
+    <span class="sidebar-text">Entretiens</span>
+</a>
+            <a href="/Owner/paiement" class="sidebar-item">
+                <i class="fas fa-credit-card menu-icon text-cyan-500"></i>
+                <span class="sidebar-text">Paiement</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Contenu principal -->
+    <main id="content" class="ml-[260px] p-6 min-h-screen" style="margin-top: 60px;">
+        <section class="messages-table-container animate-fadeInUp">
+            <h3 class="text-xl font-semibold text-gray-800 mb-5">Gestion des Messages</h3>
+            <div class="action-bar mb-4 d-flex flex-wrap gap-2 align-items-center">
+                <button class="btn btn-primary"  onclick="ouvrirModaleReponse()">
+                    <i class="fas fa-plus me-2"></i>Repondre
+                </button>
+                <button class="btn btn-secondary" id="bulkArchive" disabled>
+                    <i class="fas fa-archive me-2"></i>Archiver
+                </button>
+                <button class="btn btn-danger" id="bulkDelete" disabled>
+                    <i class="fas fa-trash me-2"></i>Supprimer
+                </button>
+                 <div class="ms-md-auto d-flex gap-2">
+                    <input type="text" id="searchInput" class="form-control search-input" placeholder="Rechercher..." style="max-width: 220px;">
+                    <select id="statusFilter" class="form-select" style="width: auto; min-width: 150px;">
+                        <option value="">Tous les statuts</option>
+                        <option value="Non lu">Non lu</option>
+    <option value="Lu">Lu</option>  <!-- ⬅️ "Lu" avec majuscule -->
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" style="width: 5%;" class="text-center">
+                                <input type="checkbox"
+       class="form-check-input message-checkbox"
+       data-email="${m.destinataireEmail}"
+       data-nom="${m.destinataireNom}"
+       data-id="${m.id}"   data-subject="${m.sujet || ''}">
+
+                            </th>
+                            <th scope="col" class="sortable" data-sort="sender">Expéditeur <i class="fas fa-sort sort-icon"></i></th>
+                            <th scope="col" class="sortable" data-sort="subject">Sujet <i class="fas fa-sort sort-icon"></i></th>
+                            <th scope="col" class="sortable" data-sort="date">Date <i class="fas fa-sort sort-icon"></i></th>
+                            <th scope="col" class="sortable" data-sort="status">Statut <i class="fas fa-sort sort-icon"></i></th>
+                            <th scope="col" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="messagesTableBody">
+                        <!-- Dynamically populated -->
+                    </tbody>
+                </table>
+            </div>
+            <nav aria-label="Pagination" class="mt-4 d-flex justify-content-between align-items-center">
+                <div id="tableInfo" class="text-muted small"></div>
+                <ul class="pagination mb-0" id="pagination"></ul>
+            </nav>
+      
+
+        </section>
+    </main>
+
+    <!-- Modals Bootstrap -->
+    
+
+    <div class="modal fade" id="replyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Répondre au message</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="replyForm" novalidate>
+                        <div class="mb-3">
+                            <label for="recipientEmail" class="form-label">Destinataire (Email)</label>
+                            <input type="email" class="form-control" id="recipientEmail" required>
+                            <div class="invalid-feedback">Veuillez entrer un email valide.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="recipientName" class="form-label">Nom du client</label>
+                            <input type="text" class="form-control" id="recipientName" required>
+                            <div class="invalid-feedback">Veuillez entrer le nom du client.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="replySubject" class="form-label">Sujet</label>
+                            <input type="text" class="form-control" id="replySubject" required>
+                            <div class="invalid-feedback">Veuillez entrer un sujet.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="replyContent" class="form-label">Message</label>
+                            <textarea class="form-control" id="replyContent" rows="5" required></textarea>
+                            <div class="invalid-feedback">Veuillez entrer un message.</div>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="submitReplyForm()"><i class="fas fa-paper-plane me-2"></i>Envoyer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="newMessageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Nouveau message</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newMessageForm" novalidate>
+                        <div class="mb-3">
+                            <label for="newRecipientEmail" class="form-label">Destinataire (Email)</label>
+                            <input type="email" class="form-control" id="newRecipientEmail" required>
+                            <div class="invalid-feedback">Veuillez entrer un email valide.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newRecipientName" class="form-label">Nom du client</label>
+                            <input type="text" class="form-control" id="newRecipientName" required>
+                            <div class="invalid-feedback">Veuillez entrer le nom du client.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newSubject" class="form-label">Sujet</label>
+                            <input type="text" class="form-control" id="newSubject" required>
+                            <div class="invalid-feedback">Veuillez entrer un sujet.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newContent" class="form-label">Message</label>
+                            <textarea class="form-control" id="newContent" rows="5" required></textarea>
+                            <div class="invalid-feedback">Veuillez entrer un message.</div>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="submitNewMessageForm()"><i class="fas fa-paper-plane me-2"></i>Envoyer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   <!-- Modal -->
+<div class="modal fade" id="modalMessage" tabindex="-1" aria-labelledby="modalMessageLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="modalMessageLabel">Détails du message</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Expéditeur :</strong> <span id="messageExpediteur"></span></p>
+        <p><strong>Email :</strong> <span id="messageEmail"></span></p>
+        <p><strong>Date :</strong> <span id="messageDate"></span></p>
+        <p><strong>Sujet :</strong> <span id="messageSujet"></span></p>
+        <p><strong>Contenu :</strong></p>
+        <p id="messageContenu" class="border p-2 bg-light rounded"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap Bundle JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+ <script>
+        // Gestion de la sidebar/navbar
+        const sidebarCustomEl = document.getElementById('sidebarCustom');
+        const contentMainEl = document.getElementById('content');
+        const toggleSidebarCustomBtnEl = document.getElementById('toggleSidebarCustom');
+        const sidebarToggleIconEl = toggleSidebarCustomBtnEl.querySelector('i');
+
+        toggleSidebarCustomBtnEl.addEventListener('click', () => {
+            const isExpanded = sidebarCustomEl.classList.contains('sidebar-expanded');
+            if (isExpanded) {
+                sidebarCustomEl.classList.remove('sidebar-expanded');
+                sidebarCustomEl.classList.add('sidebar-collapsed');
+                contentMainEl.style.marginLeft = '80px';
+                sidebarToggleIconEl.classList.remove('fa-chevron-left');
+                sidebarToggleIconEl.classList.add('fa-chevron-right');
+            } else {
+                sidebarCustomEl.classList.remove('sidebar-collapsed');
+                sidebarCustomEl.classList.add('sidebar-expanded');
+                contentMainEl.style.marginLeft = '260px';
+                sidebarToggleIconEl.classList.remove('fa-chevron-right');
+                sidebarToggleIconEl.classList.add('fa-chevron-left');
+            }
+        });
+
+        if (sidebarCustomEl.classList.contains('sidebar-expanded')) {
+            contentMainEl.style.marginLeft = '260px';
+        } else {
+            contentMainEl.style.marginLeft = '80px';
+        }
+
+        // Gestion du profil utilisateur
+        const userProfileCustomEl = document.getElementById('userProfileCustom');
+        const userDropdownCustomEl = document.getElementById('userDropdownCustom');
+        userProfileCustomEl.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const isActive = userDropdownCustomEl.classList.toggle('active');
+            userProfileCustomEl.classList.toggle('dropdown-active', isActive);
+        });
+
+        // Gestion des alertes
+        const alertsIconCustomEl = document.getElementById('alertsIconCustom');
+        const alertsModalCustomEl = document.getElementById('alertsModalCustom');
+        const closeAlertsModalCustomBtnEl = document.getElementById('closeAlertsModalCustom');
+        alertsIconCustomEl.addEventListener('click', (event) => {
+            event.stopPropagation();
+            alertsModalCustomEl.classList.toggle('active');
+            userDropdownCustomEl.classList.remove('active');
+            userProfileCustomEl.classList.remove('dropdown-active');
+        });
+        if(closeAlertsModalCustomBtnEl) {
+            closeAlertsModalCustomBtnEl.addEventListener('click', () => {
+                alertsModalCustomEl.classList.remove('active');
+            });
+        }
+
+        document.addEventListener('click', (event) => {
+            if (userProfileCustomEl && !userProfileCustomEl.contains(event.target) && userDropdownCustomEl && !userDropdownCustomEl.contains(event.target)) {
+                userDropdownCustomEl.classList.remove('active');
+                userProfileCustomEl.classList.remove('dropdown-active');
+            }
+            if (alertsIconCustomEl && !alertsIconCustomEl.contains(event.target) && alertsModalCustomEl && !alertsModalCustomEl.contains(event.target)) {
+                alertsModalCustomEl.classList.remove('active');
+            }
+        });
+
+        // Gestion de la langue
+        const languageSwitchCustomEl = document.getElementById('languageSwitchCustom');
+        const flagIconCustomEl = languageSwitchCustomEl.querySelector('.flag-icon');
+        let currentLangCustomVal = 'fr';
+        languageSwitchCustomEl.addEventListener('click', () => {
+            if (currentLangCustomVal === 'fr') {
+                flagIconCustomEl.classList.remove('flag-icon-fr');
+                flagIconCustomEl.classList.add('flag-icon-gb');
+                currentLangCustomVal = 'gb';
+            } else {
+                flagIconCustomEl.classList.remove('flag-icon-gb');
+                flagIconCustomEl.classList.add('flag-icon-fr');
+                currentLangCustomVal = 'fr';
+            }
+        });
+
+        // ===== SYSTÈME UNIFIÉ DE GESTION DES MESSAGES =====
+        
+        let allMessages = [];
+        let filteredMessages = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let currentSortField = 'date';
+        let currentSortDirection = 'desc';
+
+        // Initialisation
+        $(document).ready(function() {
+            console.log('=== INITIALISATION SYSTÈME MESSAGES ===');
+            chargerMessages();
+            initializeEventListeners();
+        });
+
+        function initializeEventListeners() {
+            // Recherche
+            $('#searchInput').on('input', debounce(function() {
+                console.log('Recherche:', $('#searchInput').val());
+                applyFilters();
+            }, 300));
+
+            // Filtres
+            $('#statusFilter').on('change', function() {
+                console.log('Filtre statut changé:', this.value);
+                applyFilters();
+            });
+
+            $('#typeFilter').on('change', function() {
+                console.log('Filtre type changé:', this.value);
+                chargerMessages(this.value);
+            });
+
+            // Sélection globale
+            $('#selectAll').on('change', function() {
+                const isChecked = this.checked;
+                $('.message-checkbox').prop('checked', isChecked);
+                updateSelection();
+            });
+
+            // Actions en masse
+            $('#bulkArchive').on('click', bulkArchiveMessages);
+            $('#bulkDelete').on('click', bulkDeleteMessages);
+        }
+
+        // Chargement des messages - VERSION CORRIGÉE
+     function chargerMessages(type = 'recus') {
+    console.log('=== CHARGEMENT MESSAGES === Type:', type);
+    const url = type === 'envoyes' ? '/Owner/envoyes' : '/Owner/recus';
+
+    showLoading();
+
+    $.ajax({
+        url: url,
+        type: 'GET',
+        success: function(messages) {
+            console.log('✅ Messages bruts reçus:', messages);
+            
+            // DEBUG AVANCÉ : Vérifier les valeurs exactes
+            console.log('🔍 INSPECTION DES STATUTS:');
+            messages.forEach((m, index) => {
+                console.log(`Message ${index + 1}:`, {
+                    id: m.id,
+                    type: m.type,
+                    'statut (raw)': m.statut,
+                    'statut (typeof)': typeof m.statut,
+                    'statut (length)': m.statut ? m.statut.length : 0,
+                    'statut (charCode)': m.statut ? Array.from(m.statut).map(c => c.charCodeAt(0)) : [],
+                    '==="Lu"': m.statut === 'Lu',
+                    'archiver': m.archiver
+                });
+            });
+            
+            // FILTRAGE STRICT DES ALERTES
+            allMessages = messages.filter(m => {
+                const messageType = (m.type || '').toString().toUpperCase();
+                const isAlerte = messageType === 'ALERTE';
+                return !isAlerte;
+            });
+            
+            console.log('✅ Messages après filtrage ALERTE:', allMessages.length);
+            applyFilters();
+            hideLoading();
+        },
+        error: function(xhr, status, error) {
+            console.error('❌ Erreur chargement messages:', error);
+            $('#messagesTableBody').html(
+                '<tr><td colspan="6" class="text-center text-danger">Erreur lors du chargement des messages</td></tr>'
+            );
+            hideLoading();
+        }
+    });
+}
+
+        // Application des filtres - VERSION CORRIGÉE
+       // Application des filtres - VERSION ULTRA-STRICTE
+// Application des filtres - VERSION CORRIGÉE (insensible à la casse)
+function applyFilters() {
+    const searchTerm = $('#searchInput').val().toLowerCase().trim();
+    const statusFilter = $('#statusFilter').val();
+
+    filteredMessages = allMessages.filter(message => {
+        // Filtre recherche
+        const matchesSearch = !searchTerm || 
+            (message.sujet && message.sujet.toLowerCase().includes(searchTerm)) ||
+            (message.subject && message.subject.toLowerCase().includes(searchTerm)) ||
+            (message.expediteur && containsSearchTerm(message.expediteur, searchTerm)) ||
+            (message.sender && containsSearchTerm(message.sender, searchTerm));
+
+        // Filtre statut simple
+        let matchesStatus = true;
+        if (statusFilter === 'Lu') {
+            matchesStatus = message.statut === 'Lu';
+        } else if (statusFilter === 'Non lu') {
+            matchesStatus = message.statut !== 'Lu';
+        } else if (statusFilter === 'Archivé') {
+            matchesStatus = message.archiver === true;
+        }
+
+        return matchesSearch && matchesStatus;
+    });
+
+    sortAndDisplayMessages();
+}
+        function containsSearchTerm(expediteur, searchTerm) {
+            if (!expediteur) return false;
+            
+            if (typeof expediteur === 'string') {
+                return expediteur.toLowerCase().includes(searchTerm);
+            }
+            
+            if (typeof expediteur === 'object') {
+                const searchableText = [
+                    expediteur.displayName,
+                    expediteur.nom,
+                    expediteur.name,
+                    (expediteur.firstName && expediteur.lastName ? `${expediteur.firstName} ${expediteur.lastName}` : null),
+                    expediteur.email
+                ].filter(Boolean).join(' ').toLowerCase();
+                
+                return searchableText.includes(searchTerm);
+            }
+            
+            return false;
+        }
+
+        // Tri et affichage
+        function sortAndDisplayMessages() {
+            // Tri
+            filteredMessages.sort((a, b) => {
+                let aValue, bValue;
+                
+                switch (currentSortField) {
+                    case 'expediteur':
+                        aValue = getExpediteurDisplayName(a.expediteur || a.sender).toLowerCase();
+                        bValue = getExpediteurDisplayName(b.expediteur || b.sender).toLowerCase();
+                        break;
+                    case 'sujet':
+                        aValue = (a.sujet || a.subject || '').toLowerCase();
+                        bValue = (b.sujet || b.subject || '').toLowerCase();
+                        break;
+                    case 'statut':
+                        aValue = (a.statut || '').toLowerCase();
+                        bValue = (b.statut || '').toLowerCase();
+                        break;
+                    case 'date':
+                    default:
+                        aValue = new Date(a.date || a.dateEnvoi || a.dateSent || 0);
+                        bValue = new Date(b.date || b.dateEnvoi || b.dateSent || 0);
+                        break;
+                }
+
+                return currentSortDirection === 'asc' ? 
+                    (aValue > bValue ? 1 : -1) : 
+                    (aValue < bValue ? 1 : -1);
+            });
+
+            displayMessages();
+        }
+
+        // Affichage des messages
+        function displayMessages() {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const paginatedMessages = filteredMessages.slice(startIndex, startIndex + itemsPerPage);
+            const tableBody = $('#messagesTableBody');
+            
+            tableBody.empty();
+
+            if (paginatedMessages.length === 0) {
+                tableBody.html('<tr><td colspan="6" class="text-center text-muted py-4">Aucun message trouvé avec les critères sélectionnés</td></tr>');
+            } else {
+                let html = '';
+                paginatedMessages.forEach(m => {
+                    const expediteurDisplay = getExpediteurDisplayName(m.expediteur || m.sender);
+                    const statutTexte = m.archiver ? 'Archivé' : (m.statut || 'Non lu');
+                    const badgeClass = m.archiver ? 'bg-secondary' : (m.statut === 'Lu' ? 'bg-success' : 'bg-warning');
+                    const iconClass = m.archiver ? 'fa-archive' : (m.statut === 'Lu' ? 'fa-envelope-open' : 'fa-envelope');
+
+                    html += `
+                        <tr>
+                            <td class="text-center">
+                                <input type="checkbox" class="form-check-input message-checkbox" 
+                                       data-id="${m.id}"
+                                       data-email="${getClientEmailFromMessage(m)}"
+                                       data-nom="${expediteurDisplay}"
+                                       data-subject="${m.sujet || m.subject || ''}">
+                            </td>
+                            <td>${expediteurDisplay}</td>
+                            <td>${m.sujet || m.subject || ''}</td>
+                            <td>${formatDate(m.date || m.dateEnvoi || m.dateSent || '')}</td>
+                            <td>
+                                <span class="badge ${badgeClass}">
+                                    <i class="fas ${iconClass} me-1"></i>
+                                    ${statutTexte}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-primary" onclick="voirDetails(${m.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                ${statutTexte === 'Non lu' && !m.archiver ? `
+                                    <button class="btn btn-sm btn-success ms-2 mark-as-read-btn" data-id="${m.id}">
+                                        <i class="fas fa-envelope-open-text"></i>
+                                    </button>
+                                ` : `
+                                    <button class="btn btn-sm btn-secondary ms-2" disabled>
+                                        <i class="fas ${m.archiver ? 'fa-archive' : 'fa-envelope-open'}"></i>
+                                    </button>
+                                `}
+                            </td>
+                        </tr>
+                    `;
+                });
+                tableBody.html(html);
+
+                // Gestion boutons "marquer comme lu"
+                $('.mark-as-read-btn').on('click', function() {
+                    const messageId = $(this).data('id');
+                    marquerCommeLu(messageId, $(this));
+                });
+            }
+
+            updatePagination();
+            updateSelection();
+            updateTableInfo();
+        }
+
+        function getExpediteurDisplayName(expediteur) {
+            if (!expediteur) return 'Inconnu';
+            if (typeof expediteur === 'string') return expediteur;
+            if (typeof expediteur === 'object') {
+                return expediteur.displayName || expediteur.nom || expediteur.name ||
+                       (expediteur.firstName && expediteur.lastName ? `${expediteur.firstName} ${expediteur.lastName}` : null) ||
+                       expediteur.email || 'Expéditeur inconnu';
+            }
+            return 'Inconnu';
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Date inconnue';
+            const date = new Date(dateString);
+            return isNaN(date) ? dateString : date.toLocaleDateString('fr-FR', {
+                year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredMessages.length / itemsPerPage);
+            const pagination = $('#pagination');
+            pagination.empty();
+
+            if (totalPages <= 1) return;
+
+            // Bouton précédent
+            if (currentPage > 1) {
+                pagination.append(`<li class="page-item"><a class="page-link" href="#">«</a></li>`);
+            }
+
+            // Pages
+            for (let i = 1; i <= totalPages; i++) {
+                const active = i === currentPage ? ' active' : '';
+                pagination.append(`<li class="page-item${active}"><a class="page-link" href="#">${i}</a></li>`);
+            }
+
+            // Bouton suivant
+            if (currentPage < totalPages) {
+                pagination.append(`<li class="page-item"><a class="page-link" href="#">»</a></li>`);
+            }
+
+            // Gestion clics pagination
+            pagination.find('.page-link').on('click', function(e) {
+                e.preventDefault();
+                const text = $(this).text();
+                if (text === '«') currentPage--;
+                else if (text === '»') currentPage++;
+                else currentPage = parseInt(text);
+                displayMessages();
+            });
+        }
+
+        function updateTableInfo() {
+            const total = filteredMessages.length;
+            const start = (currentPage - 1) * itemsPerPage + 1;
+            const end = Math.min(currentPage * itemsPerPage, total);
+            $('#tableInfo').text(total === 0 ? 'Aucun message' : `Affichage de ${start} à ${end} sur ${total} message(s)`);
+        }
+
+        function updateSelection() {
+            const checked = $('.message-checkbox:checked').length;
+            const total = $('.message-checkbox').length;
+            const anyChecked = checked > 0;
+            
+            $('#bulkArchive, #bulkDelete').prop('disabled', !anyChecked);
+            $('#selectAll').prop('checked', anyChecked && checked === total)
+                          .prop('indeterminate', anyChecked && checked < total);
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function showLoading() {
+            $('#messagesTableBody').html('<tr><td colspan="6" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></td></tr>');
+        }
+
+        function hideLoading() {}
+
+        // Gestion du tri
+        $('.sortable').on('click', function() {
+            const field = $(this).data('sort');
+            
+            $('.sort-icon').removeClass('fa-sort-up fa-sort-down').addClass('fa-sort');
+            
+            if (currentSortField === field) {
+                currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSortField = field;
+                currentSortDirection = 'asc';
+            }
+            
+            $(this).find('.sort-icon').removeClass('fa-sort')
+                   .addClass(currentSortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down');
+            
+            sortAndDisplayMessages();
+        });
+
+        // Écouteur pour les checkbox individuelles
+        $(document).on('change', '.message-checkbox', updateSelection);
+
+        // Actions
+        function marquerCommeLu(messageId, button) {
+            button.prop('disabled', true).find('i').addClass('fa-spin');
+            
+            $.ajax({
+                url: `/Owner/messages/${messageId}/lire`,
+                type: 'POST',
+                success: function() {
+                    afficherToast('Message marqué comme lu');
+                    chargerMessages($('#typeFilter').val());
+                },
+                error: function() {
+                    afficherToast('Erreur lors du marquage', true);
+                    button.prop('disabled', false).find('i').removeClass('fa-spin');
+                }
+            });
+        }
+
+        function bulkArchiveMessages() {
+            const selectedIds = getSelectedMessageIds();
+            if (selectedIds.length === 0) {
+                afficherToast('Veuillez sélectionner au moins un message', true);
+                return;
+            }
+
+            if (!confirm(`Archiver ${selectedIds.length} message(s) ?`)) return;
+
+            $.ajax({
+                url: '/Owner/messages/archive',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ ids: selectedIds }),
+                success: function() {
+                    afficherToast('Messages archivés');
+                    chargerMessages($('#typeFilter').val());
+                },
+                error: function() {
+                    afficherToast('Erreur lors de l\'archivage', true);
+                }
+            });
+        }
+
+        function bulkDeleteMessages() {
+            const selectedIds = getSelectedMessageIds();
+            if (selectedIds.length === 0) {
+                afficherToast('Veuillez sélectionner au moins un message', true);
+                return;
+            }
+
+            if (!confirm(`Supprimer ${selectedIds.length} message(s) ?`)) return;
+
+            Promise.all(selectedIds.map(id => 
+                $.ajax({ url: `/Owner/messages/${id}`, type: 'DELETE' })
+            )).then(() => {
+                afficherToast('Messages supprimés');
+                chargerMessages($('#typeFilter').val());
+            }).catch(() => {
+                afficherToast('Erreur lors de la suppression', true);
+            });
+        }
+
+        function getSelectedMessageIds() {
+            return $('.message-checkbox:checked').map(function() {
+                return $(this).data('id');
+            }).get();
+        }
+
+        function afficherToast(message, isError = false) {
+            const toastEl = $(`
+                <div class="toast align-items-center text-white ${isError ? 'bg-danger' : 'bg-success'} border-0 position-fixed bottom-0 end-0 m-4">
+                    <div class="d-flex">
+                        <div class="toast-body">${message}</div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            `);
+            $('body').append(toastEl);
+            const toast = new bootstrap.Toast(toastEl[0]);
+            toast.show();
+            setTimeout(() => toastEl.remove(), 4000);
+        }
+</script>
+    <script>
+ 
+
+        // Envoie la liste au backend pour archivage
+        document.getElementById('bulkArchive').addEventListener('click', function bulkArchive() {
+            // Récupération des cases cochées
+            const checkboxes = document.querySelectorAll('.message-checkbox:checked');
+            
+            if (checkboxes.length === 0) {
+                alert("Veuillez sélectionner au moins un message.");
+                return;
+            }
+
+            // Extraction des IDs
+            const ids = Array.from(checkboxes).map(cb => parseInt(cb.dataset.id));
+
+            console.log("IDs sélectionnés :", ids); // Pour debug
+
+            fetch('/Owner/messages/archive', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ ids: ids })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(err => { throw new Error(err); });
+                }
+                return response.text();
+            })
+            .then(data => {
+                alert("Messages archivés avec succès !");
+                chargerMessages('recus'); // ou 'envoyes' selon ton contexte
+            })
+            .catch(error => {
+                console.error("Erreur lors de l’archivage:", error);
+                alert(error.message);
+            });
+        });
+    
+    </script>
+    <SCRIPT>
+    function getClientEmailFromMessage(message) {
+        // Essayer différentes sources pour l'email du client
+        if (message.expediteur && message.expediteur.email) {
+            return message.expediteur.email;
+        }
+        if (message.sender && message.sender.email) {
+            return message.sender.email;
+        }
+        if (message.emailExpediteur) {
+            return message.emailExpediteur;
+        }
+        if (message.expediteurEmail) {
+            return message.expediteurEmail;
+        }
+        
+        // Si aucune source trouvée, retourner vide
+        console.warn('Email du client non trouvé dans:', message);
+        return '';
+    }
+
+    function ouvrirModaleReponse() {
+        const checkbox = document.querySelector('.message-checkbox:checked');
+        if (!checkbox) {
+            afficherToast("Veuillez sélectionner une ligne d'abord.", true);
+            return;
+        }
+
+        // DEBUG: Afficher toutes les données de la checkbox
+        console.log("🔍 Données de la checkbox:", {
+            email: checkbox.getAttribute("data-email"),
+            nom: checkbox.getAttribute("data-nom"), 
+            sujet: checkbox.getAttribute("data-subject")
+        });
+
+        const destinataireEmail = checkbox.getAttribute("data-email");
+        const destinataireNom = checkbox.getAttribute("data-nom");
+        const sujetOriginal = checkbox.getAttribute("data-subject");
+
+        // Remplir les champs dans la modale
+        document.getElementById("newRecipientEmail").value = destinataireEmail;
+        document.getElementById("newRecipientName").value = destinataireNom;
+        document.getElementById("newSubject").value = sujetOriginal ? `RE: ${sujetOriginal}` : "";
+
+        // Afficher la modale
+        bootstrap.Modal.getOrCreateInstance(document.getElementById("newMessageModal")).show();
+    }
+
+    </SCRIPT>
+ 
+<script>
+function submitNewMessageForm() {
+    const form = document.getElementById('newMessageForm');
+
+    if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        return;
+    }
+
+    // Récupérer les données depuis le formulaire
+    const destinataireEmail = document.getElementById('newRecipientEmail').value;
+    const destinataireNom = document.getElementById('newRecipientName').value;
+    const sujet = document.getElementById('newSubject').value;
+    const content = document.getElementById('newContent').value;
+
+    // Vérifier que les champs email et nom sont remplis
+    if (!destinataireEmail || !destinataireNom) {
+        afficherToast("Erreur: données du client manquantes.", true);
+        return;
+    }
+
+    // Afficher les données dans la console pour debug
+    const requestData = {
+        destinataireEmail,
+        destinataireNom,
+        sujet,
+        content
+    };
+    
+    console.log("📤 Données envoyées au serveur:", requestData);
+
+    fetch('/Owner/envoyer', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => {
+        console.log("📨 Réponse du serveur - Status:", response.status);
+        
+        if (!response.ok) {
+            // Essayer de récupérer le message d'erreur du serveur
+            return response.text().then(errorText => {
+                console.error("❌ Erreur détaillée du serveur:", errorText);
+                throw new Error(`Erreur ${response.status}: ${errorText || "Erreur lors de l'envoi du message."}`);
+            });
+        }
+        return response.text();
+    })
+    .then(message => {
+        console.log("✅ Réponse du serveur:", message);
+        bootstrap.Modal.getInstance(document.getElementById('newMessageModal')).hide();
+        afficherToast("Message envoyé avec succès !");
+        form.reset();
+        form.classList.remove('was-validated');
+        
+        // Réinitialiser les sélections
+        $('.message-checkbox').prop('checked', false);
+        updateSelection();
+    })
+    .catch(error => {
+        console.error("❌ Erreur complète:", error);
+        afficherToast(error.message || "Erreur lors de l'envoi.", true);
+    });
+}
+</script>
+
+
+<script>
+function voirDetails(id) {
+    fetch(`/Owner/messagedetail/${id}`)
+        .then(res => {
+            if (!res.ok) throw new Error("Erreur lors de la récupération du message.");
+            return res.text();  // Récupérer la réponse brute en texte
+        })
+        .then(text => {
+            console.log("Réponse brute du backend :", text);
+
+            // Essayer de parser JSON ici, entouré de try/catch
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                console.error("Erreur JSON:", e);
+                alert("Le format des données reçues est invalide.");
+                return;
+            }
+            console.log("🔍 Données reçues :", data);
+
+            document.getElementById('messageExpediteur').textContent = data.expediteurNom || "N/A";
+            document.getElementById('messageEmail').textContent = data.expediteurEmail || "N/A";
+
+            document.getElementById('messageDate').textContent = data.dateEnvoi || "N/A";
+            document.getElementById('messageSujet').textContent = data.sujet || "N/A";
+            document.getElementById('messageContenu').textContent = data.content || "Aucun contenu.";
+
+            const modal = new bootstrap.Modal(document.getElementById('modalMessage'));
+            modal.show();
+        })
+        .catch(error => {
+            console.error(error);
+            alert("Impossible d'afficher les détails du message.");
+        });
+}
+
+</script>
+
+<script>
+$(document).ready(function() {
+    // Charger les données de l'utilisateur
+    $('#showUserProfile').click(function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: '/api/user/profille',
+            type: 'GET',
+            success: function(user) {
+                $('#firstName').val(user.firstName);
+                $('#lastName').val(user.lastName);
+                $('#phone').val(user.telephone);
+                $('#email').val(user.email);
+                $('#password').val(''); // Champ mot de passe vide par défaut
+            },
+            error: function(xhr) {
+                alert('Erreur lors de la récupération des informations: ' + xhr.responseText);
+            }
+        });
+    });
+
+    // Basculer l'affichage du mot de passe
+    $('#togglePassword').click(function() {
+        const passwordField = $('#password');
+        const type = passwordField.attr('type') === 'password' ? 'text' : 'password';
+        passwordField.attr('type', type);
+        $(this).toggleClass('fa-eye fa-eye-slash');
+    });
+
+    // Enregistrer les modifications
+    $('#saveProfile').click(function() {
+        const userData = {
+            firstName: $('#firstName').val(),
+            lastName: $('#lastName').val(),
+            telephone: $('#phone').val(),
+            email: $('#email').val(),
+            password: $('#password').val()
+        };
+
+        $.ajax({
+            url: '/api/user/proprofile',
+            type: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify(userData),
+            success: function(response) {
+                alert('Profil mis à jour avec succès !');
+                $('#userModal').modal('hide');
+            },
+            error: function(xhr) {
+                alert('Erreur lors de la mise à jour du profil: ' + xhr.responseText);
+            }
+        });
+    });
+});
+</script>
+<script>
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileToggle = document.getElementById('mobileMenuToggle');
+    const sidebar = document.getElementById('sidebarCustom');
+    const body = document.body;
+
+    if (mobileToggle && sidebar) {
+        mobileToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Toggle la classe pour afficher/masquer la sidebar en mode responsive
+            sidebar.classList.toggle('sidebar-open');
+            body.classList.toggle('sidebar-open'); // Optionnel : bloque le scroll du body quand ouvert
+            
+            // Rotate l'icône (optionnel, pour effet visuel)
+            const icon = mobileToggle.querySelector('i');
+            if (icon) {
+                icon.classList.toggle('rotate-180');
+            }
+        });
+    }
+
+    // Fermer la sidebar si clic hors d'elle en mode responsive
+    document.addEventListener('click', function(e) {
+        const isMobile = window.innerWidth <= 1024;
+        if (isMobile && sidebar && sidebar.classList.contains('sidebar-open') && 
+            !sidebar.contains(e.target) && !mobileToggle.contains(e.target)) {
+            sidebar.classList.remove('sidebar-open');
+            body.classList.remove('sidebar-open');
+            
+            // Reset icône
+            const icon = mobileToggle.querySelector('i');
+            if (icon) {
+                icon.classList.remove('rotate-180');
+            }
+        }
+    });
+
+    // Adapter au redimensionnement de fenêtre (intègre avec le JS précédent si existant)
+    window.addEventListener('resize', function() {
+        const isMobile = window.innerWidth <= 1024;
+        if (isMobile) {
+            // Forcer état mobile
+            if (sidebar) sidebar.classList.remove('sidebar-expanded', 'sidebar-collapsed');
+        } else {
+            // Fermer si ouvert en mobile
+            if (sidebar) {
+                sidebar.classList.remove('sidebar-open');
+                body.classList.remove('sidebar-open');
+            }
+        }
+    });
+});
+
+
+
+
+
+</script>
+</body>
+</html>

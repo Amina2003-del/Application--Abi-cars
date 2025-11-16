@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Propriétaire - Gestion des Avis</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <!-- Flag Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet">
+    <!-- Toastify CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
+    <!-- Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" th:href="@{/proprietaire/avisclients.css}">
+    
+   
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="navbar-left">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Rechercher un avis..." oninput="searchReviews()">
+            </div>
+        </div>
+        <div class="navbar-right">
+            <div class="notification-modal-container">
+                <div class="notification" id="alertsIcon">
+                    <i class="fas fa-bell text-lg text-gray-600"></i>
+                    <span class="badge">3</span>
+                </div>
+                <div class="notification-modal" id="notificationModal">
+                    <div class="notification-modal-header">
+                        <h3>Alertes récentes</h3>
+                        <span class="close-btn" id="closeNotificationModal">×</span>
+                    </div>
+                    <div class="notification-modal-body">
+                        <div class="alert-item">
+                            <div class="alert-content">
+                                <div class="alert-title">Support Team</div>
+                                <div class="alert-message">Problème de maintenance sur la voiture #123</div>
+                            </div>
+                            <div class="alert-meta">
+                                <div class="alert-time">5 mins</div>
+                                <span class="alert-status status-urgent">URGENT</span>
+                            </div>
+                        </div>
+                        <div class="alert-item">
+                            <div class="alert-content">
+                                <div class="alert-title">Design Team</div>
+                                <div class="alert-message">Inspection nécessaire pour la voiture #456</div>
+                            </div>
+                            <div class="alert-meta">
+                                <div class="alert-time">2 hours</div>
+                                <span class="alert-status status-waiting">EN ATTENTE</span>
+                            </div>
+                        </div>
+                        <div class="alert-item">
+                            <div class="alert-content">
+                                <div class="alert-title">Developers</div>
+                                <div class="alert-message">Nouvelle voiture ajoutée au parc</div>
+                            </div>
+                            <div class="alert-meta">
+                                <div class="alert-time">Today</div>
+                                <span class="alert-status status-new">NOUVEAU</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="language-switch" id="languageSwitch">
+                <span class="flag-icon flag-icon-gb"></span>
+            </div>
+            <div class="user-profile" id="userProfile">
+            <span th:text="${currentUser != null ? currentUser.firstName + ' ' + currentUser.lastName : 'Invité'}"></span>
+            
+                <i class="fa fa-user"></i>
+            </div>
+            <div class="dropdown-menu" id="userDropdown">
+                <a href="#">Mon profil</a>
+<a th:href="@{/Siteoffeciel/index}" >
+  <i class="fas fa-sign-out-alt"></i>Se déconnecter
+</a>            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-text font-bold">Dashboard</span>
+            <button id="toggleSidebar" class="text-white focus:outline-none hover:text-gray-300">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Gestion</div>
+                <a th:href="@{/Owner/reservation}" class="sidebar-item">
+                    <i class="fas fa-calendar-check"></i>
+                    <span class="sidebar-text">Réservations</span>
+                </a>
+                <a th:href="@{/voitures}"  class="sidebar-item">
+                    <i class="fas fa-car"></i>
+                    <span class="sidebar-text">Voitures</span>
+                </a>
+                <a th:href="@{/Owner/clientespace}"  class="sidebar-item">
+                    <i class="fas fa-user"></i>
+                    <span class="sidebar-text">Clients</span>
+                </a>
+                <a th:href="@{/Owner/litige}"  class="sidebar-item">
+                    <i class="fas fa-gavel"></i>
+                    <span class="sidebar-text">Litiges</span>
+                </a>
+                <a th:href="@{/Owner/paiement}"  class="sidebar-item">
+                    <i class="fas fa-credit-card"></i>
+                    <span class="sidebar-text">Paiement</span>
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Communication</div>
+                <a th:href="@{/Owner/message}" class="sidebar-item">
+                    <i class="fas fa-envelope"></i>
+                    <span class="sidebar-text">Messages</span>
+                </a>
+                <a th:href="@{/Owner/notifications}"  class="sidebar-item">
+                    <i class="fas fa-bell"></i>
+                    <span class="sidebar-text">Notifications</span>
+                </a>
+                <a th:href="@{/Owner/avis}"  class="sidebar-item active">
+                    <i class="fas fa-star"></i>
+                    <span class="sidebar-text">Avis</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Sidebar Toggle -->
+    <button id="mobileSidebarToggle" class="fixed top-4 left-4 z-50 bg-blue-500 text-white p-2 rounded-md shadow-lg md:hidden hover:bg-blue-600">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container mt-5">
+            <h1 class="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-gray-100">Espace Propriétaire - Gestion des Avis</h1>
+
+            <!-- Global Error Message -->
+            <div id="global-error" class="error-message" role="alert"></div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-dropdown">
+                    <div class="filter-icon" id="ratingFilterIcon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="filter-dropdown-content" id="ratingFilterDropdown">
+                        <a href="#" data-value="" onclick="setRatingFilter('')">Tous</a>
+                        <a href="#" data-value="5" onclick="setRatingFilter('5')">5 Étoiles</a>
+                        <a href="#" data-value="4" onclick="setRatingFilter('4')">4 Étoiles</a>
+                        <a href="#" data-value="3" onclick="setRatingFilter('3')">3 Étoiles</a>
+                        <a href="#" data-value="2" onclick="setRatingFilter('2')">2 Étoiles</a>
+                        <a href="#" data-value="1" onclick="setRatingFilter('1')">1 Étoile</a>
+                    </div>
+                </div>
+                <div class="filter-icon" onclick="applyFilters()">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+
+            <!-- Reviews List -->
+            <div id="reviews-list">
+                <!-- Review 1 -->
+                <div class="review-card" data-rating="5">
+                    <div class="review-header">
+                        <div class="review-client-info">
+                            <div class="client-avatar">MD</div>
+                            <div class="review-client-details">
+                                <h5>Marie Dubois</h5>
+                                <div class="review-date">01/05/2025 10:00</div>
+                            </div>
+                        </div>
+                        <div class="review-rating" id="rating-1"></div>
+                    </div>
+                    <div class="review-content">Excellent service ! La voiture était propre et le personnel très aimable.</div>
+                    <div class="review-actions">
+                        <div class="like-button" data-review-id="1" onclick="toggleLike(this)">
+                            <i class="fas fa-heart"></i>
+                            <span>3</span>
+                        </div>
+                        <div class="reply-button" data-review-id="1" onclick="toggleReplyForm(this)">Répondre</div>
+                    </div>
+                    <!-- Owner Reply with Rating -->
+                    <div class="owner-profile-reply" id="owner-reply-1">
+                        <div class="owner-profile-header">
+                            <div class="owner-avatar">PR</div>
+                            <div class="owner-profile-details">
+                                <h6>Propriétaire</h6>
+                                <span class="owner-label">Officiel</span>
+                            </div>
+                        </div>
+                        <div class="owner-reply-date">02/05/2025 14:00</div>
+                        <div class="owner-reply-content">Merci Marie pour votre retour positif ! Nous sommes ravis de votre satisfaction.</div>
+                        <div class="owner-rating" id="owner-rating-1" data-rating="5"></div>
+                    </div>
+                </div>
+
+                <!-- Review 2 -->
+                <div class="review-card" data-rating="3">
+                    <div class="review-header">
+                        <div class="review-client-info">
+                            <div class="client-avatar">PM</div>
+                            <div class="review-client-details">
+                                <h5>Paul Martin</h5>
+                                <div class="review-date">30/04/2025 09:30</div>
+                            </div>
+                        </div>
+                        <div class="review-rating" id="rating-2"></div>
+                    </div>
+                    <div class="review-content">Service correct, mais la voiture avait un léger problème de climatisation.</div>
+                    <div class="review-actions">
+                        <div class="like-button" data-review-id="2" onclick="toggleLike(this)">
+                            <i class="fas fa-heart"></i>
+                            <span>1</span>
+                        </div>
+                        <div class="reply-button" data-review-id="2" onclick="toggleReplyForm(this)">Répondre</div>
+                    </div>
+                </div>
+
+                <!-- Review 3 -->
+                <div class="review-card" data-rating="4">
+                    <div class="review-header">
+                        <div class="review-client-info">
+                            <div class="client-avatar">CL</div>
+                            <div class="review-client-details">
+                                <h5>Claire Lefèvre</h5>
+                                <div class="review-date">29/04/2025 15:45</div>
+                            </div>
+                        </div>
+                        <div class="review-rating" id="rating-3"></div>
+                    </div>
+                    <div class="review-content">Très bonne expérience, je recommande ! Juste un petit retard à la livraison.</div>
+                    <div class="review-actions">
+                        <div class="like-button liked" data-review-id="3" onclick="toggleLike(this)">
+                            <i class="fas fa-heart"></i>
+                            <span>5</span>
+                        </div>
+                        <div class="reply-button" data-review-id="3" onclick="toggleReplyForm(this)">Répondre</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <nav>
+                <ul class="pagination">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">Précédent</a>
+                    </li>
+                    <li class="page-item active">
+                        <a class="page-link" href="#">1</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">2</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">3</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Suivant</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Reply Modal -->
+    <div class="modal" id="replyModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <form class="reply-form" id="replyForm" onsubmit="return submitReply(event)">
+                <input type="hidden" id="modalReviewId" name="reviewId">
+                <textarea name="comment" rows="4" placeholder="Votre réponse..." required></textarea>
+                <div class="rating-select">
+                    <label for="modalOwnerRating">Note pour le client (1-5) :</label>
+                    <select name="ownerRating" id="modalOwnerRating" class="form-select w-20" required>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">Envoyer</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script>
+        // Sidebar and Navbar Scripts
+        const sidebar = document.getElementById('sidebar');
+        const toggleSidebar = document.getElementById('toggleSidebar');
+        const mobileSidebarToggle = document.getElementById('mobileSidebarToggle');
+        const mainContent = document.querySelector('.main-content');
+        const navbar = document.querySelector('.navbar');
+        const userProfile = document.getElementById('userProfile');
+        const userDropdown = document.getElementById('userDropdown');
+        const alertsIcon = document.getElementById('alertsIcon');
+        const notificationModal = document.getElementById('notificationModal');
+        const closeNotificationModal = document.getElementById('closeNotificationModal');
+        const languageSwitch = document.getElementById('languageSwitch');
+        const replyModal = document.getElementById('replyModal');
+        const replyForm = document.getElementById('replyForm');
+
+        let isSidebarCollapsed = false;
+
+        function updateLayout() {
+            const sidebarWidth = isSidebarCollapsed ? 70 : 250;
+            navbar.style.left = `${sidebarWidth}px`;
+            navbar.style.width = `calc(100% - ${sidebarWidth}px)`;
+            mainContent.style.marginLeft = `${sidebarWidth}px`;
+            mainContent.style.width = `calc(100% - ${sidebarWidth}px)`;
+            navbar.offsetWidth;
+            mainContent.offsetWidth;
+            window.dispatchEvent(new Event('resize'));
+        }
+
+        function toggleSidebarState() {
+            isSidebarCollapsed = !isSidebarCollapsed;
+            sidebar.classList.toggle('sidebar-collapsed', isSidebarCollapsed);
+            mainContent.classList.toggle('sidebar-collapsed', isSidebarCollapsed);
+            navbar.classList.toggle('sidebar-collapsed', isSidebarCollapsed);
+            sidebar.addEventListener('transitionend', updateLayout, { once: true });
+        }
+
+        toggleSidebar.addEventListener('click', toggleSidebarState);
+        mobileSidebarToggle.addEventListener('click', () => sidebar.classList.toggle('sidebar-show'));
+        userProfile.addEventListener('click', () => userDropdown.classList.toggle('active'));
+        alertsIcon.addEventListener('click', (e) => { e.stopPropagation(); notificationModal.classList.toggle('active'); });
+        closeNotificationModal.addEventListener('click', () => notificationModal.classList.remove('active'));
+        languageSwitch.addEventListener('click', () => {
+            const currentFlag = languageSwitch.querySelector('.flag-icon');
+            if (currentFlag.classList.contains('flag-icon-gb')) {
+                currentFlag.classList.remove('flag-icon-gb');
+                currentFlag.classList.add('flag-icon-fr');
+                showToast('Langue changée en français.', 'success');
+            } else {
+                currentFlag.classList.remove('flag-icon-fr');
+                currentFlag.classList.add('flag-icon-gb');
+                showToast('Langue changée en anglais.', 'success');
+            }
+        });
+
+        updateLayout();
+
+        // Review Management Scripts
+        let ratingFilter = '';
+        let searchQuery = '';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const reviews = document.querySelectorAll('.review-card');
+            reviews.forEach(review => {
+                const reviewId = review.querySelector('.reply-button').getAttribute('data-review-id');
+                const rating = parseInt(review.getAttribute('data-rating'));
+                const ratingContainer = document.getElementById(`rating-${reviewId}`);
+                renderStars(rating, ratingContainer);
+
+                const ownerRatingContainer = document.getElementById(`owner-rating-${reviewId}`);
+                if (ownerRatingContainer) {
+                    const ownerRating = ownerRatingContainer.getAttribute('data-rating') || 5;
+                    renderStars(parseInt(ownerRating), ownerRatingContainer);
+                }
+            });
+        });
+
+        function renderStars(rating, container) {
+            container.innerHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                const star = document.createElement('i');
+                star.className = `fas fa-star ${i <= rating ? '' : 'empty'}`;
+                container.appendChild(star);
+            }
+        }
+
+        function setRatingFilter(value) {
+            ratingFilter = value;
+            applyFilters();
+        }
+
+        function searchReviews() {
+            searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const reviews = document.querySelectorAll('.review-card');
+            let visibleReviews = 0;
+            reviews.forEach(review => {
+                const rating = parseInt(review.getAttribute('data-rating'));
+                const clientName = review.querySelector('.review-client-details h5').textContent.toLowerCase();
+                const ratingMatch = !ratingFilter || rating === parseInt(ratingFilter);
+                const searchMatch = !searchQuery || clientName.includes(searchQuery);
+                review.style.display = ratingMatch && searchMatch ? 'block' : 'none';
+                if (ratingMatch && searchMatch) visibleReviews++;
+            });
+            document.querySelector('.pagination').style.display = visibleReviews > 0 ? 'flex' : 'none';
+        }
+
+        function toggleReplyForm(element) {
+            const reviewId = element.getAttribute('data-review-id');
+            document.getElementById('modalReviewId').value = reviewId;
+            replyModal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            replyModal.style.display = 'none';
+            replyForm.reset();
+        }
+
+        function toggleLike(element) {
+            const reviewId = element.getAttribute('data-review-id');
+            const isLiked = element.classList.contains('liked');
+            const likesCountSpan = element.querySelector('span');
+            let likesCount = parseInt(likesCountSpan.textContent);
+            setTimeout(() => {
+                element.classList.toggle('liked');
+                likesCountSpan.textContent = isLiked ? likesCount - 1 : likesCount + 1;
+                showToast(isLiked ? 'Like retiré.' : 'Avis aimé !', 'success');
+            }, 500);
+        }
+
+        function submitReply(event) {
+            event.preventDefault();
+            const reviewId = document.getElementById('modalReviewId').value;
+            const comment = replyForm.querySelector('textarea[name="comment"]').value.trim();
+            const ownerRating = parseInt(replyForm.querySelector('select[name="ownerRating"]').value);
+
+            if (!comment || !ownerRating) {
+                showError('Veuillez remplir tous les champs.');
+                return false;
+            }
+
+            const replyDiv = document.getElementById(`owner-reply-${reviewId}`);
+            if (replyDiv.querySelector('.owner-reply-content')) {
+                showError('Une réponse existe déjà pour cet avis.');
+                return false;
+            }
+
+            const totalRatings = 10; // Example value, should come from backend
+            const replyContent = document.createElement('div');
+            replyContent.className = 'owner-reply-content';
+            replyContent.textContent = comment;
+
+            const replyDate = document.createElement('div');
+            replyDate.className = 'owner-reply-date';
+            replyDate.textContent = new Date().toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+            const ratingContainer = document.createElement('div');
+            ratingContainer.className = 'owner-rating';
+            ratingContainer.id = `owner-rating-${reviewId}`;
+            ratingContainer.setAttribute('data-rating', ownerRating);
+            renderStars(ownerRating, ratingContainer);
+
+            replyDiv.innerHTML = `
+                <div class="owner-profile-header">
+                    <div class="owner-avatar">PR</div>
+                    <div class="owner-profile-details">
+                        <h6>Propriétaire</h6>
+                        <span class="owner-label">Officiel</span>
+                    </div>
+                </div>
+            `;
+            replyDiv.appendChild(replyDate);
+            replyDiv.appendChild(replyContent);
+            replyDiv.appendChild(ratingContainer);
+
+            closeModal();
+            showToast('Réponse envoyée avec succès !', 'success');
+            return false;
+        }
+
+        function showToast(message, type = 'success') {
+            Toastify({
+                text: message,
+                duration: 3000,
+                close: true,
+                gravity: "top",
+                position: "right",
+                backgroundColor: type === 'success' ? "#2f855a" : "#c53030",
+                stopOnFocus: true
+            }).showToast();
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('global-error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => errorDiv.style.display = 'none', 5000);
+            showToast(message, 'error');
+        }
+
+        // Close modal on outside click
+        window.addEventListener('click', (e) => {
+            if (e.target === replyModal) closeModal();
+        });
+    </script>
+</body>
+</html>

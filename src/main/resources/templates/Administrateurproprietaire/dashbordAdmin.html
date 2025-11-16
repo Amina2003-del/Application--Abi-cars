@@ -1,0 +1,4058 @@
+
+<!DOCTYPE html>
+<!-- Using Thymeleaf namespace for attribute demonstration -->
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet">
+    
+    <!-- Using Thymeleaf variable for title -->
+    <title th:text="${pageTitle ?: 'Rent car - Tableau de Bord Administrateur (Avancé)'}">ABIcars- Tableau de Bord Administrateur (Avancé)</title>
+
+    <!-- Bootstrap CSS (CDN) -->
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <!-- Font Awesome (CDN) -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css" rel="stylesheet" />
+    
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+        <link rel="stylesheet" th:href="@{/assets/css/administrateurespace.css}">
+  
+</head>
+<body>
+   <div class="d-flex" id="wrapper">
+    <!-- Sidebar -->
+    <div class="border-end" id="sidebar-wrapper">
+        <div class="sidebar-heading">
+             <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMCIgaGVpZ2h0PSIzMCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSI5Ii8+PHBhdGggZD0iTTE0IDEyTDEwIDEyIDEyIDEwIDEyIDE0Ij48L3BhdGg+PC9zdmc+" alt="Carbnb Logo">
+            <span>ABIcars Admin</span>
+        </div>
+        <div class="list-group list-group-flush">
+            <!-- Liens de la Sidebar avec data-tooltip et span pour le texte -->
+            <a href="#dashboard" class="list-group-item list-group-item-action active" data-target="dashboard-section" data-tooltip="Tableau de Bord">
+                <i class="fas fa-tachometer-alt fa-fw"></i><span>Tableau de Bord</span>
+            </a>
+            <a href="#cars-section" class="list-group-item list-group-item-action" data-target="cars-section" data-tooltip="Voitures">
+                <i class="fas fa-car fa-fw"></i><span>Voitures</span>
+            </a>
+            <a href="#users" class="list-group-item list-group-item-action" data-target="users-section" data-tooltip="Utilisateurs">
+                <i class="fas fa-users fa-fw"></i><span>Utilisateurs</span>
+            </a>
+            <a href="#bookings" class="list-group-item list-group-item-action" data-target="bookings-section" data-tooltip="Réservations">
+                <i class="fas fa-calendar-alt fa-fw"></i><span>Réservations</span>
+            </a>
+            <a href="#disputes" class="list-group-item list-group-item-action" data-target="disputes-section" data-tooltip="Litiges">
+                <i class="fas fa-gavel fa-fw"></i><span>Litiges</span>
+            </a>
+            <a href="#payments" class="list-group-item list-group-item-action" data-target="payments-section" data-tooltip="Paiements">
+                <i class="fas fa-credit-card fa-fw"></i><span>Paiements</span>
+            </a>
+            <a href="#reviews" class="list-group-item list-group-item-action" data-target="reviews-section" data-tooltip="Avis">
+                <i class="fas fa-star fa-fw"></i><span>Avis</span>
+            </a>
+            <a href="#reports" class="list-group-item list-group-item-action" data-target="reports-section" data-tooltip="Rapports & Analyses">
+                <i class="fas fa-chart-line fa-fw"></i><span>Rapports & Analyses</span>
+            </a>
+         
+            <a href="#settings" class="list-group-item list-group-item-action" data-target="settings-section" data-tooltip="Paramètres">
+                <i class="fas fa-cog fa-fw"></i><span>Paramètres</span>
+            </a>
+          
+            <a th:href="@{/Siteoffeciel/index}" class="list-group-item list-group-item-action mt-auto text-danger" data-tooltip="Déconnexion">
+                <i class="fas fa-sign-out-alt fa-fw"></i><span>Déconnexion</span>
+            </a>
+        </div>
+    </div>
+<!-- /#sidebar-wrapper -->
+
+<!-- Page Content Wrapper -->
+<div id="page-content-wrapper">
+        <!-- Top Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+            <div class="container-fluid">
+                <!-- Bouton de bascule Sidebar (AJOUTÉ ICI - c'était manquant) -->
+                <button class="navbar-toggler me-2 d-lg-none" type="button" id="sidebarToggle" aria-label="Toggle sidebar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <!-- Fin Bouton -->
+              
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+             
+                    <!-- Contenu original de la Navbar -->
+                    <ul class="navbar-nav ms-auto mt-2 mt-lg-0 align-items-center">
+             
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="navbarDropdownUser" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-user me-1"></i>
+
+                                <!-- Si connecté, afficher prénom/nom ; sinon "Admin Principal" -->
+                                <span th:if="${#authorization.expression('isAuthenticated()')}"
+                                      th:text="${#authentication.principal.firstName + ' ' + #authentication.principal.lastName}">
+                                </span>
+                                <span th:unless="${#authorization.expression('isAuthenticated()')}">
+                                    Admin Principal
+                                </span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownUser">
+                                <a class="dropdown-item" href="#!" data-bs-toggle="modal" data-bs-target="#modalProfil">
+                                    <i class="fas fa-user-circle fa-fw me-2 text-gray-400"></i>Profil
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" th:href="@{/Siteoffeciel/index}" href="#"><i class="fas fa-sign-out-alt fa-fw me-2 text-gray-400"></i>Déconnexion</a>
+                            </div>
+                        </li>
+                    </ul>
+                                          
+                    <!-- Fin contenu original Navbar -->
+                </div>
+              
+            </div>
+        </nav>   <!-- /Top Navigation -->
+
+            <!-- Main Content Area -->
+            <div class="container-fluid p-3 p-md-4">
+                <!-- TOUT LE CONTENU ORIGINAL DES SECTIONS EST PRÉSERVÉ ICI -->
+                <!-- Section Tableau de Bord -->
+                <div class="content-section active" id="dashboard-section">
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h1 class="h3 mb-0 text-gray-800">Tableau de Bord</h1>
+                   </div>
+                    <div class="row"> <div class="col-xl-3 col-md-6 mb-4"> 
+                    <div class="card border-start border-primary border-4 shadow h-100 py-2 stat-card">
+                     <div class="card-body"> <div class="row no-gutters align-items-center"><div class="col mr-2"> 
+                     <div class="text-xs fw-bold text-primary text-uppercase mb-1">Voitures Actives</div><div class="h5 mb-0 fw-bold text-gray-800" th:text="${stats.voituresActives}"></div>
+                     </div><div class="col-auto"><i class="fas fa-car fa-2x text-gray-300"></i></div></div></div> </div> </div> <div class="col-xl-3 col-md-6 mb-4"> <div class="card border-start border-success border-4 shadow h-100 py-2 stat-card"> <div class="card-body"><div class="row no-gutters align-items-center"><div class="col mr-2"><div class="text-xs fw-bold text-success text-uppercase mb-1">Revenus (Mois Courant)</div><div class="h5 mb-0 fw-bold text-gray-800" th:text="'€ ' + ${stats.revenusMois}"></div>
+                     </div><div class="col-auto"><i class="fas fa-dollar-sign fa-2x text-gray-300"></i></div></div></div> </div> </div> <div class="col-xl-3 col-md-6 mb-4"> <div class="card border-start border-info border-4 shadow h-100 py-2 stat-card"> <div class="card-body"><div class="row no-gutters align-items-center"><div class="col mr-2"><div class="text-xs fw-bold text-info text-uppercase mb-1">Taux d'occupation</div><div class="row no-gutters align-items-center"><div class="col-auto"><div class="h5 mb-0 mr-3 fw-bold text-gray-800" th:text="${#numbers.formatDecimal(stats.tauxOccupation, 0, 'POINT', 0, 'NONE')} + '%'"></div>
+                     </div><div class="col"><div class="progress progress-sm mr-2"><div class="progress-bar bg-info"
+     role="progressbar"
+     th:style="'width:' + ${stats.tauxOccupation} + '%'"
+     th:aria-valuenow="${stats.tauxOccupation}"
+     aria-valuemin="0" aria-valuemax="100">
+</div></div></div></div></div><div class="col-auto"><i class="fas fa-clipboard-list fa-2x text-gray-300"></i></div></div></div> </div> </div> <div class="col-xl-3 col-md-6 mb-4"> <div class="card border-start border-warning border-4 shadow h-100 py-2 stat-card"> <div class="card-body"><div class="row no-gutters align-items-center"><div class="col mr-2"><div class="text-xs fw-bold text-warning text-uppercase mb-1">Approbations en Attente</div><div class="h5 mb-0 fw-bold text-gray-800" th:text="${stats.approbationsEnAttente}">0</div>
+</div><div class="col-auto"><i class="fas fa-comments fa-2x text-gray-300"></i></div></div></div> </div> </div> </div>
+                    <div class="row"> <div class="col-xl-8 col-lg-7 mb-4"> <div class="card shadow"> <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between"><h6 class="m-0 fw-bold text-primary">Aperçu des Revenus (6 derniers mois)</h6></div> <div class="card-body"><div class="chart-area" style="height: 300px;"><canvas id="revenueChart"></canvas></div></div> </div> </div> <div class="col-xl-4 col-lg-5 mb-4"> <div class="card shadow"> <div class="card-header py-3"><h6 class="m-0 fw-bold text-primary">Statuts des Réservations</h6></div> <div class="card-body"><div class="chart-pie pt-4" style="height: 265px;"><canvas id="bookingStatusChart"></canvas></div> <div class="mt-4 text-center small"><span class="me-2"><i class="fas fa-circle text-info"></i> Active</span><span class="me-2"><i class="fas fa-circle text-success"></i> Terminée</span><span class="me-2"><i class="fas fa-circle text-warning"></i> En Attente</span><span class="me-2"><i class="fas fa-circle text-danger"></i> Annulée</span></div></div> </div> </div> </div>
+                </div>
+                <!-- Section Voitures -->
+               <div class="content-section" id="cars-section">
+    <!-- Section d'en-tête et bouton d'ajout de voiture -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap"> 
+        <h1 class="h3 mb-2 mb-md-0 text-gray-800">Gestion des Voitures</h1>
+        <!-- <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addCarModal">
+            <i class="fas fa-plus me-1"></i> Ajouter une Voiture
+        </button> -->
+    </div>
+
+    <!-- Filtrage des voitures -->
+    <div class="card mb-4">
+        <div class="card-body p-3">
+            <form class="row g-2 align-items-end" id="carFilterForm">
+              <div class="col-lg-3 col-md-6">
+    <label for="carFilterMake" class="form-label">Marque</label>
+    <select class="form-select form-select-sm" id="carFilterMake" name="make">
+        <option value="">-- Sélectionnez une marque --</option>
+        <th:block th:each="make : ${marques}">
+            <option th:value="${make}" th:text="${make}"></option>
+        </th:block>
+    </select>
+</div>
+
+<div class="col-lg-3 col-md-6">
+    <label for="carFilterModel" class="form-label">Modèle</label>
+    <select class="form-select form-select-sm" id="carFilterModel" name="model">
+        <option value="">-- Sélectionnez un modèle --</option>
+        <th:block th:each="model : ${modeles}">
+            <option th:value="${model}" th:text="${model}"></option>
+        </th:block>
+    </select>
+</div>
+
+                <div class="col-lg-3 col-md-6">
+                    <label for="carFilterStatus" class="form-label">Statut</label>
+                    <select id="carFilterStatus" class="form-select form-select-sm">
+                        <option selected>Tous</option>
+                         <th:block th:each="statut : ${statuts}">
+        <option th:value="${statut.name()}" th:text="${statut.label}"></option>
+    </th:block>
+                     
+                    </select>
+                </div>
+              
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste des voitures -->
+    <div class="card shadow mb-8">
+        <div class="card-header py-3">
+            <h6 class="m-0 fw-bold text-primary">
+                <i class="fas fa-car me-2"></i> Liste des Voitures
+            </h6>
+        </div>
+        <div class="card-body">
+    <div style="overflow-x: visible;">
+                <table class="table table-bordered table-hover" id="carsTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Marque</th>
+                             <th>Modèle</th>
+                            <th>Imm.</th>
+                            <th>Proprio.</th>
+                            <th>Statut Appr.</th>
+                            <th>Disponibilité</th>
+                            <th>Prix/j</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Exemple de ligne pour une voiture -->
+                      <tr th:each="voiture : ${voitures}" th:id="'car-row-' + ${voiture.id}">
+                            <td th:text="${voiture.id}"></td>
+                            <td th:text="${voiture.ville}"></td>
+                            <td th:text="${voiture.marque}"></td>
+                               <td th:text="${voiture.modele}"></td>
+                            <td th:text="${voiture.immatriculation}"></td>
+<td th:text="${voiture.proprietaire.fullNameWithId}">
+</td>
+<td>
+        <span th:switch="${voiture.statutApprobation?.name()}"> <!-- .name() donnera "APPROVED", "REJECTED", "PENDING" -->
+            <span th:case="'APPROUVEE'" class="status-badge status-approved">Approuvée</span>
+            <span th:case="'REJETEE'" class="status-badge status-rejected">Rejetée</span>
+            <span th:case="*" class="status-badge status-pending" th:text="${voiture.statutApprobation?.name() ?: 'N/A'}">N/A</span>
+        </span>
+    </td>            
+            
+            
+            
+<td>
+    <span class="status-badge status-unavailable" th:text="${voiture.disponible}"></span>
+</td>                             <td th:text="${voiture.prixJournalier} + '€'  "></td>                    
+
+<td>
+    <!-- Voir / Modifier -->
+    <button class="btn btn-sm btn-info btn-action" 
+            title="Voir/Modifier"
+            
+            data-bs-toggle="modal" 
+            data-bs-target="#editCarModal"
+            th:attr="data-car-id=${voiture.id}">
+        <i class="fas fa-edit"></i>
+    </button>
+
+    <!-- Approuver -->
+    <button class="btn btn-sm btn-success btn-action btn-approve-car" 
+            title="Approuver" 
+            th:attr="data-car-id=${voiture.id}">
+        <i class="fas fa-check"></i>
+    </button>
+
+    <!-- Rejeter -->
+    <button class="btn btn-sm btn-danger btn-action btn-reject-car" 
+            title="Rejeter" 
+            th:attr="data-car-id=${voiture.id}">
+        <i class="fas fa-times"></i>
+    </button>
+
+    <!-- Mettre en attente -->
+    <button class="btn btn-sm btn-warning btn-action btn-pending-car" 
+            title="Mettre en attente" 
+            th:attr="data-car-id=${voiture.id}">
+        <i class="fas fa-clock"></i>
+    </button>
+
+    <!-- Masquer (Supprimer) -->
+    <button class="btn btn-sm btn-dark btn-action btn-hide-car" 
+            title="Masquer"
+            th:attr="data-car-id=${voiture.id}">
+        <i class="fas fa-trash-alt"></i>
+    </button>
+
+    <!-- Gérer les images -->
+   <button class="btn btn-primary manage-images"
+        th:attr="data-car-id=${voiture.id},
+                 data-image-url=@{/Siteoffeciel/images/{ownerId}/{img}(ownerId=${voiture.proprietaire.id}, img=${voiture.imagePrincipaleURL})}"
+        th:if="${voiture.imagePrincipaleURL != null and voiture.proprietaire != null}"
+        title="Gérer les images">
+    <i class="fas fa-images"></i>
+</button>
+</td>
+
+                        </tr>
+                        <!-- Autres lignes de voiture similaires... -->
+                    </tbody>
+                </table>
+                
+            </div>
+<!-- Popup de confirmation pour masquer une voiture -->
+    <div id="delete-popup" class="popup-overlay hidden">
+        <div class="popup-box">
+            <h2>Confirmation</h2>
+            <p>Voulez-vous vraiment masquer cette voiture ?</p>
+            <div class="popup-actions">
+                <button class="btn cancel-btn" id="cancel-delete">Annuler</button>
+                <button class="btn confirm-btn" id="confirm-delete">Masquer</button>
+            </div>
+        </div>
+    </div>
+<div id="approve-popup" class="popup-overlay hidden">
+    <div class="popup-box">
+        <h2>Confirmation</h2>
+        <p>Voulez-vous vraiment approuver cette voiture ?</p>
+        <div class="popup-actions">
+            <button class="btn cancel-btn" id="cancel-approve">Annuler</button>
+            <button class="btn confirm-btn" id="confirm-approve">Approuver</button>
+        </div>
+    </div>
+</div>
+    <!-- Notification Toast -->
+    <div id="toast-notification" class="toast-notification hidden">
+        Voiture masquée avec succès ✔️
+    </div>
+                       <!-- Pagination -->
+            <nav aria-label="Page navigation example" class="mt-3 d-flex justify-content-center">
+                <!-- AJOUTER UN ID ICI -->
+                <ul class="pagination pagination-sm" id="paginationControls">
+                    <!-- Le contenu sera généré par JavaScript -->
+                    <li class="page-item disabled"><a class="page-link" href="#">Précédent</a></li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item disabled"><a class="page-link" href="#">Suivant</a></li>
+                </ul>
+            </nav>
+        </div> <!-- Fin de card-body -->
+    </div> <!-- Fin de card -->
+</div> <!-- Fin de #cars-section -->
+                
+                <!-- Modal pour afficher l'image -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Image de la Voiture</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" class="img-fluid" alt="Image de la voiture">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+                
+               <div class="modal fade" id="modalProfil" tabindex="-1" aria-labelledby="modalProfilLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form id="userProfileForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalProfilLabel">Modifier Profil</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="firstName" class="form-label">Prénom</label>
+            <input type="text" class="form-control" id="firstName" name="firstName" />
+          </div>
+          <div class="mb-3">
+            <label for="lastName" class="form-label">Nom</label>
+            <input type="text" class="form-control" id="lastName" name="lastName" />
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" />
+          </div>
+          <!-- Autres champs si besoin -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+          <button type="submit" class="btn btn-primary">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+                
+                
+                
+                <!-- Modal Profil -->
+<div class="modal fade" id="profileModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Profil Utilisateur</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="profileContent">
+        <!-- Contenu profil injecté ici -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Historique -->
+<div class="modal fade" id="historyModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Historique des Réservations</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="historyContent">
+        <!-- Contenu historique injecté ici -->
+      </div>
+    </div>
+  </div>
+</div>
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+               <!-- Section Utilisateurs -->
+<div class="content-section" id="users-section">
+    <h1 class="h3 mb-4 text-gray-800">Gestion des Utilisateurs</h1>
+    
+    <ul class="nav nav-tabs mb-3" id="usersTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button 
+                class="nav-link active" 
+                id="owners-tab" 
+                data-bs-toggle="tab" 
+                data-bs-target="#owners-content" 
+                type="button" role="tab" 
+                aria-controls="owners-content" 
+                aria-selected="true"
+            >
+                <i class="fas fa-car-side me-1"></i> Propriétaires (<span id="owner-count">0</span>)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button 
+                class="nav-link" 
+                id="clients-tab" 
+                data-bs-toggle="tab" 
+                data-bs-target="#clients-content" 
+                type="button" role="tab" 
+                aria-controls="clients-content" 
+                aria-selected="false"
+            >
+                <i class="fas fa-user me-1"></i> Clients (<span id="client-count">0</span>)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button 
+                class="nav-link" 
+                id="visitors-tab" 
+                data-bs-toggle="tab" 
+                data-bs-target="#visitors-content" 
+                type="button" role="tab" 
+                aria-controls="visitors-content" 
+                aria-selected="false"
+            >
+                <i class="fas fa-user-clock me-1"></i> Visitors (<span id="visitor-count">0</span>)
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="usersTabContent">
+        <!-- Propriétaires -->
+        <div 
+            class="tab-pane fade show active" 
+            id="owners-content" 
+            role="tabpanel" 
+            aria-labelledby="owners-tab"
+        >
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold text-primary">
+                        <i class="fas fa-car-side me-1"></i> Liste des Propriétaires
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table 
+                            class="table table-bordered table-hover" 
+                            id="ownersTable" 
+                            width="100%"
+                        >
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Email</th>
+                                    <th>Téléphone</th>
+                                    <th>Statut</th>
+                                    <th>Voitures</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody> <!-- Rempli par JS -->
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clients -->
+        <div 
+            class="tab-pane fade" 
+            id="clients-content" 
+            role="tabpanel" 
+            aria-labelledby="clients-tab"
+        >
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold text-primary">
+                        <i class="fas fa-user me-1"></i> Liste des Clients
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table 
+                            class="table table-bordered table-hover" 
+                            id="clientsTable" 
+                            width="100%"
+                        >
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Email</th>
+                                    <th>Téléphone</th>
+                                    <th>Réserv.</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody> <!-- Rempli par JS -->
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visitors -->
+        <div 
+            class="tab-pane fade" 
+            id="visitors-content" 
+            role="tabpanel" 
+            aria-labelledby="visitors-tab"
+        >
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold text-primary">
+                        <i class="fas fa-user-clock me-1"></i> Liste des Visitors
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table 
+                            class="table table-bordered table-hover" 
+                            id="visitorsTable" 
+                            width="100%"
+                        >
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom complet</th>
+                                    <th>Email</th>
+                                    <th>Téléphone</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody> <!-- Rempli par JS -->
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+                <!-- Section Réservations -->
+               <div class="content-section" id="bookings-section">
+        <h1 class="h3 mb-4 text-gray-800">Gestion des Réservations</h1>
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 fw-bold text-primary">
+                    <i class="fas fa-calendar-alt me-1"></i>Liste des Réservations
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="bookingsTable" width="100%">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Voiture (ID)</th>
+                                <th>Client (ID)</th>
+                                <th>Début</th>
+                                <th>Fin</th>
+                                <th>Prix</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Loop through reservations -->
+                            <tr th:each="reservation : ${reservations}" th:data-booking-id="'R' + ${reservation.id}">
+                                <!-- ID -->
+                                <td th:text="'R' + ${reservation.id}"></td>
+                                <!-- Voiture (ID) -->
+                                <td th:text="${reservation.voiture != null} ? ${reservation.voiture.fullName} + ' (' + ${reservation.voiture.id} + ')' : 'N/A'"></td>
+                                <!-- Client (ID) -->
+<td th:text="${reservation.utilisateur != null} ? (${reservation.utilisateur.firstName ?: ''} + ' ' + ${reservation.utilisateur.lastName ?: ''}) + ' (' + ${reservation.utilisateur.id} + ')' : 'N/A'"></td>                                <!-- Date Début -->
+                                <td th:text="${reservation.dateDebut} ?: 'N/A'"></td>
+                                <!-- Date Fin -->
+                                <td th:text="${reservation.dateFin} ?: 'N/A'"></td>
+                                <!-- Prix -->
+                                <td th:text="${reservation.prixTotal != null} ? ${reservation.prixTotal} + '€' : 'N/A'"></td>
+                                <!-- Statut -->
+                                <td>
+                                    <span th:class="'status-badge status-' + ${reservation.statut != null} ? ${reservation.statut.toString().toLowerCase().replace('_', '-')} : 'pending'"
+                                          th:text="${reservation.statut != null} ? ${reservation.statut.toString().replace('_', ' ')} : 'En Attente'"></span>
+                                </td>
+                                <!-- Actions -->
+                                <td>
+                                    <!-- Show buttons based on status -->
+                                    <div th:switch="${reservation.statut}">
+                                        <!-- Case: EN_ATTENTE (Pending) -->
+                                        <div th:case="EN_ATTENTE">
+                                            <button class="btn btn-sm btn-success btn-action btn-approve-booking"
+                                                    th:attr="data-booking-id='R' + ${reservation.id}" title="Approb. Manuelle">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-danger btn-action btn-cancel-booking"
+                                                    th:attr="data-booking-id='R' + ${reservation.id}" title="Annuler">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-secondary btn-action btn-view-details" 
+        th:attr="data-booking-id='R' + ${reservation.id}" title="Voir Détails">
+    <i class="fas fa-eye"></i>
+</button>
+
+                                        </div>
+                                        <!-- Case: CONFIRMEE (Active or Upcoming) -->
+                                        <div th:case="CONFIRMEE">
+                                            <button class="btn btn-sm btn-info btn-action" title="Modifier">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-danger btn-action btn-cancel-booking"
+                                                    th:attr="data-booking-id='R' + ${reservation.id}" title="Annuler">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-secondary btn-action btn-view-details" 
+        th:attr="data-booking-id='R' + ${reservation.id}" title="Voir Détails">
+    <i class="fas fa-eye"></i>
+</button>
+
+                                        </div>
+                                        <!-- Case: TERMINEE (Completed) -->
+                                        <div th:case="TERMINEE">
+                                            <button class="btn btn-sm btn-secondary btn-action" title="Voir Détails">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                           <button class="btn btn-sm btn-secondary btn-action btn-view-details" 
+        th:attr="data-booking-id='R' + ${reservation.id}" title="Voir Détails">
+    <i class="fas fa-eye"></i>
+</button>
+
+                                        </div>
+                                        <!-- Case: ANNULEE (Cancelled) -->
+                                        <div th:case="ANNULEE">
+                                           <button class="btn btn-sm btn-secondary btn-action btn-view-details" 
+        th:attr="data-booking-id='R' + ${reservation.id}" title="Voir Détails">
+    <i class="fas fa-eye"></i>
+</button>
+
+                                        </div>
+                                        <!-- Default Case -->
+                                        <div th:case="*">
+                                            <button class="btn btn-sm btn-secondary btn-action btn-view-details" 
+        th:attr="data-booking-id='R' + ${reservation.id}" title="Voir Détails">
+    <i class="fas fa-eye"></i>
+</button>
+
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- Show a message if there are no reservations -->
+                            <tr th:if="${#lists.isEmpty(reservations)}">
+                                <td colspan="8" style="text-align: center;">Aucune réservation trouvée.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                
+            </div>
+        </div>
+    </div>
+    <div id="detailsModal" class="hidden" style="position: fixed; top: 10%; left: 50%; transform: translateX(-50%); background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 0 10px #0008; z-index: 9999;">
+  <button onclick="closeModal('detailsModal')" style="float: right;">✖</button>
+  <h3>Détails de la réservation</h3>
+  <div id="detailsContent">Chargement...</div>
+  
+
+</div>
+      <!-- Modal pour les détails de réservation -->
+<div class="modal fade" id="reservationDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Détails de la Réservation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="reservationDetailsContent">
+                <!-- Les détails seront chargés ici dynamiquement -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+                <!-- Section Litiges -->
+         <div class="content-section" id="disputes-section">
+
+  <h1 class="h3 mb-4 text-gray-800">Gestion des Litiges</h1>
+
+  <!-- Carte liste des litiges -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 fw-bold text-primary">
+        <i class="fas fa-gavel me-1"></i>Liste des Litiges
+      </h6>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover" id="disputesTable" width="100%">
+          <thead>
+            <tr>
+              <th>ID Litige</th>
+              <th>ID Réserv.</th>
+              <th>Type</th>
+              <th>Signalé le</th>
+              <th>Statut</th>
+              <th>Parties</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="disputesTableBody">
+            <!-- Contenu dynamique via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal : Résolution Litige -->
+  <!-- Modal de réponse au litige -->
+<div class="modal fade" id="modalResolveDispute" tabindex="-1" aria-labelledby="modalResolveDisputeLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-success shadow">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="modalResolveDisputeLabel">
+          <i class="fas fa-check-circle me-2"></i>Résoudre le litige
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <form id="resolveDisputeForm">
+        <div class="modal-body">
+          <input type="hidden" id="disputeId">
+          <div class="mb-3">
+            <label for="responseText" class="form-label">Votre réponse :</label>
+            <textarea class="form-control" id="responseText" rows="4" placeholder="Écrivez une réponse au litige..." required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="submit" class="btn btn-success">
+            <i class="fas fa-check"></i> Résoudre
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Toast de confirmation -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+  <div id="resolveToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        ✅ Litige résolu avec succès !
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fermer"></button>
+    </div>
+  </div>
+</div>
+
+  <!-- Modal : Confirmation Clôturer -->
+  <div class="modal fade" id="confirmCloseModal" tabindex="-1" aria-labelledby="confirmCloseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-warning shadow">
+        <div class="modal-header bg-warning text-dark">
+          <h5 class="modal-title" id="confirmCloseModalLabel">
+            <i class="fas fa-times-circle me-2"></i>Confirmer la clôture
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body">
+          Êtes-vous sûr de vouloir <strong>clôturer</strong> ce litige ?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="button" class="btn btn-warning" id="confirmCloseBtn">
+            <i class="fas fa-check"></i> Confirmer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Modal : Confirmation Rejeter -->
+  <div class="modal fade" id="confirmRejectModal" tabindex="-1" aria-labelledby="confirmRejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-danger shadow">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="confirmRejectModalLabel">
+            <i class="fas fa-ban me-2"></i>Confirmer le rejet
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body">
+          Êtes-vous sûr de vouloir <strong>rejeter</strong> ce litige ?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+          <button type="button" class="btn btn-danger" id="confirmRejectBtn">
+            <i class="fas fa-check"></i> Confirmer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toasts pour Confirmation -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100; max-width: 350px;">
+    <!-- Toast : fermeture -->
+    <div
+      id="closeToast"
+      class="toast align-items-center text-white bg-warning border-0"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    >
+      <div class="d-flex">
+        <div class="toast-body fw-bold">Litige clôturé avec succès !</div>
+        <button
+          type="button"
+          class="btn-close btn-close-white me-2 m-auto"
+          data-bs-dismiss="toast"
+          aria-label="Fermer"
+        ></button>
+      </div>
+    </div>
+
+    <!-- Toast : rejet -->
+    <div
+      id="rejectToast"
+      class="toast align-items-center text-white bg-danger border-0"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    >
+      <div class="d-flex">
+        <div class="toast-body fw-bold">Litige rejeté avec succès !</div>
+        <button
+          type="button"
+          class="btn-close btn-close-white me-2 m-auto"
+          data-bs-dismiss="toast"
+          aria-label="Fermer"
+        ></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal : détails du litige -->
+  <div class="modal fade" id="disputeModal" tabindex="-1" aria-labelledby="disputeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="disputeModalLabel">Détails du Litige</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="disputeDetails"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+       
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+         <!-- Section Paiements -->
+            <div class="content-section" id="payments-section">
+    <h1 class="h3 mb-4 text-gray-800">Gestion des Paiements</h1>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 fw-bold text-primary">
+                <i class="fas fa-credit-card me-1"></i>Transactions Récentes
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="paymentsTable" width="100%">
+                    <thead>
+                        <tr>
+                            <th>ID Trans.</th>
+                            <th>ID Réserv.</th>
+                            <th>Méthode</th>
+                            <th>Montant</th>
+                            <th>Date</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody th:each="paiement : ${paiements}">
+                        <tr>
+                            <td th:text="${paiement.id}">T001</td>
+                            <td th:text="${paiement.reservation.id}">B007</td>
+                            <td th:text="${paiement.methode}">Carte</td>
+                            <td th:text="${paiement.montant + ' €'}">140 €</td>
+                            <td th:text="${#temporals.format(paiement.date, 'yyyy-MM-dd')}">2024-12-16</td>
+                            <td>
+                                <span 
+                                    th:class="${'status-badge status-' + (paiement.statut != null ? paiement.statut.toString().toLowerCase() : 'unknown')}"
+                                    th:text="${paiement.statut != null ? paiement.statut : 'Inconnu'}"
+                                    style="color: blue;">
+                                </span>
+                            </td>
+                            <td>
+                                <!-- Détails -->
+                               <button class="btn btn-sm btn-info btn-action" title="Détails" th:attr="data-id=${paiement.id}">
+    <i class="fas fa-eye"></i>
+</button>
+
+                                <!-- Voir Facture -->
+                                <button class="btn btn-sm btn-dark btn-action btn-facture" title="Facture"
+                                        th:attr="data-id=${paiement.id}">
+                                    <i class="fas fa-file-pdf"></i>
+                                </button>
+
+                                <!-- Paiement en attente -->
+<!-- Paiement en attente ou payé -->
+<th:block th:if="${paiement != null and paiement.statut != null}">
+    
+    <!-- Statut EN_ATTENTE -->
+    <!-- Statut EN_ATTENTE -->
+<th:block th:if="${paiement.statut != null and paiement.statut.name() == 'EN_ATTENTE'}">
+    <button class="btn btn-sm btn-info btn-action btn-retry" title="Retenter Paiement"
+            th:attr="data-id=${paiement.id}">
+        <i class="fas fa-redo"></i>
+    </button>
+</th:block>
+
+<!-- Statut PAYE -->
+<th:block th:if="${paiement.statut != null and paiement.statut.name() == 'PAYE'}">
+    <button class="btn btn-sm btn-warning btn-action btn-refund" title="Rembourser"
+            th:attr="data-id=${paiement.id}">
+        <i class="fas fa-undo"></i>
+    </button>
+    <button class="btn btn-sm btn-primary btn-action btn-resent" title="Renvoyer Notification"
+                  th:attr="data-id-paiement=${paiement.id}">
+        <i class="fas fa-paper-plane"></i>
+    </button>
+</th:block>
+
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+
+           
+        </div>
+    </div>
+</div>
+<div class="modal" id="modalDetails" tabindex="-1" style="display: none;">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Détails du Paiement</h5>
+        <button type="button" class="btn-close" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body"><!-- rempli dynamiquement --></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+       <!-- Section Avis -->
+               <div class="content-section" id="reviews-section">
+  <h1 class="h3 mb-4 text-gray-800">Gestion des Avis</h1>
+  <div class="card mb-4">
+    <div class="card-body p-3">
+      <form id="filterForm" class="row g-2 align-items-end">
+       
+        <div class="col-lg-4 col-md-6">
+          <label for="reviewFilterRating" class="form-label">Note</label>
+          <select id="reviewFilterRating" name="note" class="form-select form-select-sm">
+            <option value="0" selected>Toutes</option>
+            <option value="5">★★★★★</option>
+            <option value="4">★★★★☆</option>
+            <option value="3">★★★☆☆</option>
+            <option value="2">★★☆☆☆</option>
+            <option value="1">★☆☆☆☆</option>
+          </select>
+        </div>
+        <div class="col-lg-4 col-md-12">
+          <button type="submit" class="btn btn-primary btn-sm w-100">
+            <i class="fas fa-filter me-1"></i> Filtrer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card shadow">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+      <h6 class="m-0 fw-bold text-primary">
+        <i class="fas fa-star me-2"></i>Liste des Avis
+      </h6>
+    </div>
+    <div class="card-body" id="reviewsList">
+      <!-- Liste dynamique ici -->
+      <p>Chargement des avis...</p>
+    </div>
+  </div>
+</div>
+<!-- Toast de notification -->
+
+<!-- Popup profil -->
+<div id="profilePopup" style="
+    display: none;
+    position: absolute;
+    top: 100px; left: 100px;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    border-radius: 8px;
+    z-index: 9999;
+">
+    <button id="closePopup" style="float:right;">X</button>
+    <div id="popupContent">Chargement...</div>
+</div>
+
+                <!-- Section Rapports -->
+                <div class="content-section" id="reports-section">
+                     <h1 class="h3 mb-4 text-gray-800">Rapports et Analyses</h1> <div class="row">
+                      <div class="col-lg-6 mb-4"><div class="card shadow"><div class="card-header py-3">
+                      <h6 class="m-0 fw-bold text-primary">Taux d'Occupation par Ville (Mois Dernier)</h6>
+                      </div><div class="card-body"><canvas id="occupationChart" style="height: 250px;">
+                      </canvas></div></div></div> <div class="col-lg-6 mb-4"><div class="card shadow">
+                      <div class="card-header py-3"><h6 class="m-0 fw-bold text-primary">Top 5 Voitures Louées (30j)</h6>
+                      </div><div class="card-body"><canvas id="topCarsChart" style="height: 250px;"></canvas></div>
+                      </div></div> </div> <div class="card shadow mb-4"> <!-- <div class="card-header py-3">
+                     <h6 class="m-0 fw-bold text-primary">Générer des Rapports Personnalisés</h6>
+                      </div><div class="card-body"><form class="row g-3 align-items-end">
+                      <div class="col-md-4"><label for="reportType" class="form-label">Type de Rapport</label>
+                      <select id="reportType" class="form-select form-select-sm"><option selected>Activité Utilisateur</option><option>Performance Voiture</option><option>Financier Détaillé</option><option>Litiges Résolus</option></select></div><div class="col-md-3"><label for="reportStartDate" class="form-label">Date Début</label><input type="date" class="form-control form-control-sm" id="reportStartDate"></div><div class="col-md-3"><label for="reportEndDate" class="form-label">Date Fin</label><input type="date" class="form-control form-control-sm" id="reportEndDate"></div><div class="col-md-2"><button type="submit" class="btn btn-success btn-sm w-100"><i class="fas fa-download me-1"></i> Générer</button></div></form></div> --></div>
+                </div>
+                <div id="reportResult" class="mt-4"></div>
+                
+                <!-- Toast -->
+                
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+  <div id="toastNotification" class="toast text-white" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-body d-flex justify-content-between align-items-center">
+      <span id="toastMessage"></span>
+      <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmation -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="confirmDeleteLabel">Confirmer la suppression</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body">
+        Êtes-vous sûr de vouloir supprimer cet avis ? Cette action est irréversible.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Supprimer</button>
+      </div>
+    </div>
+  </div>
+</div>
+                
+                <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055">
+  <div id="toastNotification" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body" id="toastMessage">Action réussie.</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fermer"></button>
+    </div>
+  </div>
+</div>
+                
+       
+                <!-- Section Paramètres -->
+              <div class="content-section" id="settings-section">
+  <h1 class="h3 mb-4 text-gray-800">Paramètres et Configuration</h1>
+
+  <!--  <div class="row">
+    <!-- Paramètres Généraux -->
+   
+    <!-- Sécurité & Rôles -->
+   
+   <!-- <div class="col-lg-6 mb-4">
+      <div class="card shadow">
+        <!--  <div class="card-header py-3">
+          <h6 class="m-0 fw-bold text-primary"><i class="fas fa-shield-alt me-1"></i> Sécurité</h6>
+        </div>-->
+       <!--  <div class="card-body">
+         <!--   <p class="small">Gestion des rôles administrateurs.</p>
+          <ul class="list-group list-group-flush mb-3 small" id="roleList">
+            <!-- Les rôles seront injectés ici -->
+          </ul>
+<!-- <button class="btn btn-success btn-sm mb-3" data-bs-toggle="modal" data-bs-target="#ajouterAdminModal">
+  <i class="fas fa-plus me-1"></i> Ajouter Rôle Admin
+</button>
+          <hr>
+          <p class="small mt-3">Autres options (MFA, etc.)</p>
+        </div>
+      </div>
+    </div>
+    <!-- Personnalisation -->
+   
+   <!-- Modal Ajouter Rôle Admin -->
+<!-- <div class="modal fade" id="ajouterAdminModal" tabindex="-1" aria-labelledby="ajouterAdminLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="ajouterAdminForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ajouterAdminLabel">Ajouter un Administrateur</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="adminFirstName" class="form-label">Prénom</label>
+            <input type="text" class="form-control" id="adminFirstName" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="adminLastName" class="form-label">Nom</label>
+            <input type="text" class="form-control" id="adminLastName" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="adminEmail" class="form-label">Email</label>
+            <input type="email" class="form-control" id="adminEmail" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="adminPassword" class="form-label">Mot de passe</label>
+            <input type="password" class="form-control" id="adminPassword" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="niveauAcces" class="form-label">Rôle Administrateur</label>
+            <select class="form-select" id="niveauAcces" required>
+              <option value="" disabled selected>Choisir un rôle</option>
+              <option value="1">Administrateur des Propriétaires</option>
+              <option value="2">Administrateur Clients</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Ajouter</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+                <!-- Section Support -->
+              <!-- Liste des Partenariats -->
+<!-- Liste des demandes de partenariat -->
+<div class="col-lg-12 mb-4">
+  <div class="card shadow">
+    <div class="card-header py-3">
+      <h6 class="m-0 fw-bold text-primary"><i class="fas fa-handshake me-1"></i> Demandes de Partenariat</h6>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Utilisateur</th>
+              <th>Adresse</th>
+              <th>Date</th>
+              <th>Statut</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+         <tbody>
+  <tr th:each="demande : ${demandes}">
+    <td th:text="${demande.id}">1</td>
+<td th:text="|${demande.utilisateur.firstName} ${demande.utilisateur.lastName} (${demande.utilisateur.email})|">Nom</td>
+    <td th:text="${demande.adresse}">Adresse</td>
+    <td th:text="${#temporals.format(demande.dateSoumission, 'dd/MM/yyyy HH:mm')}">Date</td>
+    <td>
+      <span th:text="${demande.statut}" 
+      th:classappend="'badge ' + 
+        (${demande.statut.name()} == 'ACCEPTE' ? 'bg-success' : 
+        (${demande.statut.name()} == 'REJETE' ? 'bg-danger' : 'bg-secondary'))">
+</span>
+
+    </td>
+    <td>
+      <button class="btn btn-success btn-sm accept-btn" th:data-id="${demande.id}"><i class="fas fa-check"></i></button>
+      <button class="btn btn-danger btn-sm reject-btn" th:data-id="${demande.id}"><i class="fas fa-times"></i></button>
+    </td>
+  </tr>
+  <tr th:if="${#lists.isEmpty(demandes)}">
+    <td colspan="6" class="text-center">Aucune demande en attente</td>
+  </tr>
+</tbody>
+
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+                <!-- FIN DES SECTIONS DE CONTENU -->
+            </div>
+            <!-- /Main Content Area -->
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white mt-4 py-3 border-top">
+                 <div class="container my-auto"><div class="copyright text-center my-auto small"><span>Copyright &copy; ABIcars<span th:text="${#dates.year(#dates.createNow())}">2024</span></span></div></div>
+            </footer>
+            <!-- /Footer -->
+
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- == MODALS == -->
+    <!-- TOUTES LES MODALES ORIGINALES SONT PRÉSERVÉES ICI -->
+ <div class="modal fade" id="addCarModal" tabindex="-1" aria-labelledby="addCarModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCarModalLabel">Ajouter une Nouvelle Voiture</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="locationForm" action="/Administrateur/ajoutervoiture" method="POST" enctype="multipart/form-data">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="marque" class="form-label">Marque</label>
+                                <input type="text" class="form-control form-control-sm" id="marque" name="marque" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="modele" class="form-label">Modèle</label>
+                                <input type="text" class="form-control form-control-sm" id="modele" name="modele" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="immatriculation" class="form-label">Immatriculation</label>
+                                <input type="text" class="form-control form-control-sm" id="immatriculation" name="Immatriculation" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="annee" class="form-label">Année</label>
+                                <input type="number" class="form-control form-control-sm" id="annee" name="annee">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="prix" class="form-label">Prix par jour (€)</label>
+                                <input type="number" step="0.01" class="form-control form-control-sm" id="prix" name="prix" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="nombrePlaces" class="form-label">Nombre de places</label>
+                                <input type="number" class="form-control form-control-sm" id="nombrePlaces" name="nombrePlaces" min="1" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="ville" class="form-label">Ville</label>
+                                <input type="text" class="form-control form-control-sm" id="ville" name="ville" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="type" class="form-label">Type de voiture</label>
+                                <select class="form-control form-control-sm" id="type" name="type" required>
+                                    <option value="" disabled selected>Sélectionner</option>
+                                    <option value="SUV">SUV</option>
+                                    <option value="Berline">Berline</option>
+                                    <option value="Citadine">Citadine</option>
+                                    <option value="4x4">4x4</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="kilometrage" class="form-label">Kilométrage (km)</label>
+                                <input type="number" class="form-control form-control-sm" id="kilometrage" name="kilometrage" min="0">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="categorie" class="form-label">Catégorie</label>
+                                <select class="form-control form-control-sm" id="categorie" name="categorie" required>
+                                    <option value="" disabled selected>Sélectionner</option>
+                                    <option value="Économique">Économique</option>
+                                    <option value="Confort">Confort</option>
+                                    <option value="Premium">Premium</option>
+                                    <option value="Luxe">Luxe</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="boite" class="form-label">Boîte</label>
+                                <select class="form-control form-control-sm" id="boite" name="boite" required>
+                                    <option value="" disabled selected>Sélectionner</option>
+                                    <option value="Manuelle">Manuelle</option>
+                                    <option value="Automatique">Automatique</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="carburant" class="form-label">Carburant</label>
+                                <select class="form-control form-control-sm" id="carburant" name="carburant" required>
+                                    <option value="" disabled selected>Sélectionner</option>
+                                    <option value="Essence">Essence</option>
+                                    <option value="Diesel">Diesel</option>
+                                    <option value="Électrique">Électrique</option>
+                                    <option value="Hybride">Hybride</option>
+                                </select>
+                            </div>
+                           
+                           
+                            <div class="col-12">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control form-control-sm" id="description" name="description" rows="3"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label for="image" class="form-label">Image Principale</label>
+                                <input class="form-control form-control-sm" type="file" id="image" name="image">
+                            </div>
+                               <div class="col-12 form-group">
+                                <label class="form-label">Images Galerie (internes)</label>
+                                <div id="galleryInputs">
+                                    <div class="gallery-input mb-2 d-flex align-items-center">
+                                        <input class="form-control form-control-sm me-2" type="file" name="galleryImages" accept="image/*">
+                                        <i class="fas fa-trash-alt text-danger remove-icon" style="display: none; cursor: pointer;" title="Supprimer cette image"></i>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="addGalleryInput"><i class="fas fa-plus me-1"></i>Ajouter image galerie</button>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="reset" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Annuler</button>
+                            <button type="submit" class="btn btn-primary btn-sm" id="submitAddCar">Ajouter Voiture</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+ 
+ <!-- Modal de profil -->
+
+
+ <div class="modal fade" id="historyModals"tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="historyModalLabel">Historique utilisateur</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-striped table-hover" id="historyTable">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Action</th>
+              <th>Détails</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- données chargées ici -->
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+ 
+ <div class="modal fade" id="editCarModal" tabindex="-1" aria-labelledby="editCarModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCarModalLabel">Modifier Voiture <span id="editCarIdDisplay" class="badge bg-light text-dark ms-2"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editCarForm">
+                    <input type="hidden" id="editCarId">
+                    <div id="modalError" class="text-danger mb-3" style="display: none;"></div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="editCarMake" class="form-label">Marque</label>
+                            <input type="text" class="form-control form-control-sm" id="editCarMake" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="editCarModel" class="form-label">Modèle</label>
+                            <input type="text" class="form-control form-control-sm" id="editCarModel" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="editCarPlate" class="form-label">Immatriculation</label>
+                            <input type="text" class="form-control form-control-sm" id="editCarPlate" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="editCarOwner" class="form-label">Proprietaire</label>
+                            <input type="number" class="form-control form-control-sm" id="editCarOwner" readonly>
+                        </div>
+                     <div class="col-md-6">
+                            <label for="ownerid" class="form-label">Année</label>
+                            <input type="number" class="form-control form-control-sm" id="editCarYear">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="editCarPrice" class="form-label">Prix par jour (€)</label>
+                            <input type="number" step="0.01" class="form-control form-control-sm" id="editCarPrice" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="editCarDescription" class="form-label">Description</label>
+                            <textarea class="form-control form-control-sm" id="editCarDescription" rows="3"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Images Actuelles</label>
+                            <div id="currentCarImages" class="mb-2">
+                                <span class="text-muted small">Chargement...</span>
+                            </div>
+                            <label for="editCarImages" class="form-label">Remplacer/Ajouter Images</label>
+                            <input class="form-control form-control-sm" type="file" id="editCarImages" name="images" value="images" accept="image/*" multiple>
+                        </div>
+              
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary btn-sm" id="submitEditCar">Enregistrer Modifications</button>
+            </div>
+        </div>
+    </div>
+    
+    
+   
+</div>
+
+<!-- Modale Profil -->
+
+
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true"><div class="modal-dialog modal-sm"><div class="modal-content"><div class="modal-header bg-warning border-0"><h5 class="modal-title text-dark" id="confirmModalLabel">Confirmation</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body" id="confirmModalBody">Action irréversible ?</div><div class="modal-footer border-0"><button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Annuler</button><button type="button" class="btn btn-warning btn-sm" id="confirmModalButton">Confirmer</button></div></div></div></div>
+    <!-- FIN DES MODALES -->
+<div id="profileModal" class="modal hidden">
+  <div class="modal-content">
+    <span onclick="closeModal('profileModal')" class="close" style="cursor:pointer;">&times;</span>
+    <div id="profileContent"></div>
+  </div>
+</div>
+
+<!-- Modale Historique -->
+<div id="historyModal" class="modal hidden">
+  <div class="modal-content">
+    <span onclick="closeModal('historyModal')" class="close" style="cursor:pointer;">&times;</span>
+    <div id="historyContent"></div>
+  </div>
+</div>
+    <!-- == SCRIPTS == -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+
+    <!-- Custom Admin Dashboard JS -->
+    <script>
+         // --- Sample Data Simulation (Inchangée) ---
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // --- Sidebar Toggle Logic ---
+            
+            // --- Fin Sidebar Toggle Logic ---
+
+            // --- Content Section Navigation (Inchangée) ---
+            const sidebarLinks = document.querySelectorAll('#sidebar-wrapper .list-group-item[data-target]');
+            const contentSections = document.querySelectorAll('.content-section');
+            const navLinks = document.querySelectorAll('#sidebar-wrapper .list-group-item');
+
+            function setActiveSection(targetId) {
+                let found = false;
+                contentSections.forEach(section => { if (section.id === targetId) { section.classList.add('active'); found = true; } else { section.classList.remove('active'); } });
+                if (!found && document.getElementById('dashboard-section')) { document.getElementById('dashboard-section').classList.add('active'); targetId = 'dashboard-section'; }
+                navLinks.forEach(link => { link.classList.toggle('active', link.getAttribute('data-target') === targetId); });
+                window.scrollTo(0, 0);
+            }
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('data-target');
+                    if(document.getElementById(targetId)) {
+                        setActiveSection(targetId);
+                        // Ferme la sidebar sur mobile après un clic
+                        if (window.innerWidth < 769 && wrapper.classList.contains('toggled')) {
+                           sidebarToggle.click();
+                        }
+                    } else {
+                        console.warn("Target section not found:", targetId);
+                        setActiveSection('dashboard-section');
+                    }
+                });
+            });
+
+            const initialHash = window.location.hash.substring(1);
+            const initialTargetId = initialHash ? initialHash + '-section' : 'dashboard-section';
+            if (document.getElementById(initialTargetId)) { setActiveSection(initialTargetId); } else { setActiveSection('dashboard-section'); }
+
+            // --- Chart.js Initialization (Inchangée) ---
+             const revenueData = { labels: ["Juil", "Aoû", "Sep", "Oct", "Nov", "Déc"], datasets: [{ label: "Revenus (€)", lineTension: 0.3, backgroundColor: "rgba(78, 115, 223, 0.05)", borderColor: "rgba(78, 115, 223, 1)", pointRadius: 3, pointBackgroundColor: "rgba(78, 115, 223, 1)", pointBorderColor: "rgba(78, 115, 223, 1)", pointHoverRadius: 4, data: [11000, 10500, 9800, 12500, 11800, 15200] }], };
+             const bookingStatusData = { labels: ['Active', 'Terminée', 'En Attente', 'Annulée'], datasets: [{ data: [42, 185, 22, 31], backgroundColor: ['#0dcaf0', '#198754', '#ffc107', '#dc3545'], hoverBackgroundColor: ['#3cd3f5', '#1e9d60', '#ffca2c', '#e1505e'], hoverBorderColor: "rgba(234, 236, 244, 1)", borderWidth: 1 }], };
+             const occupationData = { labels: ['Paris', 'Lyon', 'Marseille', 'Bordeaux', 'Lille', 'Nice'], datasets: [{ label: 'Taux Occupation (%)', data: [78, 65, 71, 62, 75, 80], backgroundColor: 'rgba(75, 192, 192, 0.6)', borderColor: 'rgba(75, 192, 192, 1)', borderWidth: 1 }]};
+             const topCarsData = { labels: ['Renault Clio', 'VW Golf', 'Peugeot 208', 'Toyota Yaris', 'Dacia Duster'], datasets: [{ label: '# Locations (30j)', data: [51, 45, 43, 38, 35], backgroundColor: 'rgba(54, 162, 235, 0.6)', borderColor: 'rgba(54, 162, 235, 1)', borderWidth: 1 }]};
+             charts.forEach(chartConfig => { const ctx = document.getElementById(chartConfig.id); if (ctx) { const existingChart = Chart.getChart(ctx); if (existingChart) { existingChart.destroy(); } new Chart(ctx, { type: chartConfig.type, data: chartConfig.data, options: chartConfig.options }); } });
+
+             // --- Bootstrap Tooltips & Toasts Initialization (Inchangée) ---
+             // Initialise les tooltips Bootstrap standards (pas ceux de la sidebar CSS)
+             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) { return new bootstrap.Tooltip(tooltipTriggerEl) });
+
+             // --- Modals & Form Handling/AJAX Simulation (Inchangées) ---
+             const editCarModalEl = document.getElementById('editCarModal');
+             const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+             const confirmModalBody = document.getElementById('confirmModalBody');
+             const confirmModalButton = document.getElementById('confirmModalButton');
+             let confirmAction = null;
+             // Add Car Sim
+             // Edit Car Sim
+
+             // --- Generic Confirmation Handling (Inchangée) ---
+             function showConfirmModal(message, onConfirm, level = 'warning') { confirmModalBody.textContent = message; confirmAction = onConfirm; const modalHeader = confirmModal._element.querySelector('.modal-header'); const confirmBtn = confirmModalButton; modalHeader.classList.remove('bg-warning', 'bg-danger', 'bg-info', 'bg-success', 'text-white', 'text-dark'); confirmBtn.classList.remove('btn-warning', 'btn-danger', 'btn-info', 'btn-success'); modalHeader.classList.add(`bg-${level}`); confirmBtn.classList.add(`btn-${level}`); confirmBtn.textContent = (level === 'danger') ? 'Supprimer' : 'Confirmer'; modalHeader.classList.add((level === 'danger' || level ==='primary' || level === 'dark') ? 'text-white' : 'text-dark'); confirmModal.show(); }
+             confirmModalButton.addEventListener('click', function() { if (typeof confirmAction === 'function') { confirmAction(); } confirmAction = null; confirmModal.hide(); });
+
+             // --- Feedback Mechanism (Inchangée) ---
+             function showFeedback(message, type = 'info') { alert(`[${type.toUpperCase()}] ${message}`); }
+
+             // --- Event Delegation for Table Actions (Inchangée) ---
+             const tables = document.querySelectorAll('.table');
+
+             // --- Notification Form Logic (Inchangée) ---
+             const notifTarget = document.getElementById('notificationTarget');
+             const specificUserField = document.getElementById('specificUserIdField');
+             if(notifTarget && specificUserField) { notifTarget.addEventListener('change', function() { const show = this.value === 'specific'; specificUserField.style.display = show ? 'block' : 'none'; specificUserField.querySelector('input').required = show; if (!show) { specificUserField.querySelector('input').value = ''; } }); }
+             const notifForm = document.getElementById('sendNotificationForm');
+             if (notifForm) { notifForm.addEventListener('submit', function(e){ e.preventDefault(); if (!notifForm.checkValidity()) { notifForm.reportValidity(); return; } const formData = new FormData(notifForm); const notifData = Object.fromEntries(formData.entries()); console.log("Simulating Send Notification:", notifData); showFeedback("Simulation: Notification envoyée !", 'success'); notifForm.reset(); specificUserField.style.display = 'none'; if(notifTarget) notifTarget.value = 'all'; }); }
+
+        }); // End DOMContentLoaded
+    </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+$(document).ready(function() {
+    // =================================================================================
+    // VARIABLES GLOBALES
+    // =================================================================================
+    let selectedCarId = null;
+    let appliquerFiltreMasquageActuellement = false;
+    let filterTimeout;
+
+    // =================================================================================
+    // SÉLECTEURS DOM
+    // =================================================================================
+    const $carFilterMake = $('#carFilterMake');
+    const $carFilterModel = $('#carFilterModel');
+    const $carFilterStatus = $('#carFilterStatus');
+    const $carFilterForm = $('#carFilterForm');
+    const $carsTableBody = $('#carsTable tbody');
+    const $modalImage = $('#modalImage');
+
+    const deletePopup = document.getElementById("delete-popup");
+    const confirmDeleteBtn = document.getElementById("confirm-delete");
+    const cancelDeleteBtn = document.getElementById("cancel-delete");
+
+    const approvePopup = document.getElementById("approve-popup");
+    const confirmApproveBtn = document.getElementById("confirm-approve");
+    const cancelApproveBtn = document.getElementById("cancel-approve");
+
+    const toastNotification = document.getElementById("toast-notification");
+    const resetMasquageBtn = document.getElementById("resetMasquageBtn");
+
+    const imageModalElement = document.getElementById('imageModal');
+    const imageModalInstance = imageModalElement ? new bootstrap.Modal(imageModalElement) : null;
+
+    // =================================================================================
+    // FONCTIONS UTILES
+    // =================================================================================
+    function hideDeletePopup() {
+        if(deletePopup) $(deletePopup).addClass("hidden");
+        selectedCarId = null;
+    }
+
+    function hideApprovePopup() {
+        if(approvePopup) $(approvePopup).addClass("hidden");
+        selectedCarId = null;
+    }
+
+    function showToast(message, isError = false) {
+        if(toastNotification) {
+            toastNotification.textContent = message;
+            toastNotification.classList.remove("hidden");
+            
+            const baseClass = "fixed top-5 right-5 p-4 rounded-md shadow-lg text-white text-sm z-50 transition-opacity duration-300 ease-in-out";
+            toastNotification.className = isError ? `${baseClass} bg-red-600` : `${baseClass} bg-green-500`;
+
+            setTimeout(() => {
+                toastNotification.classList.add("hidden");
+                toastNotification.textContent = ""; 
+            }, 3000);
+        } else {
+            console.log("📢", message);
+        }
+    }
+
+    function handleImageModal() {
+        const imageUrl = $(this).data('image-url');
+        let finalImageUrl = '/images/default.jpg';
+        
+        if (imageUrl && String(imageUrl).trim() !== "") {
+        	finalImageUrl = (String(imageUrl).startsWith('http') || String(imageUrl).startsWith('/')) ? 
+                    imageUrl : `/Siteoffeciel/images/${imageUrl}`;
+
+        }
+        
+        if ($modalImage.length) $modalImage.attr('src', finalImageUrl);
+        if (imageModalInstance) imageModalInstance.show();
+        else if ($.fn.modal) $('#imageModal').modal('show');
+    }
+
+    function handleFilterWithDebounce() {
+        clearTimeout(filterTimeout);
+        filterTimeout = setTimeout(() => fetchFilteredCars(false), 450);
+    }
+
+    function fetchFilteredCars(isInitialOrResetLoad = false) {
+        if(isInitialOrResetLoad) appliquerFiltreMasquageActuellement = false;
+
+        const filterData = {
+            make: $carFilterMake.val() || "",
+            model: $carFilterModel.val() || "",
+            status: $carFilterStatus.val() || ""
+        };
+        Object.keys(filterData).forEach(k => { if(!filterData[k]) delete filterData[k]; });
+
+        if ($carsTableBody.length) {
+            $carsTableBody.html(`
+                <tr>
+                    <td colspan="8" class="text-center">
+                        <div class="spinner-border spinner-border-sm me-2"></div>
+                        Chargement des voitures...
+                    </td>
+                </tr>
+            `);
+        }
+
+        $.ajax({
+            url: '/Administrateur/api/cars/filter',
+            type: 'GET',
+            data: filterData,
+            dataType: 'json',
+            success: (data) => renderCars(data, isInitialOrResetLoad),
+            error: (jqXHR) => {
+                console.error("Erreur fetchFilteredCars:", jqXHR.responseText);
+                if($carsTableBody.length) {
+                    $carsTableBody.html(`
+                        <tr>
+                            <td colspan="8" class="text-center text-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Erreur de chargement des voitures
+                            </td>
+                        </tr>
+                    `);
+                }
+            }
+        });
+    }
+
+    function renderCars(voitures, ignoreMasquageActuel = false) {
+        if (!$carsTableBody.length) return;
+
+        if (!Array.isArray(voitures) || voitures.length === 0) {
+            $carsTableBody.html(`
+                <tr>
+                    <td colspan="8" class="text-center text-muted">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Aucune voiture trouvée
+                    </td>
+                </tr>
+            `);
+            return;
+        }
+
+        let html = '';
+        voitures.forEach(voiture => {
+            if(!voiture?.id || voiture.supprimer === 1) return; // masquée côté base
+            html += generateCarRowHTML(voiture);
+        });
+
+        $carsTableBody.html(html || `
+            <tr>
+                <td colspan="8" class="text-center text-muted">
+                    <i class="fas fa-eye-slash me-2"></i>
+                    Aucune voiture à afficher
+                </td>
+            </tr>
+        `);
+    }
+
+    function generateCarRowHTML(voiture) {
+        return `
+            <tr id="car-row-${voiture.id}">
+                <td>${voiture.id}</td>
+                <td>${voiture.marque || 'N/A'}</td>
+                <td>${voiture.modele || ''}</td>
+                <td>${voiture.immatriculation || 'N/A'}</td>
+                <td>
+                ${voiture.proprietaire 
+                    ? `${voiture.proprietaire.firstName || ''} ${voiture.proprietaire.lastName || ''}`.trim() || 'Propriétaire Inconnu'
+                    : 'Propriétaire Inconnu'} 
+                (#${voiture.proprietaire?.id || ''})
+              </td>
+                <td><span class="status-badge ${voiture.statutApprobation==='APPROVED'?'status-approved':voiture.statutApprobation==='REJECTED'?'status-rejected':'status-pending'}">
+                    ${voiture.statutApprobation || 'En attente'}
+                </span></td>
+                <td><span class="status-badge ${voiture.disponible?'status-available':'status-unavailable'}">
+                    ${voiture.disponible?'Disponible':'Indisponible'}
+                </span></td>
+                <td>${voiture.prixJournalier ? voiture.prixJournalier+'€':'N/A'}</td>
+                <td>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button class="btn btn-info btn-action" data-bs-toggle="modal" data-bs-target="#editCarModal" data-car-id="${voiture.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-success btn-approve-car" data-car-id="${voiture.id}">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="btn btn-warning btn-reject-car" data-car-id="${voiture.id}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <button class="btn btn-secondary btn-pending-car" data-car-id="${voiture.id}">
+                            <i class="fas fa-clock"></i>
+                        </button>
+                        <button class="btn btn-danger btn-hide-car" data-car-id="${voiture.id}">
+                            <i class="fas fa-eye-slash"></i>
+                        </button>
+                        ${voiture.imagePrincipaleURL && voiture.proprietaire ? 
+                                `<button class="btn btn-primary manage-images" 
+                                         data-image-url="/Siteoffeciel/images/${voiture.proprietaire.id}/${voiture.imagePrincipaleURL}" 
+                                         data-car-id="${voiture.id}"
+                                         title="Gérer les images">
+                                    <i class="fas fa-images"></i>
+                                 </button>` : 
+                                `<button class="btn btn-secondary manage-images" disabled
+                                         data-car-id="${voiture.id}"
+                                         title="Aucune image disponible">
+                                    <i class="fas fa-images"></i>
+                                 </button>`
+                            }
+                    </div>
+                </td>
+            </tr>`;
+    }
+
+    // =================================================================================
+    // GESTION DES BOUTONS
+    // =================================================================================
+    function bindDeleteButtons() {
+        $carsTableBody.off('click', '.btn-hide-car').on('click', '.btn-hide-car', function() {
+            selectedCarId = $(this).data('car-id');
+            if (!selectedCarId) return;
+
+            if (deletePopup) $(deletePopup).removeClass("hidden");
+            else confirmCarDeletionAndSave(); // fallback
+        });
+    }
+
+    function confirmCarDeletionAndSave() {
+        if(!selectedCarId) { hideDeletePopup(); return; }
+
+        $.ajax({
+            url: `/Administrateur/masquer/${selectedCarId}`,
+            type: 'POST',
+            data: { supprimer: 1 }, // <-- envoyer 1 pour masquer
+            success: function() {
+                const row = document.getElementById(`car-row-${selectedCarId}`);
+                if(row) row.remove(); // retire la ligne côté front
+            },
+            error: function(xhr) {
+                console.error("Erreur masquage voiture:", xhr.responseText);
+                showToast("Erreur lors du masquage côté base", true);
+            },
+            complete: function() {
+                hideDeletePopup();
+            }
+        });
+
+    }
+
+    function updateCarStatusAjax(carId, actionPath, successMessage) {
+        if(!carId) return;
+        $.ajax({
+            url: `/api/cars/${actionPath}/${carId}`,
+            type: 'PUT',
+            success: () => {
+                showToast(successMessage, false);
+                fetchFilteredCars(false);
+            },
+            error: (xhr) => {
+                console.error(`Erreur ${actionPath} voiture ${carId}:`, xhr.responseText);
+                showToast(`Erreur: ${xhr.responseText || "Impossible de mettre à jour le statut."}`, true);
+            },
+            complete: () => { selectedCarId=null; hideApprovePopup(); }
+        });
+    }
+
+    function confirmCarApproval() { updateCarStatusAjax(selectedCarId, 'approve', 'Voiture approuvée avec succès !'); }
+    function confirmCarRejection() { updateCarStatusAjax(selectedCarId, 'reject', 'Voiture rejetée avec succès.'); }
+    function confirmCarSetPending() { updateCarStatusAjax(selectedCarId, 'pending', 'Voiture mise en attente.'); }
+
+    // =================================================================================
+    // INITIALISATION DES ÉVÉNEMENTS
+    // =================================================================================
+    $carsTableBody.on('click', '.manage-images', handleImageModal);
+
+    [$carFilterMake, $carFilterModel, $carFilterStatus].forEach($filter => {
+        if($filter.length) $filter.on($filter.is('select')?'change':'input', handleFilterWithDebounce);
+    });
+
+    if($carFilterForm.length) $carFilterForm.on('submit', function(e){ e.preventDefault(); fetchFilteredCars(false); });
+
+    if(cancelDeleteBtn) cancelDeleteBtn.addEventListener("click", hideDeletePopup);
+    if(confirmDeleteBtn) confirmDeleteBtn.addEventListener("click", confirmCarDeletionAndSave);
+
+    if(cancelApproveBtn) cancelApproveBtn.addEventListener("click", hideApprovePopup);
+    if(confirmApproveBtn) confirmApproveBtn.addEventListener("click", confirmCarApproval);
+
+    $carsTableBody.on('click', '.btn-approve-car', function() { selectedCarId = $(this).data('car-id'); if(approvePopup) $(approvePopup).removeClass("hidden"); else confirmCarApproval(); });
+    $carsTableBody.on('click', '.btn-reject-car', function() { selectedCarId = $(this).data('car-id'); confirm("Êtes-vous sûr ?") && confirmCarRejection(); });
+    $carsTableBody.on('click', '.btn-pending-car', function() { selectedCarId = $(this).data('car-id'); confirm("Êtes-vous sûr ?") && confirmCarSetPending(); });
+
+    if(resetMasquageBtn) resetMasquageBtn.addEventListener("click", () => fetchFilteredCars(true));
+
+    bindDeleteButtons();
+    fetchFilteredCars(true);
+});
+
+</script>
+<script>
+$('#addGalleryInput').click(function() {
+    const inputHtml = `
+    <div class="gallery-input mb-2 d-flex align-items-center">
+        <input class="form-control form-control-sm me-2" type="file" name="galleryImages" accept="image/*">
+        <i class="fas fa-trash-alt text-danger remove-icon" style="cursor:pointer;" title="Supprimer cette image"></i>
+    </div>`;
+    $('#galleryInputs').append(inputHtml);
+});
+
+// Supprimer un champ galerie
+$('#galleryInputs').on('click', '.remove-icon', function() {
+    $(this).closest('.gallery-input').remove();
+});
+
+document.getElementById('submitAddCar').addEventListener('click', function(event) {
+    event.preventDefault(); // Empêcher la soumission immédiate
+
+    // Afficher la popup de confirmation
+    Swal.fire({
+        title: 'Confirmer l\'ajout',
+        text: 'Voulez-vous vraiment ajouter cette voiture ?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Annuler'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Si l'utilisateur clique sur "OK", envoyer les données
+            var form = document.getElementById('locationForm');
+            var formData = new FormData(form);
+
+            // Afficher les données envoyées pour débogage
+            for (var pair of formData.entries()) {
+                console.log(pair[0] + ': ' + pair[1]);
+            }
+
+            // Vérifier si FormData contient des données
+            if (formData.entries().next().done) {
+                Swal.fire({
+                    title: 'Erreur',
+                    text: 'Aucune donnée à envoyer. Veuillez remplir le formulaire.',
+                    icon: 'error',
+                    confirmButtonText: 'Réessayer'
+                });
+                return;
+            }
+
+            fetch(form.action, {
+                method: form.method,
+                body: formData
+            })
+            .then(response => {
+                console.log('Statut de la réponse:', response.status);
+                return response.json().catch(() => {
+                    // Si JSON échoue, tenter de lire comme texte
+                    return response.text().then(text => {
+                        if (response.status === 200 || response.status === 302) {
+                            // Supposer que la redirection indique un succès
+                            return { success: true, message: 'Voiture ajoutée avec succès' };
+                        }
+                        throw new Error(text || 'Erreur serveur inconnue');
+                    });
+                });
+            })
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Ajout réussi 🎉',
+                        text: 'La voiture a été ajoutée avec succès !',
+                        icon: 'success',
+                        confirmButtonText: 'Continuer',
+                        timer: 2500,
+                        timerProgressBar: true
+                    }).then(() => {
+                        // Rediriger vers la section cars-section
+                        window.location.href = '/Administrateur/dashbordAdmin#cars-section';
+                    });
+                    form.reset();
+                    // Fermer le modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addCarModal'));
+                    modal.hide();
+                } else {
+                    throw new Error(data.message || 'Erreur lors de l\'ajout de la voiture');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                Swal.fire({
+                    title: 'Erreur',
+                    text: error.message || 'Une erreur inattendue est survenue.',
+                    icon: 'error',
+                    confirmButtonText: 'Réessayer'
+                });
+            });
+        }
+    });
+});
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+<script>
+//== Script Complet CORRIGÉ pour Charger et Enregistrer les Modifications via Modale ==
+//Version avec Inputs Texte pour Statut/Dispo et Alert au Succès
+
+//Attend que le document HTML soit complètement chargé et prêt
+$(document).ready(function() {
+
+ // --- Configuration Globale (Adaptez si nécessaire) ---
+ const API_BASE_URL = '/api/cars'; // URL de base de votre API voiture
+ // Préfixe URL pour afficher les images DEPUIS LE NAVIGATEUR.
+ // DOIT correspondre à la config serveur (MvcConfig) et à ce que l'API retourne.
+
+ // --- Sélection des éléments importants de la modale ---
+ const $modalElement = $('#editCarModal');
+ if (!$modalElement.length) {
+     console.error("Erreur critique: Élément modal #editCarModal introuvable.");
+     return; // Ne pas continuer si la modale n'existe pas
+ }
+ // Correction: Utiliser l'élément DOM directement pour le constructeur Bootstrap
+ const editCarModalInstance = new bootstrap.Modal($modalElement[0]);
+ const $form = $modalElement.find('form#editCarForm');
+ const $errorDiv = $modalElement.find('#modalError');
+ const $titleIdSpan = $modalElement.find('#editCarIdDisplay');
+ const $hiddenIdInput = $form.find('#editCarId');
+
+ // Champs du formulaire
+ const $makeInput = $form.find('#editCarMake');
+ const $modelInput = $form.find('#editCarModel');
+ const $plateInput = $form.find('#editCarPlate');
+ const $yearInput = $form.find('#editCarYear');
+ const $ownerIdInput = $form.find('#editCarOwner');
+ const $priceInput = $form.find('#editCarPrice');
+ const $descriptionArea = $form.find('#editCarDescription');
+ // Cibler les inputs texte pour statut et disponibilité
+ const $approvalInput = $form.find('#editCarApprovalStatus');
+ const $availabilityInput = $form.find('#editCarAvailabilityStatus');
+ const $currentImagesDiv = $form.find('#currentCarImages');
+ const $editCarImagesInput = $form.find('#editCarImages');
+ const $submitButton = $modalElement.find('#submitEditCar');
+
+ // --- Fonction pour afficher un message d'erreur dans la modale ---
+ function showModalError(message) {
+     $errorDiv.text(message).show();
+     // Ne pas modifier l'affichage des images ici
+ }
+
+ // --- Fonction pour remplir le formulaire ---
+ function populateEditForm(voitureData) {
+     console.log("Remplissage du formulaire avec :", voitureData);
+     $makeInput.val(voitureData.marque || '');
+     $modelInput.val(voitureData.modele || '');
+     $plateInput.val(voitureData.immatriculation || '');
+     $yearInput.val(voitureData.annee || '');
+     $ownerIdInput.val(voitureData.proprietaire ? voitureData.proprietaire.id : '');  // **Correction** : set proprietaireId pour préservation
+     $priceInput.val(voitureData.prixJournalier || '');
+     $descriptionArea.val(voitureData.description || '');
+
+     // Remplir les inputs texte avec les valeurs brutes reçues
+     $approvalInput.val(voitureData.statutApprobation || ''); // Ex: "EN_ATTENTE"
+     $availabilityInput.val(voitureData.disponible || ''); // Ex: "Disponible"
+
+  // Afficher l'image principale
+     $currentImagesDiv.html('<span class="text-muted small">Aucune image principale.</span>'); // Défaut
+     if (voitureData.imagePrincipaleURL && voitureData.proprietaire && voitureData.proprietaire.id) {
+         let imageUrl = `/images/${voitureData.proprietaire.id}/${voitureData.imagePrincipaleURL}`;
+
+         // Si context-path spécifique (ex. /Siteoffeciel), préfixez-le
+         const CONTEXT_PATH = '/Siteoffeciel'; // À adapter si différent (ou vide si pas de context-path)
+         if (CONTEXT_PATH && !imageUrl.startsWith(CONTEXT_PATH)) {
+             imageUrl = CONTEXT_PATH + imageUrl;
+         }
+
+         console.log("Construction SRC de l'image:", imageUrl);
+         $currentImagesDiv.html(
+             `<img src="${imageUrl}"
+                   alt="Image principale"
+                   class="img-thumbnail me-2"
+                   style="max-width: 100px; max-height: 100px;"
+                   onerror="this.style.display='none';
+                            this.parentElement.innerHTML += '<span class='text-danger small'>Image introuvable</span>';
+                            console.error('Erreur chargement image via src=${imageUrl}')">
+              ` // Optionnel : Bouton pour éditer les images (implémentez gererImages si besoin)
+         );
+     } else {
+         console.warn("Pas d'image principale ou propriétaire manquant pour la voiture ID:", voitureData.id);
+         // Stockez une flag globale pour le submit (ex. window.currentVoitureProprietaire = null;)
+         window.currentVoitureProprietaire = null;
+     }
+
+     // Activez le bouton une seule fois (suppression doublon)
+     $submitButton.prop('disabled', false);
+     console.log("Formulaire rempli.");
+ }
+
+ // --- Écouteur d'événement : Ouverture de la modale (délégué pour éviter multiples bindings) ---
+ $(document).on('click', '.btn-info.btn-action[data-bs-target="#editCarModal"]', function(e) {
+     e.preventDefault();  // Empêche double déclenchement
+     const triggerButton = $(this);
+     const carIdToEdit = triggerButton.data('car-id');
+     console.log(`Click détecté sur bouton éditer: Pour voiture ID ${carIdToEdit}`);
+
+     // Force ouverture modale
+     editCarModalInstance.show();
+
+     // Préparation (même code que show.bs.modal, pour cohérence)
+     $errorDiv.hide().text('');
+     $form[0].reset();
+     $currentImagesDiv.html('<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Chargement...</span></div>');
+     $hiddenIdInput.val('');
+     $titleIdSpan.text('');
+     $submitButton.prop('disabled', true);
+
+     if (!carIdToEdit || carIdToEdit === '') {
+         console.error("ID voiture invalide depuis bouton.");
+         showModalError("Impossible d'identifier la voiture.");
+         editCarModalInstance.hide();  // Cache modale si erreur
+         return;
+     }
+
+     $hiddenIdInput.val(carIdToEdit);
+     $titleIdSpan.text(`#${carIdToEdit}`);
+
+     // Appel AJAX GET
+     const apiUrl = `${API_BASE_URL}/get/${carIdToEdit}`;
+     console.log(`Appel AJAX GET vers: ${apiUrl}`);
+
+     $.ajax({
+         url: apiUrl,
+         type: 'GET',
+         dataType: 'json',
+         timeout: 10000, // Ajout timeout pour éviter hang
+         success: function(responseData) {
+             console.log(`Réponse AJAX reçue: `, responseData);
+             const voitureData = responseData;
+
+             if (voitureData && typeof voitureData === 'object' && Object.keys(voitureData).length > 0) {
+                 const receivedId = voitureData.id;
+                 $titleIdSpan.text(receivedId !== null && receivedId !== undefined ? `#${receivedId}` : `#${carIdToEdit} (ID serveur invalide!)`);
+                 $hiddenIdInput.val(receivedId);  // **Correction** : val(receivedId) pour éviter null (preserve ID serveur)
+
+                 if (receivedId === null || receivedId === undefined) {
+                     console.warn("ATTENTION: L'ID reçu du serveur est null. La sauvegarde échouera.");
+                     showModalError("Erreur: Données de voiture incomplètes reçues du serveur (ID manquant).");
+                     return;
+                 } else if (String(receivedId) !== String(carIdToEdit)) {
+                     console.error(`Incohérence d'ID! Attendu ${carIdToEdit}, reçu ${receivedId}`);
+                     showModalError("Erreur: Incohérence de données reçues.");
+                     return;
+                 }
+
+                 // Stockez une flag pour le proprio (utilisée au submit)
+                 window.currentVoitureProprietaire = voitureData.proprietaire ? voitureData.proprietaire.id : null;
+
+                 populateEditForm(voitureData);
+             } else {
+                 console.error("Réponse serveur invalide/vide:", responseData);
+                 showModalError("Impossible de récupérer les détails (réponse invalide).");
+             }
+         },
+         error: function(xhr, status, error) {
+             console.error(`ERREUR AJAX (${status}) lors du chargement voiture ID ${carIdToEdit}: ${error}`, xhr.status, xhr.responseText);
+             let errorMsg = `Erreur chargement (Code: ${xhr.status}). `;
+             if (status === 'parsererror') {
+                 errorMsg += "Réponse serveur mal formée.";
+                 if (xhr.responseText) {
+                     errorMsg += ` Début: ${xhr.responseText.substring(0, 100)}...`;
+                 }
+             } else if (status === 'timeout') {
+                 errorMsg += "Délai dépassé – Vérifiez la connexion.";
+             } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                 errorMsg += xhr.responseJSON.message;
+             } else if (xhr.responseText) {
+                 errorMsg += "Détail: " + xhr.responseText.substring(0, 100);
+             } else {
+                 errorMsg += error || "Erreur inconnue.";
+             }
+             showModalError(errorMsg);
+         }
+     });
+ });
+
+ // --- Écouteur d'événement : Clic sur "Enregistrer Modifications" ---
+ $submitButton.on('click', function() {
+     const carId = $hiddenIdInput.val();
+     const carIdNum = parseInt(carId);
+     if (!carIdNum || isNaN(carIdNum)) {
+         console.error("Soumission Échec: ID de voiture invalide ou manquant dans le champ caché.", carId);
+         showModalError("Erreur: Impossible de sauvegarder sans ID de voiture valide. Veuillez recharger.");
+         return;
+     }
+
+     // **Nouvelle vérif : Propriétaire avant submit (pour éviter 400 backend)**
+     if (window.currentVoitureProprietaire === null || window.currentVoitureProprietaire === undefined) {
+         console.warn("Propriétaire manquant pour voiture ID:", carIdNum);
+         showModalError("Erreur: Propriétaire manquant pour cette voiture. Associez-en un d'abord via l'édition basique.");
+         return;
+     }
+
+     console.log(`Clic sur Enregistrer pour voiture ID ${carIdNum}.`);
+
+     // --- Validation Côté Client ---
+     // (Votre code existant pour validation, ex. champs requis)
+
+     const voitureDataPourMiseAJour = {
+         marque: $makeInput.val().trim(),
+         modele: $modelInput.val().trim(),
+         immatriculation: $plateInput.val().trim(),
+         annee: parseInt($yearInput.val()) || null,
+         prixJournalier: parseFloat($priceInput.val()) || null,
+         description: $descriptionArea.val().trim(),
+         proprietaireId: window.currentVoitureProprietaire  // ✅ NE PAS utiliser $ownerIdInput.val() si disabled
+
+         // Ajoutez les autres champs ici si nécessaire...
+     };
+     console.log("Données à envoyer:", voitureDataPourMiseAJour);
+
+     // 2. Gérer les images
+     const imageFiles = $editCarImagesInput[0].files;
+     const hasNewImages = (imageFiles && imageFiles.length > 0);
+
+     // 3. Préparer AJAX
+     let ajaxData;
+     let ajaxContentType = 'application/json';
+     let ajaxProcessData = true;
+     let updateUrl;
+     const ajaxType = 'PUT';
+
+     if (hasNewImages) {
+         console.log("Préparation de FormData (avec images).");
+         ajaxData = new FormData();
+         ajaxData.append('voitureData', new Blob([JSON.stringify(voitureDataPourMiseAJour)], { type: 'application/json' }));
+         for (let i = 0; i < imageFiles.length; i++) {
+             ajaxData.append('images', imageFiles[i]); // **Correction** : 'imageFiles' pour matcher backend
+         }
+         ajaxContentType = false;
+         ajaxProcessData = false;
+         updateUrl = `${API_BASE_URL}/updateWithImages/${carIdNum}`;
+     } else {
+         console.log("Préparation de JSON (sans nouvelles images).");
+         ajaxData = JSON.stringify(voitureDataPourMiseAJour);
+         updateUrl = `${API_BASE_URL}/update/${carIdNum}`;
+     }
+     console.log(`Appel AJAX ${ajaxType} vers: ${updateUrl}`);
+
+     // 4. Exécuter AJAX
+     $.ajax({
+         url: updateUrl,
+         type: ajaxType,
+         data: ajaxData,
+         contentType: ajaxContentType,
+         processData: ajaxProcessData,
+         dataType: 'json',
+         timeout: 30000, // Timeout plus long pour uploads
+         beforeSend: function() {
+             $submitButton.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Sauvegarde...');
+             $errorDiv.hide().text('');
+         },
+         success: function(response) {
+             console.log(`Mise à jour réussie pour voiture ID ${carIdNum}. Réponse:`, response);
+
+             // --- Afficher l'alerte de succès ---
+             alert("Voiture modifiée avec succès !");
+
+             // Optionnel: Afficher aussi le toast
+             showToast("Voiture modifiée avec succès !", false);
+
+             if (editCarModalInstance) editCarModalInstance.hide(); // Fermer la modale
+
+             // 5. Rafraîchir la table
+             if (typeof fetchFilteredCars === "function") {
+                 console.log("Rafraîchissement de la liste des voitures.");
+                 fetchFilteredCars(false);
+             } else {
+                 console.warn("Fonction fetchFilteredCars non définie. Rechargez la page.");
+                 window.location.reload();
+             }
+         },
+         error: function(xhr, status, error) {
+             console.error(`Erreur AJAX (${status}) lors de la mise à jour voiture ID ${carIdNum}: ${error}`, xhr.status, xhr.responseText);
+             let errorMsg = "Erreur lors de la sauvegarde.";
+             if (status === 'parsererror') {
+                 errorMsg += " Réponse serveur mal formée.";
+             } else if (status === 'timeout') {
+                 errorMsg += " Délai dépassé lors de l'upload.";
+             } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                 errorMsg += ` ${xhr.responseJSON.message}`;
+             } else if (xhr.responseText) {
+                 errorMsg += ` Détail: ${xhr.responseText.substring(0, 150)}`;
+             }
+             errorMsg += ` (Code: ${xhr.status})`;
+             showModalError(errorMsg);
+             showToast("Erreur lors de la modification.", true);
+         },
+         complete: function() {
+             $submitButton.prop('disabled', false).text('Enregistrer Modifications');
+             $editCarImagesInput.val('');
+         }
+     });
+ }); // Fin du click sur #submitEditCar
+
+ // --- Mettez ici VOS AUTRES fonctions existantes ---
+ // (initializeEventListeners, fetchFilteredCars, renderCars,
+ // updateCarStatusAjax, confirmCarApproval, etc...)
+
+ // --- Fonction Toast (assurez-vous qu'elle est définie une seule fois) ---
+ function showToast(message, isError = false) {
+     const toastEl = document.getElementById("toast-notification");
+     if (toastEl) {
+         toastEl.textContent = message;
+         const baseClass = "fixed top-5 right-5 p-4 rounded-md shadow-lg text-white text-sm z-50 transition-opacity duration-300 ease-in-out";
+         toastEl.className = isError ? `${baseClass} bg-red-600` : `${baseClass} bg-green-500`;
+         toastEl.classList.remove("hidden");
+         setTimeout(() => {
+             toastEl.classList.add("hidden");
+             toastEl.textContent = "";
+         }, 3500);
+     } else {
+         console.warn("Élément Toast #toast-notification introuvable:", message);
+         // Ne pas mettre d'alert ici si on en a déjà un au succès
+     }
+ }
+
+}); // Fin de $(document).ready()
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const targetSelect = document.getElementById('notificationTarget');
+    const specificIdField = document.getElementById('specificUserIdField');
+
+    if (targetSelect && specificIdField) {
+        targetSelect.addEventListener('change', function() {
+            if (this.value === 'specific') {
+                specificIdField.style.display = 'block';
+            } else {
+                specificIdField.style.display = 'none';
+            }
+        });
+        // Initialiser au cas où la valeur par défaut serait 'specific' (peu probable)
+        if (targetSelect.value === 'specific') {
+             specificIdField.style.display = 'block';
+        }
+    }
+});
+</script>
+
+<script>
+//== Extrait JavaScript pour la Section Alertes ==
+
+//--- Mettez ceci au début de votre $(document).ready() ---
+const API_BASE_URL_ALERTS = '/api/alerts'; // URL pour les alertes
+
+//--- Mettez ceci avec vos autres sélecteurs DOM ---
+const $notificationForm = $('#sendNotificationForm');
+const $notificationTargetSelect = $('#notificationTarget');
+const $specificUserIdField = $('#specificUserIdField');
+const $notificationUserIdInput = $('#notificationUserId');
+const $notificationTitleInput = $('#notificationTitle');
+const $notificationMessageInput = $('#notificationMessage');
+const $recentHistoryList = $('#recentHistoryList'); // Assurez-vous que votre <ul> a cet ID
+const $notificationSubmitBtn = $notificationForm.find('button[type="submit"]'); // Bouton d'envoi du formulaire
+
+//--- Mettez ceci dans votre fonction principale d'initialisation ---
+//function initializeEventListeners() {
+//  ... vos autres écouteurs ...
+    initializeNotificationSection(); // Appel pour initialiser cette section
+//}
+
+//--- Ajoutez ces nouvelles fonctions dans votre $(document).ready() ---
+
+function initializeNotificationSection() {
+ fetchRecentAlertHistory();
+ // fetchAutoNotificationSettings(); // Si implémenté
+
+ // Afficher/Cacher champ ID spécifique
+ if ($notificationTargetSelect.length && $specificUserIdField.length) {
+     $notificationTargetSelect.on('change', function() {
+         if ($(this).val() === 'specific') { $specificUserIdField.slideDown(); }
+         else { $specificUserIdField.slideUp(); $notificationUserIdInput.val(''); }
+     }).trigger('change'); // Déclencher au cas où la valeur initiale est 'specific'
+ } else {
+     console.warn("Éléments #notificationTarget ou #specificUserIdField manquants.");
+ }
+
+
+ // Soumission formulaire envoi manuel
+ if ($notificationForm.length) {
+     $notificationForm.on('submit', handleSendManualAlert);
+ } else {
+      console.warn("Formulaire #sendNotificationForm manquant.");
+ }
+
+ // Écouteurs pour les switchs auto (à ajouter si implémenté)
+ // $('.auto-notification-switch').on('change', handleAutoNotificationToggle);
+}
+
+function fetchRecentAlertHistory() {
+ if (!$recentHistoryList || !$recentHistoryList.length) { return; }
+ console.log("Chargement historique alertes...");
+ $recentHistoryList.html('<li class="list-group-item px-0 py-1 text-muted small">Chargement...</li>');
+
+ $.ajax({
+     url: `${API_BASE_URL_ALERTS}/history?limit=5`, // Limite à 5 pour l'aperçu
+     type: 'GET',
+     dataType: 'json',
+     success: function(historyList) {
+         console.log("Historique reçu:", historyList);
+         renderRecentHistory(historyList || []);
+     },
+     error: function(xhr, status, error) {
+         console.error("Erreur chargement historique:", status, error, xhr.responseText);
+         $recentHistoryList.html('<li class="list-group-item px-0 py-1 text-danger small">Erreur chargement historique.</li>');
+         showToast("Erreur chargement historique.", true); // Assurez-vous que showToast est définie
+     }
+ });
+}
+
+function renderRecentHistory(historyItems) {
+  if (!$recentHistoryList || !$recentHistoryList.length) return;
+  if (!Array.isArray(historyItems) || historyItems.length === 0) {
+      $recentHistoryList.html('<li class="list-group-item px-0 py-1 text-muted small">Aucun historique récent.</li>');
+      return;
+  }
+  let historyHtml = '';
+  historyItems.forEach(item => {
+      // Formater la date pour l'affichage
+      let displayDate = "N/A";
+      try {
+          if(item.dateEnvoiFormatted) {
+              displayDate = item.dateEnvoiFormatted; // Utiliser la date formatée du backend
+          } else if (item.dateEnvoi) {
+              // Fallback si non formatée
+              displayDate = new Date(item.dateEnvoi).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+          }
+      } catch(e) { console.error("Erreur date hist:", e); }
+
+      historyHtml += `
+          <li class="list-group-item px-0 py-1 d-flex justify-content-between align-items-center">
+              <span title="${item.sujet || ''}">
+                 ${item.sujet || 'Sans Sujet'}
+                 <small class="text-muted d-block" style="font-size: 0.8em;">${item.cible || 'Cible inconnue'}</small>
+              </span>
+              <small class="text-muted">${displayDate}</small>
+          </li>`;
+  });
+  $recentHistoryList.html(historyHtml);
+}
+
+function handleSendManualAlert(event) {
+ event.preventDefault();
+ console.log("Tentative d'envoi alerte manuelle...");
+
+ const cible = $notificationTargetSelect.val();
+ const sujet = $notificationTitleInput.val().trim();
+ const message = $notificationMessageInput.val().trim();
+ const userIds = $notificationUserIdInput.val().trim();
+
+ if (!sujet || !message) { showToast("Le sujet et le message sont requis.", true); return; }
+ if (cible === 'specific' && !userIds) { showToast("Veuillez fournir les IDs utilisateur.", true); return; }
+
+ const requestData = { cible, sujet, message, userIdList: (cible === 'specific') ? userIds : null };
+ const $submitBtn = $(this).find('button[type="submit"]');
+ const originalBtnText = $submitBtn.html();
+
+ $.ajax({
+     url: `${API_BASE_URL_ALERTS}/send`,
+     type: 'POST',
+     contentType: 'application/json',
+     data: JSON.stringify(requestData),
+     dataType: 'json',
+     beforeSend: () => $submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Envoi...'),
+     success: function(response) {
+         console.log("Réponse succès envoi alerte:", response);
+         showToast(response.message || "Alerte envoyée avec succès.", false);
+         $notificationForm[0].reset();
+         $specificUserIdField.slideUp(); // Cacher le champ ID
+         fetchRecentAlertHistory(); // Rafraîchir
+     },
+     error: function(xhr, status, error) {
+          console.error("Erreur envoi alerte:", status, error, xhr.responseText);
+          const errorMsg = xhr.responseJSON ? xhr.responseJSON.message : (xhr.responseText || "Erreur inconnue");
+          showToast(`Erreur envoi: ${errorMsg} (Code: ${xhr.status})`, true);
+     },
+     complete: () => $submitBtn.prop('disabled', false).html(originalBtnText)
+ });
+}
+
+//N'oubliez pas la fonction showToast (définie ailleurs dans votre code complet)
+//function showToast(message, isError = false) { ... }
+
+//--- FIN Extrait JavaScript pour Alertes ---
+</script>
+<script>
+console.log("Script chargé");
+
+document.addEventListener('DOMContentLoaded', () => {
+  const tbody = document.querySelector('tbody');
+  console.log("DOM chargé, tbody trouvé :", tbody);
+
+  tbody.addEventListener('click', (e) => {
+    console.log("Click détecté sur :", e.target);
+
+    const btn = e.target.closest('button');
+    if (!btn) {
+      console.log("Aucun bouton proche du clic, sortie.");
+      return;
+    }
+
+    console.log("Bouton cliqué :", btn);
+    const userId = btn.dataset.userId;
+    console.log("UserId extrait :", userId);
+
+    if (!userId) {
+      console.warn("Pas d'userId sur ce bouton, sortie.");
+      return;
+    }
+
+    // Bloquer l'utilisateur
+    if (btn.classList.contains('btn-block-user')) {
+      console.log("Action : bloquer utilisateur");
+      if (confirm("Voulez-vous bloquer cet utilisateur ?")) {
+        fetch(`/Administrateur/admin/users/${userId}/block`, { method: 'POST' })
+          .then(res => {
+            console.log("Réponse blocage reçue, status:", res.status);
+            if (res.ok) {
+              alert("Utilisateur bloqué !");
+              btn.disabled = true;
+            } else {
+              alert("Erreur lors du blocage.");
+            }
+          })
+          .catch(err => {
+            console.error("Erreur fetch blocage :", err);
+            alert("Erreur réseau lors du blocage.");
+          });
+      } else {
+        console.log("Blocage annulé par l'utilisateur");
+      }
+    }
+
+    // Voir profil
+    else if (btn.classList.contains('btn-view-profile')) {
+      console.log("Action : voir profil utilisateur");
+      fetch(`/Administrateur/admin/users/${userId}/profile-json`)
+        .then(res => {
+          console.log("Réponse fetch profil, status:", res.status);
+          if (!res.ok) throw new Error("Erreur HTTP " + res.status);
+          return res.json();
+        })
+        .then(user => {
+          console.log("Données utilisateur reçues :", user);
+          const html = `
+            <p><strong>Nom:</strong> ${user.firstName} ${user.lastName}</p>
+            <p><strong>Email:</strong> ${user.email}</p>
+            <p><strong>Téléphone:</strong> ${user.tel}</p>
+            <p><strong>Statut:</strong> ${user.enabled ? "Actif" : "Bloqué"}</p>
+          `;
+          document.getElementById("profileContent").innerHTML = html;
+          document.getElementById("profileModal").classList.remove("hidden");
+          console.log("Modale profil affichée");
+        })
+        .catch(err => {
+          console.error("Erreur chargement profil :", err);
+          alert("Impossible de charger le profil.");
+        });
+    }
+
+    // Voir historique
+    else if (btn.classList.contains('btn-view-history')) {
+      console.log("Action : voir historique utilisateur");
+      fetch(`/Administrateur/admin/users/${userId}/history-json`)
+        .then(res => {
+          console.log("Réponse fetch historique, status:", res.status);
+          if (!res.ok) throw new Error("Erreur HTTP " + res.status);
+          return res.json();
+        })
+        .then(history => {
+          console.log("Données historique reçues :", history);
+          let html = "<ul>";
+          if (history.length === 0) {
+            html = "<p>Aucune réservation trouvée.</p>";
+          } else {
+            history.forEach(r => {
+              html += `<li>Du ${r.dateDebut} au ${r.dateFin} - ${r.car.marque}</li>`;
+            });
+            html += "</ul>";
+          }
+          document.getElementById("historyContent").innerHTML = html;
+          document.getElementById("historyModal").classList.remove("hidden");
+          console.log("Modale historique affichée");
+        })
+        .catch(err => {
+          console.error("Erreur chargement historique :", err);
+          alert("Erreur lors du chargement de l'historique.");
+        });
+    }
+  });
+});
+
+// Fermer les modales
+function closeModal(id) {
+  console.log("Fermeture modale :", id);
+  document.getElementById(id).classList.add('hidden');
+}
+</script>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Charge les propriétaires au chargement initial
+    loadUsers('owners');
+
+    // Gestion des tabs Bootstrap
+    document.querySelector('#owners-tab').addEventListener('click', () => loadUsers('owners'));
+    document.querySelector('#clients-tab').addEventListener('click', () => loadUsers('clients'));
+    document.querySelector('#visitors-tab').addEventListener('click', () => loadUsers('visitors'));  // <-- ajout
+
+});
+
+function loadUsers(type) {
+    const url = `/Administrateur/${type}`;
+    fetch(url)
+        .then(res => {
+            if (!res.ok) throw new Error('Erreur réseau');
+            return res.json();
+        })
+        .then(data => {
+            if (type === 'owners') {
+                populateOwnersTable(data);
+            } else if (type === 'clients') {
+                populateClientsTable(data);
+            } else if (type === 'visitors') {
+                populateVisitorsTable(data);
+            }
+        })
+        .catch(err => {
+            console.error('Erreur:', err);
+            alert('Impossible de charger les utilisateurs');
+        });
+}
+
+function createStatusBadge(status) {
+    if (typeof status !== 'string') {
+        return '<span class="badge bg-secondary">Inconnu</span>';
+    }
+
+    switch (status.toLowerCase()) {
+        case 'actif':
+            return '<span class="badge bg-success">Actif</span>';
+        case 'inactif':
+            return '<span class="badge bg-danger">Inactif</span>';
+        case 'suspendu':
+            return '<span class="badge bg-warning">Suspendu</span>';
+        default:
+            return `<span class="badge bg-secondary">${status}</span>`;
+    }
+}
+
+
+function populateOwnersTable(users) {
+    const tbody = document.querySelector('#ownersTable tbody');
+    tbody.innerHTML = '';
+
+    users.forEach(user => {
+        const voituresCount = user.voituresCount || '-';
+        const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+        const tr = document.createElement('tr');
+        tr.dataset.userId = user.id;
+        tr.innerHTML = `
+            <td>${user.id}</td>
+            <td>${fullName}</td>
+            <td>${user.email}</td>
+            <td>${user.telephone}</td>
+            <td>${createStatusBadge(user.statut)}</td>
+            <td>${voituresCount}</td>
+            <td>
+                <button class="btn btn-sm btn-warning btn-suspend-user" data-user-id="${user.id}" title="Suspendre"><i class="fas fa-ban"></i></button>
+                <button class="btn btn-sm btn-secondary btn-view-profile" data-user-id="${user.id}" title="Voir Profil"><i class="fas fa-eye"></i></button>
+                <button class="btn btn-sm btn-info btn-view-stats" data-user-id="${user.id}" title="Stats"><i class="fas fa-chart-bar"></i></button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    document.getElementById('owner-count').textContent = users.length;
+}
+
+function populateClientsTable(users) {
+    const tbody = document.querySelector('#clientsTable tbody');
+    tbody.innerHTML = '';
+
+    users.forEach(user => {
+        const reservCount = user.reservationsCount || 0;
+
+        const tr = document.createElement('tr');
+        tr.dataset.userId = user.id;
+        tr.innerHTML = `
+            <td>${user.id}</td>
+            <td>${user.fullName}</td>
+            <td>${user.email}</td>
+            <td>${user.tel}</td>
+            <td>${reservCount}</td>
+            <td>${createStatusBadge(user.statut)}</td>
+            <td>
+                <button class="btn btn-sm btn-danger btn-suspend-user" data-user-id="${user.id}" title="Bloquer"><i class="fas fa-lock"></i></button>
+                <button class="btn btn-sm btn-secondary btn-view-profile" data-user-id="${user.id}" title="Voir Profil"><i class="fas fa-eye"></i></button>
+                <button class="btn btn-sm btn-info btn-view-history" data-user-id="${user.id}" title="Historique"><i class="fas fa-history"></i></button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    document.getElementById('client-count').textContent = users.length;
+}
+
+// 🟢 FONCTIONS GLOBALES (plus propre)
+
+function handleSuspend(userId, type) {
+    console.log("Suspend user:", userId, "type:", type); // <-- ajoute ceci pour débug
+
+    if (confirm('Voulez-vous suspendre cet utilisateur ?')) {
+        fetch(`/Administrateur/suspend/${userId}`, { method: 'POST' })
+            .then(response => {
+                if (!response.ok) throw new Error('Erreur suspension');
+                return response.json();
+            })
+            .then(() => {
+                loadUsers(type); // Recharge après suspension
+            })
+            .catch(err => {
+                alert('Erreur lors de la suspension : ' + err.message);
+            });
+    }
+}
+
+function handleViewProfile(userId) {
+    fetch(`/Administrateur/profiles/${userId}`)
+        .then(response => {
+            if (!response.ok) throw new Error(`Erreur profil : ${response.status} ${response.statusText}`);
+            return response.json();
+        })
+        .then(data => {
+            console.log("Données reçues pour l'utilisateur :", data);
+            Swal.fire({
+                title: `Profil de ${data.firstName || 'N/A'} ${data.lastName || ''}`,
+                html: `
+                    <p><strong>Email :</strong> ${data.email || 'Non renseigné'}</p>
+                    <p><strong>Téléphone :</strong> ${data.tel || data.phone || data.phoneNumber || 'Non renseigné'}</p>
+                    <p><strong>Statut :</strong> ${data.enabled ? 'Actif' : 'Inactif'}</p>
+                `,
+                icon: 'info',
+                confirmButtonText: 'Fermer'
+            });
+        })
+        .catch(err => {
+            console.error('Erreur lors du fetch du profil:', err);
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreur',
+                text: `Erreur lors du chargement du profil : ${err.message}`
+            });
+        });
+}
+
+
+function handleViewStats(userId) {
+    fetch(`/Administrateur/${userId}/stats`)
+        .then(response => {
+            if (!response.ok) throw new Error('Erreur stats');
+            return response.json();
+        })
+        .then(data => {
+            console.log("Données reçues pour l'utilisateur :", data);
+
+            Swal.fire({
+                title: `Statistiques de ${data.name || 'Utilisateur'}`,
+                html: `<p><strong>Nombre de voitures :</strong> ${data.voituresCount != null ? data.voituresCount : 0}</p>
+                	  <p><strong>Autres infos :</strong> ${
+                    typeof data.otherStats === 'string' && data.otherStats.trim() !== ''
+                    ? data.otherStats
+                    : 'Aucune donnée'
+                  }</p>
+                  `,
+                  
+                  icon: 'success',
+                confirmButtonText: 'Fermer'
+            });
+
+        })
+        .catch(err => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreur',
+                text: `Erreur lors du chargement des stats : ${err.message}`
+            });
+        });
+}
+
+
+// 🟢 BINDING DES BOUTONS : une fois le DOM prêt
+
+$(document).ready(function () {
+    // Initial load
+    loadUsers('owners'); // tu peux le changer par "clients" ou "visitors" selon l'onglet actif
+
+    // Owners
+    $(document).on('click', '#ownersTable .btn-suspend-user', function () {
+        const userId = $(this).data('user-id');
+        handleSuspend(userId, 'owners');
+    });
+
+    $(document).on('click', '#ownersTable .btn-view-profile', function () {
+        const userId = $(this).data('user-id');
+        handleViewProfile(userId);
+    });
+
+    $(document).on('click', '#ownersTable .btn-view-stats', function () {
+        const userId = $(this).data('user-id');
+        handleViewStats(userId);
+    });
+
+    // Clients
+   
+
+    $(document).on('click', '#clientsTable .btn-view-profile', function () {
+        const userId = $(this).data('user-id');
+        handleViewProfile(userId);
+    });
+
+   
+});
+
+function populateClientsTable(users) {
+    const tbody = document.querySelector('#clientsTable tbody');
+    tbody.innerHTML = '';
+
+    users.forEach(user => {
+        const reservCount = user.reservationsCount || 0;
+
+        const tr = document.createElement('tr');
+        tr.dataset.userId = user.id;
+        tr.innerHTML = `
+            <td>${user.id}</td>
+            <td>${user.fullName}</td>
+            <td>${user.email}</td>
+            <td>${user.telephone}</td>
+            <td>${reservCount}</td>
+            <td>${createStatusBadge(user.statut)}</td>
+            <td>
+                <button class="btn btn-sm btn-danger btn-block-user" data-user-id="${user.id}" title="Bloquer"><i class="fas fa-lock"></i></button>
+                <button class="btn btn-sm btn-secondary btn-view-profile" data-user-id="${user.id}" title="Voir Profil"><i class="fas fa-eye"></i></button>
+                <button class="btn btn-sm btn-info btn-view-history" data-user-id="${user.id}" title="Historique"><i class="fas fa-history"></i></button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // Met à jour le compteur ici, une fois pour toutes
+    document.getElementById('client-count').textContent = users.length;
+
+    // Ajoute les écouteurs après création du tableau
+    addClientActionListeners();
+}
+
+function addClientActionListeners() {
+    // Bouton Bloquer
+    document.querySelectorAll('.btn-block-user').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const userId = button.dataset.userId;
+            if (confirm('Voulez-vous vraiment bloquer cet utilisateur ?')) {
+                fetch(`/Administrateur/${userId}/block`, { method: 'POST' })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('Utilisateur bloqué avec succès.');
+                            const statutTd = document.querySelector(`tr[data-user-id="${userId}"] td:nth-child(6)`);
+                            if(statutTd) {
+                                statutTd.innerHTML = '<span class="badge bg-danger">Bloqué</span>';
+                            }
+                        } else {
+                            alert('Erreur lors du blocage.');
+                        }
+                    })
+                    .catch(() => alert('Erreur réseau'));
+            }
+        });
+    });
+
+    // Bouton Voir Profil
+    // (À implémenter si tu veux)
+
+    // Bouton Historique (modal avec AJAX)
+    document.querySelectorAll('.btn-view-history').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const userId = button.dataset.userId;
+
+            fetch(`/Administrateur/${userId}/history/json`)
+                .then(response => response.json())
+                .then(historyList => {
+                    const tbody = document.querySelector('#historyTable tbody');
+                    tbody.innerHTML = '';
+
+                    if(historyList.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="3" class="text-center">Aucun historique disponible</td></tr>`;
+                    } else {
+                        historyList.forEach(entry => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${new Date(entry.date).toLocaleString()}</td>
+                                <td>${entry.action}</td>
+                                <td>${entry.details}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    }
+
+                    const historyModal = new bootstrap.Modal(document.getElementById('historyModals'));
+                    historyModal.show();
+                })
+                .catch(() => alert('Aucun Reservation disponible'));
+        });
+    });
+}
+
+//Fonction pour créer un badge de statut sécurisé
+// Crée un badge de statut avec couleurs selon le statut
+function createStatusBadge(statut) {
+    const safeStatut = (statut || '').toLowerCase();
+    if (safeStatut === 'actif' || safeStatut === 'active') {
+        return '<span class="badge bg-success">Actif</span>';
+    } else if (safeStatut === 'inactif' || safeStatut === 'inactive') {
+        return '<span class="badge bg-danger">Inactif</span>';
+    } else {
+        return '<span class="badge bg-secondary">Inconnu</span>';
+    }
+}
+
+function createStatusBadge(statut) {
+    const safeStatut = (statut || '').toLowerCase();
+    if (safeStatut === 'actif' || safeStatut === 'active') {
+        return '<span class="badge bg-success">Actif</span>';
+    } else if (safeStatut === 'inactif' || safeStatut === 'inactive') {
+        return '<span class="badge bg-danger">Inactif</span>';
+    } else {
+        return '<span class="badge bg-secondary">Inconnu</span>';
+    }
+}
+
+function populateVisitorsTable(users) {
+    const tbody = document.querySelector('#visitorsTable tbody');
+    tbody.innerHTML = '';
+
+    users.forEach(user => {
+        const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+        const tr = document.createElement('tr');
+        tr.dataset.userId = user.id;
+        tr.innerHTML = `
+            <td>${user.id}</td>
+            <td>${fullName}</td>
+            <td>${user.email}</td>
+            <td>${user.telephone || ''}</td>
+            <td>${createStatusBadge(user.statut)}</td>
+            <td>
+                <button class="btn btn-sm btn-success btn-activate-user" data-user-id="${user.id}" title="Activer">
+                    <i class="fas fa-check"></i>
+                </button>
+                <button class="btn btn-sm btn-secondary btn-view-profile" data-user-id="${user.id}" title="Voir Profil">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    document.getElementById('visitor-count').textContent = users.length;
+
+    // Attach listeners
+    document.querySelectorAll('.btn-activate-user').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const userId = e.currentTarget.dataset.userId;
+            activateUser(userId);
+        });
+    });
+
+    document.querySelectorAll('.btn-view-profile').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const userId = e.currentTarget.dataset.userId;
+            viewUserProfile(userId);
+        });
+    });
+}
+
+function activateUser(userId) {
+    if (!confirm(`Voulez-vous vraiment activer l'utilisateur avec l'ID ${userId} ?`)) return;
+
+    fetch(`/Administrateur/users/${userId}/activer`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Erreur lors de l\'activation');
+        alert(`Utilisateur ${userId} activé avec succès.`);
+        // Optionnel: rafraîchir la liste
+        // loadVisitors();
+    })
+    .catch(error => {
+        alert('Erreur : ' + error.message);
+    });
+}
+function viewUserProfile(userId) {
+    fetch(`/Administrateur/profilessetaille/${userId}`)
+    .then(response => {
+        if (!response.ok) throw new Error('Profil introuvable');
+        return response.json();
+    })
+    .then(user => {
+        const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+        const htmlContent = `
+            <p><strong>ID :</strong> ${user.id}</p>
+            <p><strong>Nom complet :</strong> ${fullName}</p>
+            <p><strong>Email :</strong> ${user.email}</p>
+            <p><strong>Téléphone :</strong> ${user.telephone || 'Non renseigné'}</p>
+            <p><strong>Statut :</strong> ${createStatusBadge(user.statut)}</p>
+        `;
+
+        // Affiche le popup SweetAlert2
+        Swal.fire({
+            title: 'Profil Utilisateur',
+            html: htmlContent,
+            icon: 'info',
+            confirmButtonText: 'Fermer',
+            width: '500px',
+            padding: '1em',
+            showCloseButton: true,
+            focusConfirm: false
+        });
+    })
+    .catch(error => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Erreur lors du chargement du profil.',
+        });
+        console.error(error);
+    });
+
+}
+
+// Gérer la fermeture du popup
+const closePopupBtn = document.getElementById('closePopup');
+if (closePopupBtn) {
+    closePopupBtn.addEventListener('click', () => {
+        document.getElementById('profilePopup').style.display = 'none';
+    });
+}
+
+
+
+</script>
+<script>
+$(document).ready(function () {
+    const table = $('#disputesTable').DataTable({
+        responsive: true,
+        language: {
+            url: 'https://cdn.datatables.net/plug-ins/1.10.25/i18n/French.json'
+        }
+    });
+
+    // === Fonction pour charger les litiges ===
+    // === Fonction pour charger les litiges ===
+function loadDisputes() {
+    $.ajax({
+        url: '/Administrateur',
+        type: 'GET',
+        success: function (data) {
+            console.log('🔍 DONNÉES LITIGES:', data);
+            
+            table.clear();
+
+            data.forEach(dispute => {
+                console.log('📋 Litige complet:', dispute);
+                
+                const date = dispute.dateCreation
+                ? new Date(dispute.dateCreation).toLocaleDateString('fr-FR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+                : 'N/A';
+
+
+                const reservationId = dispute.reservationId ?? 'N/A';
+                const type = dispute.type ?? 'N/A';
+                const statut = dispute.statut ?? 'N/A';
+                
+                // Extraction des données depuis l'objet réservation
+                const locataireNom = extractClientName(dispute);
+                const voiture = extractVehicleInfo(dispute);
+
+                console.log('📝 Résultat final:', `${locataireNom} - Véhicule: ${voiture}`);
+
+                table.row.add([
+                    dispute.id,
+                    reservationId,
+                    type,
+                    date,
+                    `<span class="badge bg-${getStatusBadge(statut)}">${statut}</span>`,
+                    `${locataireNom} - Véhicule: ${voiture}`,
+                    `<div class="btn-group" role="group">
+                        <button class="btn btn-sm btn-info view-dispute" data-id="${dispute.id}"><i class="fas fa-eye"></i></button>
+                        <button class="btn btn-sm btn-success resolve-btn" data-id="${dispute.id}"><i class="fas fa-check"></i></button>
+                        <button class="btn btn-sm btn-warning close-btn" data-id="${dispute.id}"><i class="fas fa-times"></i></button>
+                        <button class="btn btn-sm btn-danger reject-btn" data-id="${dispute.id}"><i class="fas fa-ban"></i></button>
+                    </div>`
+                ]);
+            });
+
+            table.draw();
+        },
+        error: function () {
+            showToast('error', 'Erreur lors du chargement des litiges');
+        }
+    });
+}
+
+// Fonction pour extraire le nom du client
+function extractClientName(dispute) {
+    if (!dispute) return "Client inconnu";
+
+    // ✅ Ton DTO a directement un objet client
+    if (dispute.client) {
+        const client = dispute.client;
+        if (client.fullName) return client.fullName;
+        if (client.nom) return client.nom;
+        if (client.firstName) return `${client.firstName} ${client.lastName || ''}`.trim();
+    }
+
+    // Fallback si le client est sous une autre forme
+    if (dispute.nomClient) return dispute.nomClient;
+    if (dispute.clientName) return dispute.clientName;
+    if (dispute.locataireNom) return dispute.locataireNom;
+
+    return "Client inconnu";
+}
+
+// Fonction pour extraire les infos du véhicule
+// Fonction pour extraire les infos du véhicule
+// Fonction pour extraire les infos du véhicule
+function extractVehicleInfo(dispute) {
+    if (!dispute) return "Véhicule inconnu";
+
+    if (dispute.vehicle && dispute.vehicle !== "-" && dispute.vehicle !== "N/A") {
+        return dispute.vehicle;
+    }
+
+    if (dispute.vehiculeMarque && dispute.vehiculeModele) {
+        return `${dispute.vehiculeMarque} ${dispute.vehiculeModele}`;
+    }
+    if (dispute.vehiculeMarque) return dispute.vehiculeMarque;
+    if (dispute.vehiculeModele) return dispute.vehiculeModele;
+
+    return "Véhicule inconnu";
+}
+
+    loadDisputes();
+
+    // === Voir détails litige ===
+    $(document).on('click', '.view-dispute', function () {
+        const disputeId = $(this).data('id');
+        $.ajax({
+            url: `/Administrateur/${disputeId}`,
+            type: 'GET',
+            success: function (dispute) {
+                console.log('Dispute data:', dispute);
+                console.log('Client:', dispute.client);
+                console.log('Propriétaire:', dispute.proprietaire);
+
+                $('#disputeDetails').html(`
+                    <p><strong>ID:</strong> ${dispute.id}</p>
+                    <p><strong>Type:</strong> ${dispute.type}</p>
+                    <p><strong>Statut:</strong> ${dispute.statut}</p>
+                    <p><strong>Date:</strong> ${ formatDateTime(dispute.dateCreation) }</p>
+                    <p><strong>Description:</strong> ${dispute.description}</p>
+                    ${dispute.resolution ? `<p><strong>Résolution:</strong> ${dispute.resolution}</p>` : ''}
+                    <p><strong>Réservation ID:</strong> ${dispute.reservationId ?? 'N/A'}</p>
+                    <p><strong>Client:</strong> ${dispute.nomClient ?? 'N/A'}</p>
+                    <p><strong>Propriétaire:</strong> ${dispute.nomProprietaire ?? 'N/A'}</p>
+                    ${dispute.attachmentPath ? `<p><strong>Pièce jointe:</strong> <a href="/Administrateur/downloadFile/${dispute.id}" class="btn btn-primary">Télécharger</a></p>` : ''}
+                `);
+                $('#resolveDisputeBtn').data('id', dispute.id);
+                $('#disputeModal').modal('show');
+            },
+            error: function () {
+                showToast('error', 'Erreur lors du chargement du litige');
+            }
+        });
+    });
+
+    // === FORMULAIRE RAPPORT ===
+    $("#reportForm").on("submit", function (e) {
+        e.preventDefault();
+
+        const type = $("#reportType").val();
+        const startDate = $("#reportStartDate").val();
+        const endDate = $("#reportEndDate").val();
+
+        $.ajax({
+            url: "/Administrateur/rapport",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                type: type,
+                startDate: startDate,
+                endDate: endDate
+            }),
+            success: function (data) {
+                if (!data || !Array.isArray(data.headers) || !Array.isArray(data.rows)) {
+                    $("#reportResult").html("<div class='alert alert-warning'>Aucune donnée disponible pour ce rapport.</div>");
+                    return;
+                }
+
+                let html = "<table class='table table-bordered'><thead><tr>";
+                data.headers.forEach(h => html += `<th>${h}</th>`);
+                html += "</tr></thead><tbody>";
+                data.rows.forEach(row => {
+                    html += "<tr>";
+                    row.forEach(cell => html += `<td>${cell}</td>`);
+                    html += "</tr>";
+                });
+                html += "</tbody></table>";
+                $("#reportResult").html(html);
+            },
+            error: function () {
+                alert("Erreur lors de la génération du rapport");
+            }
+        });
+    });
+
+    // === Gestion des LITIGES ===
+    $(document).on('click', '.resolve-btn', function () {
+        const disputeId = $(this).data('id');
+        $('#resolveDisputeForm').data('id', disputeId);
+        $('#responseText').val('');
+        $('#modalResolveDispute').modal('show');
+    });
+
+    // === Soumettre résolution de litige ===
+    $('#resolveDisputeForm').on('submit', function (e) {
+        e.preventDefault();
+        const disputeId = $(this).data('id');
+        const responseText = $('#responseText').val().trim();
+
+        if (!responseText) {
+            showToast('warning', 'Veuillez écrire une réponse au litige.');
+            return;
+        }
+
+        $.ajax({
+            url: `/Administrateur/${disputeId}/resoudre`,
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ response: responseText }),
+            success: function () {
+                $('#modalResolveDispute').modal('hide');
+                showToast('success', 'Litige résolu avec succès');
+                loadDisputes();
+            },
+            error: function () {
+                showToast('error', 'Erreur lors de la résolution du litige.');
+            }
+        });
+    });
+
+    // === Clôturer (ouvrir modal) ===
+    $(document).on('click', '.close-btn', function () {
+        const disputeId = $(this).data('id');
+        $('#confirmCloseBtn').data('id', disputeId);
+        $('#confirmCloseModal').modal('show');
+    });
+
+    $('#confirmCloseBtn').click(function () {
+        const disputeId = $(this).data('id');
+        $.ajax({
+            url: `/Administrateur/${disputeId}/fermer`,
+            type: 'PUT',
+            success: function () {
+                $('#confirmCloseModal').modal('hide');
+                showToast('success', 'Litige clôturé avec succès');
+                loadDisputes();
+            },
+            error: function () {
+                showToast('error', 'Erreur lors de la clôture du litige');
+            }
+        });
+    });
+
+    // === Rejeter (ouvrir modal) ===
+    $(document).on('click', '.reject-btn', function () {
+        const disputeId = $(this).data('id');
+        $('#confirmRejectBtn').data('id', disputeId);
+        $('#confirmRejectModal').modal('show');
+    });
+
+    $('#confirmRejectBtn').click(function () {
+        const disputeId = $(this).data('id');
+        $.ajax({
+            url: `/Administrateur/${disputeId}/rejeter`,
+            type: 'PUT',
+            success: function () {
+                $('#confirmRejectModal').modal('hide');
+                showToast('success', 'Litige rejeté avec succès');
+                loadDisputes();
+            },
+            error: function () {
+                showToast('error', 'Erreur lors du rejet du litige');
+            }
+        });
+    });
+
+    // === Fonction utilitaire : format date ===
+    function formatDateTime(dateArray) {
+        if (!Array.isArray(dateArray)) return 'N/A';
+        const [year, month, day, hour, minute, second] = dateArray;
+        const date = new Date(year, month - 1, day, hour, minute, second);
+        const dateStr = date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+        const timeStr = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        return `${dateStr} à ${timeStr}`;
+    }
+
+    // === Fonction utilitaire : badge de statut ===
+    function getStatusBadge(status) {
+        switch (status) {
+            case 'OUVERT': return 'warning';
+            case 'EN_COURS': return 'info';
+            case 'RESOLU': return 'success';
+            case 'FERME': return 'secondary';
+            case 'REJETE': return 'danger';
+            default: return 'primary';
+        }
+    }
+
+    // === Fonction utilitaire : Toast ===
+    function showToast(type, message) {
+        if (typeof toastr !== 'undefined') {
+            toastr.options = {
+                closeButton: true,
+                progressBar: true,
+                positionClass: 'toast-top-right',
+                timeOut: '3000',
+            };
+            toastr[type] ? toastr[type](message) : toastr.info(message);
+        } else {
+            alert(message);
+        }
+    }
+});
+</script>
+
+
+<!-- Partie HTML mise à jour : Voir réponse précédente pour la table -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // Voir les détails du paiement
+  document.addEventListener('click', function (e) {
+    if (e.target.matches('.btn-action[title="Détails"]')) {
+      const id = e.target.dataset.id;
+
+      fetch(`/Administrateur/details/${id}`)
+        .then(res => res.json())
+        .then(data => {
+            console.log('Réponse data :', data); // 👈 Ajout debug
+
+            const clientName = data.clientNom || 'Client non disponible';
+            const voitureMarque = data.voitureMarque || 'Voiture non disponible';
+
+          const modal = document.getElementById('modalDetails');
+          modal.querySelector('.modal-body').innerHTML = `
+            <p><strong>ID Paiement:</strong> ${data.id}</p>
+            <p><strong>Montant:</strong> ${data.montant} €</p>
+            <p><strong>Méthode:</strong> ${data.methode}</p>
+            <p><strong>Date:</strong> ${data.date}</p>
+            <p><strong>Statut:</strong> ${data.statut}</p>
+            <p><strong>Client:</strong> ${clientName}</p>
+            <p><strong>Voiture:</strong> ${voitureMarque}</p>
+          `;
+
+          // Affiche le modal
+          modal.style.display = 'block';
+          modal.classList.add('show');
+          document.body.classList.add('modal-open');
+        });
+    }
+
+    // Voir la facture (Téléchargement PDF depuis byte[] stocké en base)
+    if (e.target.matches('.btn-facture')) {
+      const id = e.target.dataset.id;
+
+      fetch(`/Administrateur/paiement/${id}/facture`)
+        .then(res => {
+          if (!res.ok) throw new Error('Facture non trouvée');
+          return res.blob();
+        })
+        .then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `facture_${id}.pdf`;  // nom du fichier à télécharger
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          window.URL.revokeObjectURL(url);
+        })
+        .catch(err => alert(err.message));
+    }
+
+    // Retenter un paiement
+    if (e.target.matches('.btn-retry')) {
+      const id = e.target.dataset.id;
+
+      fetch(`/Administrateur/paiement/${id}/retry`, { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+          alert('Paiement re-tenté. ' + data.message);
+          location.reload();
+        });
+    }
+
+    // Rembourser un paiement
+  document.querySelectorAll('.btn-refund').forEach(button => {
+  button.addEventListener('click', function(e) {
+    const id = e.target.dataset.id;
+    if (confirm('Confirmer le remboursement de ce paiement ?')) {
+      fetch(`/Administrateur/paiement/${id}/rembourser`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Erreur lors du remboursement');
+        }
+        return response.text();
+      })
+      .then(message => {
+        alert(message);
+        location.reload();
+      })
+      .catch(error => alert(error.message));
+    }
+  });
+});
+
+  document.addEventListener('click', function(e) {
+	    if (e.target.matches('.btn-resent')) {
+	        const idPaiement = e.target.dataset.idPaiement;  // exemple: <button class="btn-resent" data-id-paiement="123">
+
+	        fetch(`/Administrateur/paiement/${idPaiement}/renvoyer-notification`, {
+	            method: 'POST'
+	        })
+	        .then(response => {
+	            if (!response.ok) throw new Error('Erreur lors de l\'envoi de la notification');
+	            return response.json();
+	        })
+	        .then(data => {
+	            alert(data.message || 'Notification envoyée avec succès.');
+	        })
+	        .catch(error => {
+	            alert(error.message);
+	        });
+	    }
+	});
+
+    // Fermer le modal
+    if (e.target.matches('.btn-close') || e.target.matches('.btn-secondary')) {
+      const modal = document.getElementById('modalDetails');
+      modal.style.display = 'none';
+      modal.classList.remove('show');
+      document.body.classList.remove('modal-open');
+    }
+  });
+});
+
+// Générer le rapport
+function generateReport() {
+  window.open('/admin/paiements/rapport', '_blank');
+}
+</script>
+
+<script>
+let avisToDeleteId = null;
+
+//🔔 Toast Bootstrap
+function showToast(message, isError = false) {
+const toastEl = document.getElementById("toastNotification");
+const toastMsg = document.getElementById("toastMessage");
+const bsToast = new bootstrap.Toast(toastEl);
+
+toastMsg.textContent = message;
+toastEl.classList.remove("bg-success", "bg-danger");
+toastEl.classList.add(isError ? "bg-danger" : "bg-success");
+
+bsToast.show();
+}
+
+//🧠 Charger les avis avec filtrage par note
+async function fetchAvis(note = 0) {
+try {
+ console.log(`📡 Chargement des avis avec note=${note}`);
+
+ const response = await fetch(`/Administrateur/api/avis?note=${note}`);
+ if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
+
+ const data = await response.json();
+ const avis = Array.isArray(data) ? data : (data.avis || data.data || []);
+ const container = document.getElementById("reviewsList");
+ container.innerHTML = "";
+
+ if (avis.length === 0) {
+   container.innerHTML = "<p class='text-center mt-3'>Aucun avis trouvé.</p>";
+   return;
+ }
+
+ avis.forEach(a => {
+   const reviewItem = document.createElement("div");
+   reviewItem.className = "review-item border-start border-warning border-4 mb-3 p-3 shadow-sm rounded";
+
+   reviewItem.innerHTML = `
+     <div class="d-flex justify-content-between align-items-start mb-2">
+       <div>
+         <h6 class="fw-bold mb-1">${a.voitureNom || 'Voiture inconnue'} - ${a.auteurNom || 'Auteur inconnu'}</h6>
+         <div class="d-flex align-items-center">
+           <div class="text-warning small me-2">
+             ${"★".repeat(a.note)}${"☆".repeat(5 - a.note)}
+           </div>
+           <small class="text-muted">${a.date || ''}</small>
+         </div>
+       </div>
+       <div class="d-flex gap-1">
+        
+         <button class="btn btn-sm btn-danger btn-delete" data-id="${a.id}" title="Supprimer">
+           <i class="fas fa-trash-alt"></i>
+         </button>
+       </div>
+     </div>
+     <p class="mb-2">"${a.commentaire || ''}"</p>
+   `;
+
+   container.appendChild(reviewItem);
+ });
+
+ // Boutons Supprimer
+ document.querySelectorAll(".btn-delete").forEach(button => {
+   button.addEventListener("click", e => {
+     avisToDeleteId = e.currentTarget.getAttribute("data-id");
+     new bootstrap.Modal(document.getElementById("confirmDeleteModal")).show();
+   });
+ });
+
+ // Boutons Publier
+ document.querySelectorAll(".btn-publish").forEach(button => {
+   button.addEventListener("click", async (e) => {
+     const id = e.currentTarget.getAttribute("data-id");
+     const success = await publierAvisById(id);
+     if (success) fetchAvis(note);
+   });
+ });
+
+} catch (error) {
+ console.error("❌ Erreur lors du chargement des avis :", error);
+ document.getElementById("reviewsList").innerHTML =
+   "<p class='text-danger text-center mt-3'>Erreur lors du chargement des avis.</p>";
+}
+}
+
+//🔎 Filtrage par note
+const filterForm = document.getElementById("filterForm");
+if (filterForm) {
+filterForm.addEventListener("submit", e => {
+ e.preventDefault();
+ const note = parseInt(document.getElementById("reviewFilterRating").value);
+ fetchAvis(note);
+});
+}
+
+//🧹 Confirmation suppression
+const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+if (confirmDeleteBtn) {
+confirmDeleteBtn.addEventListener("click", async () => {
+ if (avisToDeleteId) {
+   const success = await supprimerAvis(avisToDeleteId);
+   if (success) fetchAvis();
+   avisToDeleteId = null;
+   bootstrap.Modal.getInstance(document.getElementById("confirmDeleteModal")).hide();
+ }
+});
+}
+
+//🚀 Chargement initial (toutes les notes)
+fetchAvis();
+
+</script>
+<script>
+$(document).ready(function () {
+    $.ajax({
+        url: "/Administrateur/charts",
+        method: "GET",
+        success: function (data) {
+            const charts = [
+                {
+                    id: 'revenueChart',
+                    type: 'line',
+                    data: data.revenueData,
+                    options: {
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: false } },
+                        plugins: { legend: { display: false } }
+                    }
+                },
+                {
+                    id: 'bookingStatusChart',
+                    type: 'doughnut',
+                    data: data.bookingStatusData,
+                    options: {
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        cutout: '75%'
+                    }
+                },
+                {
+                    id: 'occupationChart',
+                    type: 'bar',
+                    data: data.occupationData,
+                    options: {
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: { x: { beginAtZero: true, max: 100 } },
+                        plugins: { legend: { display: false } }
+                    }
+                },
+                {
+                    id: 'topCarsChart',
+                    type: 'bar',
+                    data: data.topCarsData,
+                    options: {
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: { x: { beginAtZero: true } },
+                        plugins: { legend: { display: false } }
+                    }
+                }
+            ];
+
+            charts.forEach(cfg => {
+                const ctx = document.getElementById(cfg.id);
+                if (ctx) {
+                    const existingChart = Chart.getChart(ctx);
+                    if (existingChart) existingChart.destroy();
+                    new Chart(ctx, {
+                        type: cfg.type,
+                        data: cfg.data,
+                        options: cfg.options
+                    });
+                }
+            });
+        },
+        error: function (err) {
+            console.error("Erreur lors du chargement des données des graphiques", err);
+        }
+    });
+});
+</script>
+<!-- <script>
+$(document).ready(function () {
+    $("form").on("submit", function (e) {
+        e.preventDefault();
+
+        const type = $("#reportType").val();
+        const startDate = $("#reportStartDate").val();
+        const endDate = $("#reportEndDate").val();
+
+        $.ajax({
+            url: "/Administrateur/rapport",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                type: type,
+                startDate: startDate,
+                endDate: endDate
+            }),
+            success: function (data) {
+                if (!data || !Array.isArray(data.headers) || !Array.isArray(data.rows)) {
+                    $("#reportResult").html("<div class='alert alert-warning'>Aucune donnée disponible pour ce rapport.</div>");
+                    return;
+                }
+
+                let html = "<table class='table table-bordered'><thead><tr>";
+                data.headers.forEach(h => html += `<th>${h}</th>`);
+                html += "</tr></thead><tbody>";
+                data.rows.forEach(row => {
+                    html += "<tr>";
+                    row.forEach(cell => html += `<td>${cell}</td>`);
+                    html += "</tr>";
+                });
+                html += "</tbody></table>";
+                $("#reportResult").html(html);
+            },
+            error: function () {
+                alert("Erreur lors de la génération du rapport");
+            }
+        });
+    });
+});
+
+</script>
+ -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Charger les données de l'utilisateur au moment d'ouverture du modal
+  document.getElementById('modalProfil').addEventListener('show.bs.modal', loadUserProfile);
+
+  function loadUserProfile() {
+	  console.log('modalProfil:', document.getElementById('modalProfil'));
+	  console.log('userProfileForm:', document.getElementById('userProfileForm'));
+
+    fetch('/Administrateur/profile')
+      .then(response => {
+        if (!response.ok) throw new Error("Erreur HTTP " + response.status);
+        return response.json();
+      })
+      .then(data => {
+        document.getElementById('firstName').value = data.firstName || '';
+        document.getElementById('lastName').value = data.lastName || '';
+        document.getElementById('email').value = data.email || '';
+      })
+      .catch(error => {
+        console.error('Erreur lors du chargement du profil :', error);
+      });
+  }
+
+  // Gérer la soumission du formulaire
+  document.getElementById('userProfileForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const formData = {
+      firstName: document.getElementById('firstName').value,
+      lastName: document.getElementById('lastName').value,
+      email: document.getElementById('email').value
+    };
+
+    fetch('/Administrateur/profile/update', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    })
+      .then(response => {
+        if (!response.ok) throw new Error("Erreur HTTP " + response.status);
+        return response.text();
+      })
+      .then(message => {
+        alert("✅ " + message);
+        // Fermer le modal
+        bootstrap.Modal.getInstance(document.getElementById('modalProfil')).hide();
+      })
+      .catch(error => {
+        alert("❌ Une erreur est survenue : " + error.message);
+      });
+  });
+</script>
+
+<script>
+  $(document).ready(function () {
+	  $('.accept-btn').on('click', function () {
+		  const id = $(this).data('id');
+		  $.post('/Administrateur/partenariat/accepter', { id: id }, function (pdfPath) {
+		    // Télécharger le fichier PDF
+		    window.location.href = '/Administrateur/telecharger?path=' + encodeURIComponent(pdfPath);
+		  });
+		
+    });
+
+    $('.reject-btn').on('click', function () {
+      const id = $(this).data('id');
+      $.post('/Administrateur/partenariat/rejeter', { id: id }, function (res) {
+        alert(res);
+        location.reload();
+      });
+    });
+  });
+</script>
+<script>
+  document.getElementById("ajouterAdminForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const firstName = document.getElementById("adminFirstName").value;
+    const lastName = document.getElementById("adminLastName").value;
+    const email = document.getElementById("adminEmail").value;
+    const password = document.getElementById("adminPassword").value;
+    const niveauAcces = document.getElementById("niveauAcces").value;
+    console.log({ firstName, lastName, email, password, niveauAcces });
+
+    fetch("/Administrateur/admin/ajouter", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ firstName, lastName, email, password, niveauAcces })
+    })
+    .then(response => {
+      if (response.ok) {
+        alert("Administrateur ajouté avec succès !");
+        location.reload();
+      } else {
+        response.text().then(msg => alert("Erreur : " + msg));
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Erreur réseau !");
+    });
+  });
+</script>
+
+</body>
+
+<script>
+// ==============================================
+// GESTION DU MODAL DES DÉTAILS DE RÉSERVATION
+// ==============================================
+
+/**
+ * Affiche les détails d'une réservation dans un modal
+ * @param {string} reservationId - ID de la réservation
+ */
+function showReservationDetails(reservationId) {
+    console.log('🔍 Chargement des détails pour la réservation:', reservationId);
+    
+    // Afficher le spinner de chargement
+    document.getElementById('reservationDetailsContent').innerHTML = `
+        <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Chargement...</span>
+            </div>
+            <p class="mt-2 text-muted">Chargement des détails de la réservation...</p>
+        </div>
+    `;
+    
+    // Afficher le modal
+    const modal = new bootstrap.Modal(document.getElementById('reservationDetailsModal'));
+    modal.show();
+    
+    // Charger les données via API
+    fetch(`/Administrateur/reservations/${reservationId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erreur ' + response.status + ' lors du chargement des données');
+            }
+            return response.json();
+        })
+        .then(reservation => {
+            console.log('✅ Détails de réservation reçus:', reservation);
+            displayReservationDetails(reservation);
+        })
+        .catch(error => {
+            console.error('❌ Erreur:', error);
+            document.getElementById('reservationDetailsContent').innerHTML = `
+                <div class="alert alert-danger">
+                    <h6><i class="fas fa-exclamation-triangle me-2"></i>Erreur de chargement</h6>
+                    <p class="mb-1">Impossible de charger les détails de la réservation.</p>
+                    <small class="text-muted">${error.message}</small>
+                </div>
+            `;
+        });
+}
+
+/**
+ * Affiche les détails de la réservation dans le modal
+ * @param {Object} reservation - Objet réservation
+ */
+function displayReservationDetails(reservation) {
+    // Fonction pour obtenir la classe CSS du badge selon le statut
+    function getStatusBadgeClass(statut) {
+        if (!statut) return 'bg-secondary';
+        
+        const statutLower = statut.toLowerCase();
+        if (statutLower.includes('confirmé') || statutLower.includes('actif') || statutLower.includes('validé')) {
+            return 'bg-success';
+        } else if (statutLower.includes('attente') || statutLower.includes('en cours')) {
+            return 'bg-warning';
+        } else if (statutLower.includes('annulé')) {
+            return 'bg-danger';
+        } else if (statutLower.includes('terminé') || statutLower.includes('fini')) {
+            return 'bg-info';
+        } else {
+            return 'bg-secondary';
+        }
+    }
+
+    // Fonction pour formater les dates
+    function formatDate(dateString) {
+        if (!dateString) return 'N/A';
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fr-FR');
+        } catch (e) {
+            return 'Date invalide';
+        }
+    }
+
+    const statusClass = getStatusBadgeClass(reservation.statut);
+    
+    const content = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="border-bottom pb-2 mb-3">Informations Réservation</h6>
+                <table class="table table-sm table-borderless">
+                    <tr>
+                        <td width="40%"><strong>ID:</strong></td>
+                        <td><strong>#${reservation.id}</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Statut:</strong></td>
+                        <td><span class="badge ${statusClass}">${reservation.statut || 'N/A'}</span></td>
+                    </tr>
+                   
+                    <tr>
+                        <td><strong>Date de début:</strong></td>
+                        <td>${formatDate(reservation.dateDebut)}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Date de fin:</strong></td>
+                        <td>${formatDate(reservation.dateFin)}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Durée:</strong></td>
+                        <td>${reservation.nombreJours || 'N/A'} jours</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Prix total:</strong></td>
+                        <td><span class="fw-bold text-primary">${reservation.prixTotal || '0'} €</span></td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="col-md-6">
+                <h6 class="border-bottom pb-2 mb-3">Informations Client</h6>
+                <table class="table table-sm table-borderless">
+                    <tr>
+                        <td width="40%"><strong>Nom:</strong></td>
+                        <td>${reservation.client?.nom || reservation.client?.fullName || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Email:</strong></td>
+                        <td>${reservation.client?.email || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Téléphone:</strong></td>
+                        <td>${reservation.client?.telephone || reservation.client?.tel || 'N/A'}</td>
+                    </tr>
+                </table>
+                
+                <h6 class="border-bottom pb-2 mb-3 mt-3">Informations Véhicule</h6>
+                <table class="table table-sm table-borderless">
+                    <tr>
+                        <td width="40%"><strong>Véhicule:</strong></td>
+                        <td>${reservation.voiture?.marque || 'N/A'} ${reservation.voiture?.modele || ''}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Immatriculation:</strong></td>
+                        <td><code>${reservation.voiture?.immatriculation || 'N/A'}</code></td>
+                    </tr>
+                    <tr>
+                    <td><strong>Prix/jour:</strong></td>
+                    <td>${reservation.voiture?.prixJournalier || reservation.voiture?.prixParJour || 'N/A'} €</td>
+                </tr>
+                </table>
+            </div>
+        </div>
+        
+        ${reservation.notes ? `
+        <div class="row mt-4">
+            <div class="col-12">
+                <h6 class="border-bottom pb-2">Notes supplémentaires</h6>
+                <div class="alert alert-light border">
+                    <i class="fas fa-sticky-note me-2"></i>
+                    ${reservation.notes}
+                </div>
+            </div>
+        </div>
+        ` : ''}
+    `;
+    
+    document.getElementById('reservationDetailsContent').innerHTML = content;
+}
+
+// Initialisation des événements
+document.addEventListener('DOMContentLoaded', function() {
+    // Gérer les clics sur les boutons "Voir Détails"
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.btn-view-details')) {
+            const button = e.target.closest('.btn-view-details');
+            const bookingId = button.getAttribute('data-booking-id');
+            
+            // Extraire l'ID numérique (supprimer le 'R' s'il existe)
+            const reservationId = bookingId.replace(/^R/, '');
+            console.log('🔍 ID réservation extrait:', reservationId);
+            
+            showReservationDetails(reservationId);
+        }
+    });
+});
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const wrapper = document.getElementById('wrapper');
+
+        if (sidebarToggle && wrapper) {
+            sidebarToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                wrapper.classList.toggle('toggled');
+            });
+        }
+
+        // Fermer la sidebar si on clique en dehors en mode responsive (mobile only)
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth < 992 && wrapper.classList.contains('toggled') && 
+                !document.getElementById('sidebar-wrapper').contains(e.target) && 
+                !sidebarToggle.contains(e.target)) {
+                wrapper.classList.remove('toggled');
+            }
+        });
+    });
+</script>
+</body>
+</html>

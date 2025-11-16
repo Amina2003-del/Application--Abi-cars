@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr-FR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="gauto | Modèle HTML de Location de Voitures par Themescare">
+    <meta name="keywords" content="taxi,voiture,location,transport">
+    <meta name="author" content="Themescare">
+    <title>Carbnb</title>
+
+    <!-- CSS principaux -->
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/magnific-popup.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/owl.carousel.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/owl.theme.default.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/animate.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/jquery.datepicker.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/nice-select.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/lightgallery.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/jquery-clockpicker.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/slicknav.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/responsive.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/mettrelocation.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/flatpickr.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/reservation.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/consultervoiture.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/delete.css}">
+
+    <!-- Librairies externes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+<div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <nav class="sidebar-menu">
+            <a th:href="@{/Voitures/location}"><i class="fa fa-car"></i> Mettre ma Location</a>
+            <a th:href="@{/Voitures/avis}"><i class="fa fa-star"></i> Consulter les Avis</a>
+            <a th:href="@{/Voitures/reservation}" class="active"><i class="fa fa-calendar"></i> Réservations</a>
+            <a th:href="@{/Voitures/message}"><i class="fa fa-gavel"></i> Litiges</a>
+            <a th:href="@{/Voitures/login}"><i class="fa fa-sign-out"></i> Déconnexion</a>
+        </nav>
+    </aside>
+
+    <!-- Contenu principal -->
+    <div class="container">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="fas fa-car me-2"></i>Liste des voitures</h4>
+                <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#addCarModal">
+                    <i class="fas fa-plus me-1"></i> Ajouter une voiture
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="search-container">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" id="searchInput" class="form-control" placeholder="Rechercher une voiture par marque, modèle, plaque...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="categoryFilter" class="form-select">
+                            <option value="">Toutes les types</option>
+                            <option value="SUV">SUV</option>
+                            <option value="Berline">Berline</option>
+                            <option value="Citadine">Citadine</option>
+                            <option value="Break">Break</option>
+                            <option value="Coupé">Coupé</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Table des voitures -->
+                <div class="table-responsive">
+                    <table class="table table-hover" id="carsTable">
+                        <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Marque & Modèle</th>
+                            <th>Immatriculation</th>
+                            <th>Année</th>
+                            <th>Carburant</th>
+                            <th>Kilométrage</th>
+                            <th>TypeVoiture</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="car : ${cars}" th:id="'car-row-' + ${car.id}">
+    <td>
+<img th:src="@{'/images/' + ${car.imagePrincipaleURL}}" />
+</td>                            <td th:text="${car.marque} + ' ' + ${car.modele}"></td>
+                            <td th:text="${car.immatriculation}"></td>
+                            <td th:text="${car.annee}"></td>
+                            <td th:text="${car.carburant}"></td>
+                             <td th:text="${car.kilometrage} + ' Km'"></td>
+                            <td><span class="badge bg-primary" th:text="${car.type}"></span></td>
+                            <td>
+                                <span th:classappend="${car.disponible} ? 'badge bg-success' : 'badge bg-danger'"
+                                      th:text="${car.disponible}"></span>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-info action-btn" data-bs-toggle="modal" data-bs-target="#viewCarModal" th:attr="data-car-id=${car.id}">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                               <button class="btn btn-sm btn-success action-btn" data-bs-toggle="modal" data-bs-target="#editCarModal" th:attr="data-car-id=${car.id}">                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger action-btn" data-bs-toggle="modal" data-bs-target="#deleteCarModal" th:attr="data-car-id=${car.id}" >
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="editCarModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="editCarForm">
+        <div class="modal-header">
+          <h5 class="modal-title">Modifier Voiture</h5>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editCarId" name="id">
+          
+          <input type="text" id="marque" name="marque" class="form-control mb-2" placeholder="Marque">
+          <input type="text" id="modele" name="modele" class="form-control mb-2" placeholder="Modèle">
+          <input type="text" id="immatriculation" name="immatriculation" class="form-control mb-2" placeholder="Immatriculation">
+          <input type="number" id="annee" name="annee" class="form-control mb-2" placeholder="Année">
+            <input type="file" id="imagePrincipale" name="imagePrincipale" class="form-control mb-2">
+ <div class="mb-3">
+            <label>Carburant</label>
+            <select class="form-select" id="carburant" name="carburant" required>
+              <option value="Essence">Essence</option>
+              <option value="Diesel">Diesel</option>
+              <option value="Hybride">Hybride</option>
+              <option value="Électrique">Électrique</option>
+            </select>
+          </div>          <input type="number" id="kilometrage" name="kilometrage" class="form-control mb-2" placeholder="Kilométrage">
+          <input type="text" id="type" name="type" class="form-control mb-2" placeholder="Type">
+          <select id="disponible" name="disponible" class="form-control mb-2">
+              <option value="true">Disponible</option>
+              <option value="false">Non disponible</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Sauvegarder</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div id="delete-popup" class="popup-overlay hidden">
+    <div class="popup-box">
+        <h2>Confirmation</h2>
+        <p>Voulez-vous vraiment masquer cette voiture ?</p>
+        <div class="popup-actions">
+            <button class="btn cancel-btn" id="cancel-delete">Annuler</button>
+            <button class="btn confirm-btn" id="confirm-delete">Masquer</button>
+        </div>
+    </div>
+</div>
+<div id="toast-notification" class="toast-notification hidden">
+    Voiture masquée avec succès ✔️
+</div>
+
+<!-- JS requis -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/assets/js/delete.js}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+$(document).ready(function() {
+    let filterTimeout;
+    const $searchInput = $('#searchInput');
+    const $categoryFilter = $('#categoryFilter');
+    const $carsTable = $('#carsTable tbody');
+    const popup = document.getElementById("delete-popup");
+    const confirmBtn = document.getElementById("confirm-delete");
+    const cancelBtn = document.getElementById("cancel-delete");
+    const toast = document.getElementById("toast-notification");
+    let selectedCarId = null;
+
+    // Initialiser les voitures masquées
+    let carsMasquees = JSON.parse(localStorage.getItem("masquees")) || [];
+
+    // Écouteurs de recherche et filtrage
+    $searchInput.on('input', handleFilter);
+    $categoryFilter.on('change', handleFilter);
+
+    function handleFilter() {
+        clearTimeout(filterTimeout);
+        filterTimeout = setTimeout(fetchFilteredCars, 300);
+    }
+
+    function fetchFilteredCars() {
+        $.ajax({
+            url: '/Voitures/filter',
+            type: 'GET',
+            data: {
+                search: $searchInput.val(),
+                category: $categoryFilter.val()
+            },
+            beforeSend: function() {
+                $carsTable.html('<tr><td colspan="9" class="text-center"><div class="spinner-border"></div></td></tr>');
+            },
+            success: function(data) {
+                renderCars(data);
+            },
+            error: function(xhr) {
+                console.error("Erreur:", xhr.responseText);
+                $carsTable.html('<tr><td colspan="9" class="text-center text-danger">Erreur de chargement</td></tr>');
+            }
+        });
+    }
+
+    function renderCars(cars) {
+        if (cars.length === 0) {
+            $carsTable.html('<tr><td colspan="9" class="text-center">Aucune voiture trouvée</td></tr>');
+            return;
+        }
+
+        let html = '';
+        cars.forEach(car => {
+            if (carsMasquees.includes(String(car.id))) {
+                return; // Ne pas afficher si masquée
+            }
+
+            html += `
+            <tr id="car-row-${car.id}">
+                <td><img src="/images/${car.imagePrincipaleURL}"></td>
+                <td>${car.marque} ${car.modele}</td>
+                <td>${car.immatriculation}</td>
+                <td>${car.annee}</td>
+                <td>${car.carburant}</td>
+                <td>${car.kilometrage} Km</td>
+                <td><span class="badge bg-primary">${car.type}</span></td>
+                <td><span class="badge ${car.disponible ? 'bg-success' : 'bg-danger'}">${car.disponible ? 'Disponible' : 'Indisponible'}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-info action-btn" data-bs-toggle="modal" data-bs-target="#viewCarModal" data-car-id="${car.id}">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-success action-btn" data-bs-toggle="modal" data-bs-target="#editCarModal" data-car-id="${car.id}">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger action-btn btn-delete" data-car-id="${car.id}">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </td>
+            </tr>`;
+        });
+
+        if (html === '') {
+            $carsTable.html('<tr><td colspan="9" class="text-center">Aucune voiture trouvée</td></tr>');
+        } else {
+            $carsTable.html(html);
+        }
+
+        bindDeleteButtons(); // Re-lier les événements après le rendu
+    }
+
+    // Fonction de liaison des boutons de suppression
+    function bindDeleteButtons() {
+        document.querySelectorAll(".btn-delete").forEach(button => {
+            button.addEventListener("click", () => {
+                selectedCarId = button.getAttribute("data-car-id");
+                popup.classList.remove("hidden");
+            });
+        });
+    }
+
+    // Bouton annuler
+    cancelBtn.addEventListener("click", () => {
+        popup.classList.add("hidden");
+        selectedCarId = null;
+    });
+
+    // Bouton confirmer (masquage)
+    confirmBtn.addEventListener("click", () => {
+        if (selectedCarId) {
+            const row = document.getElementById("car-row-" + selectedCarId);
+            if (row) {
+                row.style.transition = "opacity 0.4s ease";
+                row.style.opacity = 0;
+                setTimeout(() => row.style.display = "none", 400);
+
+                if (!carsMasquees.includes(selectedCarId)) {
+                    carsMasquees.push(selectedCarId);
+                    localStorage.setItem("masquees", JSON.stringify(carsMasquees));
+                }
+
+                showToast("Voiture masquée avec succès ✔️");
+            }
+        }
+        popup.classList.add("hidden");
+        selectedCarId = null;
+    });
+
+    function showToast(message) {
+        toast.textContent = message;
+        toast.classList.remove("hidden");
+        toast.classList.add("show");
+        setTimeout(() => {
+            toast.classList.remove("show");
+            setTimeout(() => toast.classList.add("hidden"), 500);
+        }, 3000);
+    }
+
+    // Charger les données initiales
+    fetchFilteredCars();
+});
+
+
+</script>
+<script>
+$(document).ready(function() {
+    // Lorsque le bouton d'édition est cliqué
+    $('.action-btn').on('click', function() {
+        var carId = $(this).data('car-id');  // Récupérer l'ID de la voiture à partir de l'attribut data-car-id
+
+        // Envoyer une requête AJAX pour obtenir les données de la voiture
+        $.ajax({
+            url: '/Voitures/' + carId,  // URL pour récupérer les informations de la voiture
+            method: 'GET',
+            success: function(data) {
+                // Remplir les champs du formulaire avec les données récupérées
+                $('#editCarId').val(data.id);
+                $('#marque').val(data.marque);
+                $('#modele').val(data.modele);
+                $('#immatriculation').val(data.immatriculation);
+                $('#annee').val(data.annee);
+                $('#carburant').val(data.carburant);
+                $('#kilometrage').val(data.kilometrage);
+                $('#type').val(data.type);
+                $('#disponible').val(data.disponible ? 'true' : 'false');  // Si la voiture est disponible, la case est cochée
+            },
+            error: function(xhr, status, error) {
+                alert('Erreur lors de la récupération des données de la voiture.');
+            }
+        });
+    });
+
+    // Gérer la soumission du formulaire de mise à jour
+    $('#editCarForm').on('submit', function(event) {
+        event.preventDefault();  // Empêcher le rechargement de la page
+
+        var formData = new FormData(this);  // Collecter les données du formulaire, y compris l'image
+
+        // Envoyer une requête AJAX pour mettre à jour la voiture
+        $.ajax({
+            url: '/Voitures/update',  // URL de l'API pour mettre à jour la voiture
+            method: 'POST',
+            data: formData,
+            processData: false,  // Empêcher la conversion des données en chaîne
+            contentType: false,  // Laisser l'upload de fichiers se faire correctement
+            success: function(response) {
+                alert('Voiture mise à jour avec succès.');
+                $('#editCarModal').modal('hide');  // Fermer la modale
+                location.reload();  // Rafraîchir la page pour voir les changements
+            },
+            error: function(xhr, status, error) {
+                alert('Erreur lors de la mise à jour de la voiture.');
+            }
+        });
+    });
+});
+
+
+</script>
+</body>
+</html>

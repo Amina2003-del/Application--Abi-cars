@@ -1,0 +1,228 @@
+/* ===== Modal avancé ===== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1050;
+    top: 0; left: 0;
+    width: 100%; height: 200%;
+    background: rgba(15, 15, 15, 0.75);
+    backdrop-filter: blur(4px);
+    overflow-y: auto;
+}
+
+.modal-content {
+    background: #fff;
+    margin: 4% auto;
+    padding: 0;
+    width: 90%;
+    max-width: 850px;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+/* Style pour la zone de dépôt */
+.upload-area {
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    padding: 25px;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.upload-area.highlight {
+    border-color: #007bff;
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.upload-placeholder {
+    color: #666;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.preview-image {
+    object-fit: cover;
+    border-radius: 4px;
+    margin: 5px;
+}
+
+.more-images {
+    background: rgba(0,0,0,0.5);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+input[type="file"] {
+    display: none;
+}
+.modal-header {
+    background: #343a40;
+    color: #fff;
+    padding: 18px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-body {
+    padding: 30px;
+    background-color: #f9f9f9;
+   
+}
+
+/* ===== Bouton ajouter voiture (flottant) ===== */
+.btn-add {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background-color: #198754;
+    color: #fff;
+    font-size: 28px;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    z-index: 1100;
+}
+
+.btn-add:hover {
+    background-color: #157347;
+    transform: scale(1.1);
+}
+
+/* ===== Upload image stylisé ===== */
+.upload-container {
+    position: relative;
+    border: 2px dashed #dee2e6;
+    border-radius: 10px;
+    background-color: #fff;
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-container:hover,
+.upload-container.highlight {
+    background-color: #e9f7ff;
+    border-color: #0d6efd;
+}
+
+.upload-icon {
+    font-size: 50px;
+    color: #6c757d;
+    margin-bottom: 12px;
+}
+
+.upload-text {
+    font-size: 14px;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.upload-container input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* ===== Preview image ===== */
+.image-preview {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.image-preview .preview-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 6px;
+    object-fit: cover;
+    position: relative;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.image-preview .remove-image {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* ===== Champs formulaire stylisés ===== */
+.modal-body label {
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.modal-body .form-control,
+.modal-body .form-select {
+    border-radius: 8px;
+    box-shadow: none;
+    transition: border-color 0.3s;
+}
+
+.modal-body .form-control:focus,
+.modal-body .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13,110,253,.25);
+}
+
+/* ===== Liste voitures cards ===== */
+.cars-list .card {
+    height: 100%;
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    background: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.cars-list .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+}
+
+.cars-list .card-img-top {
+    height: 190px;
+    object-fit: cover;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .modal-content {
+        width: 95%;
+    }
+
+    .btn-add {
+        bottom: 20px;
+        right: 20px;
+    }
+}

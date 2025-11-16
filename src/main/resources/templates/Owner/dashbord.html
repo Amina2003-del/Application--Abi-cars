@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord - Rent Car</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome pour les icônes -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Flag-icon-css pour les drapeaux -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet">
+    <!-- Chart.js pour les graphiques -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+           <link rel="stylesheet" th:href="@{/assets/css/dashbordowner.css}">
+   
+</head>
+<body class="bg-gray-100">
+    <!-- Barre de navigation supérieure -->
+    <div class="navbar">
+        <div class="navbar-left">
+            <span class="brand">ABIcars</span>
+        </div>
+        <div class="navbar-right">
+            <div class="nav-icon-btn" id="alertsIcon">
+            </div>
+            <div class="nav-icon-btn" id="languageSwitch">
+                <span class="flag-icon flag-icon-fr"></span>
+            </div>
+         <div class="user-profile" id="userProfile">
+    <i class="fa fa-user-circle"></i>
+<span th:text="${currentUser != null ? currentUser.firstName + ' ' + currentUser.lastName : 'Invité'}"></span>
+    <i class="fas fa-chevron-down fa-xs ml-1"></i>
+</div>
+
+            <div class="dropdown-menu" id="userDropdown">
+               <a href="#" id="showUserProfile">
+                <i class="fas fa-user-edit"></i>Mon profil</a>
+<a th:href="@{/Siteoffeciel/index}" >
+  <i class="fas fa-sign-out-alt"></i>Se déconnecter
+</a>
+            </div>
+        </div>
+    </div>
+
+<!-- Modal -->
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      
+      <div class="modal-header bg-primary text-white rounded-top">
+        <h5 class="modal-title" id="userModalLabel">Profil Utilisateur</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body user-info">
+        <form id="userProfileForm">
+          <div class="row g-3">
+
+            <div class="col-md-6">
+              <label for="firstName" class="form-label">Prénom</label>
+              <input type="text" class="form-control" id="firstName" name="firstName">
+            </div>
+
+            <div class="col-md-6">
+              <label for="lastName" class="form-label">Nom</label>
+              <input type="text" class="form-control" id="lastName" name="lastName">
+            </div>
+
+            <div class="col-md-6">
+              <label for="phone" class="form-label">Téléphone</label>
+              <input type="tel" class="form-control" id="phone" name="phone">
+            </div>
+
+            <div class="col-md-6">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email">
+            </div>
+
+            <div class="col-12 position-relative">
+              <label for="password" class="form-label">Nouveau mot de passe</label>
+              <input type="password" class="form-control pe-5" id="password" name="password">
+              <i class="fas fa-eye"
+     id="togglePassword"
+     style="position:absolute; top:50%; right:1rem; transform: translateY(-50%); cursor:pointer; margin-top:15px;"></i>
+</div>
+
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+        <button type="button" class="btn btn-primary" id="saveProfile">Enregistrer</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+    <!-- Modal pour les alertes -->
+    <div class="modal" id="alertsModal">
+        <div class="modal-header">
+            <h3>Notifications Récentes</h3>
+            <span class="close-btn" id="closeAlertsModal">×</span>
+        </div>
+        <div class="modal-body">
+            <div class="alert-item">
+                <div class="alert-icon-wrapper"><i class="fas fa-tools fa-lg"></i></div>
+                <div class="alert-content">
+                    <span class="alert-title">Maintenance Requise</span>
+                    <p class="alert-message">Voiture #123 (Toyota Camry) nécessite une révision urgente.</p>
+                    <div class="alert-footer">
+                        <span class="alert-time">Il y a 5 mins</span>
+                        <span class="alert-status urgent">URGENT</span>
+                    </div>
+                </div>
+            </div>
+            <div class="alert-item">
+                <div class="alert-icon-wrapper"><i class="fas fa-file-invoice fa-lg"></i></div>
+                <div class="alert-content">
+                    <span class="alert-title">Nouvelle Facture</span>
+                    <p class="alert-message">Facture #INV-0789 générée pour le client Jean Dupont.</p>
+                    <div class="alert-footer">
+                        <span class="alert-time">Il y a 2 heures</span>
+                        <span class="alert-status new">NOUVEAU</span>
+                    </div>
+                </div>
+            </div>
+            <div class="alert-item">
+                <div class="alert-icon-wrapper"><i class="fas fa-calendar-check fa-lg"></i></div>
+                <div class="alert-content">
+                    <span class="alert-title">Réservation Confirmée</span>
+                    <p class="alert-message">Réservation #RES-556 pour une BMW Série 3 validée.</p>
+                    <div class="alert-footer">
+                        <span class="alert-time">Aujourd'hui à 09:30</span>
+                        <span class="alert-status pending">CONFIRMÉ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barre latérale -->
+    <div id="sidebar" class="sidebar sidebar-expanded fixed top-0 left-0 h-screen overflow-y-auto" style="padding-top: 60px;">
+        <div class="sidebar-header">
+            <div class="brand-logo-wrapper">
+                <i class="fas fa-tachometer-alt brand-icon"></i>
+                <span class="brand-text">Tableau Bord</span>
+            </div>
+            <button id="toggleSidebar" class="toggle-btn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+        <div class="sidebar-menu">
+            <a href="/Owner/message" class="sidebar-item">
+                <i class="fas fa-envelope menu-icon text-sky-400"></i>
+                <span class="sidebar-text">Messages</span>
+            </a>
+            <a href="/Owner/clientespace" class="sidebar-item active">
+                <i class="fas fa-users menu-icon text-fuchsia-400"></i>
+                <span class="sidebar-text">Clients</span>
+            </a>
+            <a href="/Owner/litige" class="sidebar-item">
+                <i class="fas fa-gavel menu-icon text-rose-500"></i>
+                <span class="sidebar-text">Litiges</span>
+            </a>
+            <a href="/Owner/voitures" class="sidebar-item">
+                <i class="fas fa-car-side menu-icon text-emerald-500"></i>
+                <span class="sidebar-text">Voitures</span>
+            </a>
+            <a href="/Owner/reservation" class="sidebar-item">
+                <i class="fas fa-calendar-check menu-icon text-amber-500"></i>
+                <span class="sidebar-text">Réservations</span>
+            </a>
+                  <a href="/Owner/entretiens" class="sidebar-item">
+    <i class="fas fa-wrench menu-icon text-orange-400"></i>
+    <span class="sidebar-text">Entretiens</span>
+</a>
+            <a href="/Owner/notifications" class="sidebar-item">
+                <i class="fas fa-bell menu-icon text-violet-500"></i>
+                <span class="sidebar-text">Notifications</span>
+            </a>
+            <a th:href="@{/Owner/paiement}" class="sidebar-item">
+                <i class="fas fa-credit-card menu-icon text-cyan-500"></i>
+                <span class="sidebar-text">Paiement</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Contenu principal -->
+    <div id="content" class="ml-[260px] p-6 pt-8 transition-all duration-350 ease-in-out min-h-screen" style="margin-top: 60px;">
+
+        <!-- Métriques clés -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="metric-card p-5 rounded-lg shadow-md animate-fadeInUp" style="animation-delay: 0.1s;">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 uppercase">Messages</h3>
+                        <p class="text-2xl font-semibold text-gray-800 mt-1" th:text="${messagesCount ?: '0'}">0</p>
+                    </div>
+                    <div class="p-3 rounded-full bg-sky-100 text-sky-500">
+                        <i class="fas fa-envelope text-xl metric-icon"></i>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <div class="w-full bg-gray-200 h-1.5 rounded-full">
+                        <div class="bg-sky-500 h-1.5 rounded-full progress-bar" style="--progress-width: 75%;"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1.5">+12% depuis le mois dernier</p>
+                </div>
+            </div>
+            <div class="metric-card p-5 rounded-lg shadow-md animate-fadeInUp" style="animation-delay: 0.2s;">
+                 <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 uppercase">Clients Ayant Loué</h3>
+                        <p class="text-2xl font-semibold text-gray-800 mt-1" th:text="${clientsLoueCount ?: '0'}">0</p>
+                    </div>
+                    <div class="p-3 rounded-full bg-pink-100 text-pink-500">
+                        <i class="fas fa-users text-xl metric-icon"></i>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <div class="w-full bg-gray-200 h-1.5 rounded-full">
+                        <div class="bg-pink-500 h-1.5 rounded-full progress-bar" style="--progress-width: 60%;"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1.5">+8% depuis le mois dernier</p>
+                </div>
+            </div>
+            <div class="metric-card p-5 rounded-lg shadow-md animate-fadeInUp" style="animation-delay: 0.3s;">
+                 <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 uppercase">Litiges Ouverts</h3>
+                        <p class="text-2xl font-semibold text-gray-800 mt-1" th:text="${litigesCount ?: '0'}">0</p>
+                    </div>
+                    <div class="p-3 rounded-full bg-red-100 text-red-500">
+                        <i class="fas fa-gavel text-xl metric-icon"></i>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <div class="w-full bg-gray-200 h-1.5 rounded-full">
+                        <div class="bg-red-500 h-1.5 rounded-full progress-bar" style="--progress-width: 20%;"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1.5" th:text="${litigesEnAttente ?: '0'} + ' en attente de résolution'">0 en attente</p>
+                </div>
+            </div>
+            <div class="metric-card p-5 rounded-lg shadow-md animate-fadeInUp" style="animation-delay: 0.4s;">
+                 <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 uppercase">Réservations Actives</h3>
+                        <p class="text-2xl font-semibold text-gray-800 mt-1" th:text="${reservationsCount ?: '0'}">0</p>
+                    </div>
+                    <div class="p-3 rounded-full bg-green-100 text-green-500">
+                        <i class="fas fa-calendar-check text-xl metric-icon"></i>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <div class="w-full bg-gray-200 h-1.5 rounded-full">
+                        <div class="bg-green-500 h-1.5 rounded-full progress-bar" style="--progress-width: 90%;"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1.5">+20% ce mois-ci</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphiques avancés -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-xl shadow-lg animate-fadeInUp border border-gray-200 col-span-1 lg:col-span-1" style="animation-delay: 0.5s;">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">Revenus Mensuels</h3>
+                <div class="large-chart-container">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 col-span-1 lg:col-span-1">
+                <div class="bg-white p-6 rounded-xl shadow-lg animate-fadeInUp border border-gray-200" style="animation-delay: 0.6s;">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-4">Taux d'Occupation</h3>
+                    <div class="chart-container">
+                        <canvas id="occupancyChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg animate-fadeInUp border border-gray-200" style="animation-delay: 0.7s;">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-4">État du Parc</h3>
+                    <div class="chart-container">
+                        <canvas id="fleetStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Gestion de la sidebar
+        const sidebar = document.getElementById('sidebar');
+        const content = document.getElementById('content');
+        const toggleSidebarBtn = document.getElementById('toggleSidebar');
+        const toggleIcon = toggleSidebarBtn.querySelector('i');
+
+        toggleSidebarBtn.addEventListener('click', () => {
+            const isExpanded = sidebar.classList.contains('sidebar-expanded');
+            if (isExpanded) {
+                sidebar.classList.remove('sidebar-expanded');
+                sidebar.classList.add('sidebar-collapsed');
+                content.classList.remove('ml-[260px]');
+                content.classList.add('ml-[80px]');
+                toggleIcon.classList.remove('fa-chevron-left');
+                toggleIcon.classList.add('fa-chevron-right');
+            } else {
+                sidebar.classList.remove('sidebar-collapsed');
+                sidebar.classList.add('sidebar-expanded');
+                content.classList.remove('ml-[80px]');
+                content.classList.add('ml-[260px]');
+                toggleIcon.classList.remove('fa-chevron-right');
+                toggleIcon.classList.add('fa-chevron-left');
+            }
+        });
+
+        // Gestion du menu déroulant utilisateur
+        const userProfile = document.getElementById('userProfile');
+        const userDropdown = document.getElementById('userDropdown');
+        userProfile.addEventListener('click', (event) => {
+            event.stopPropagation();
+            userDropdown.classList.toggle('active');
+        });
+
+        // Gestion du modal des alertes
+        const alertsIcon = document.getElementById('alertsIcon');
+        const alertsModal = document.getElementById('alertsModal');
+        const closeAlertsModal = document.getElementById('closeAlertsModal');
+        alertsIcon.addEventListener('click', (event) => {
+            event.stopPropagation();
+            alertsModal.classList.toggle('active');
+            userDropdown.classList.remove('active');
+        });
+        closeAlertsModal.addEventListener('click', () => {
+            alertsModal.classList.remove('active');
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!userProfile.contains(event.target) && !userDropdown.contains(event.target)) {
+                userDropdown.classList.remove('active');
+            }
+            if (!alertsIcon.contains(event.target) && !alertsModal.contains(event.target)) {
+                alertsModal.classList.remove('active');
+            }
+        });
+
+        const languageSwitch = document.getElementById('languageSwitch');
+        const flagIcon = languageSwitch.querySelector('.flag-icon');
+        let currentLang = 'fr';
+        languageSwitch.addEventListener('click', () => {
+            if (currentLang === 'fr') {
+                flagIcon.classList.remove('flag-icon-fr');
+                flagIcon.classList.add('flag-icon-gb');
+                currentLang = 'gb';
+                alert('Langue changée en Anglais (simulation)');
+            } else {
+                flagIcon.classList.remove('flag-icon-gb');
+                flagIcon.classList.add('flag-icon-fr');
+                currentLang = 'fr';
+                alert('Langue changée en Français (simulation)');
+            }
+        });
+
+        // Graphiques
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.color = '#6B7280';
+
+        const occupancyCtx = document.getElementById('occupancyChart').getContext('2d');
+        new Chart(occupancyCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Louées', 'Disponibles', 'En Maintenance'],
+                datasets: [{
+                    data: [60, 30, 10],
+                    backgroundColor: ['#3B82F6', '#10B981', '#F59E0B'],
+                    borderColor: '#ffffff',
+                    borderWidth: 3,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 15, boxWidth:12 } },
+                    tooltip: {
+                        backgroundColor: '#1F2937', titleFont: {size: 14}, bodyFont: {size: 12}, padding: 10, cornerRadius: 6
+                    }
+                },
+                animation: { animateScale: true, animateRotate: true, duration: 1200, easing: 'easeOutQuart' }
+            }
+        });
+
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        const revenueGradient = revenueCtx.createLinearGradient(0, 0, 0, 350);
+        revenueGradient.addColorStop(0, 'rgba(59, 130, 246, 0.6)');
+        revenueGradient.addColorStop(1, 'rgba(59, 130, 246, 0.05)');
+        new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil'],
+                datasets: [{
+                    label: 'Revenus (€)',
+                    data: [12000, 15500, 13000, 18000, 16500, 21000, 19500],
+                    borderColor: '#3B82F6',
+                    backgroundColor: revenueGradient,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#3B82F6',
+                    pointHoverBackgroundColor: '#3B82F6',
+                    pointHoverBorderColor: '#ffffff',
+                    pointRadius: 4,
+                    pointHoverRadius: 7,
+                    borderWidth: 2.5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true, position: 'top', labels: {font: {size: 13}, color: '#374151'} },
+                    tooltip: { mode: 'index', intersect: false, backgroundColor: '#1F2937', titleFont: {size: 14}, bodyFont: {size: 12}, padding: 10, cornerRadius: 6 }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#E5E7EB', drawBorder: false }, ticks: { padding: 10, font: {size: 11} } },
+                    x: { grid: { display: false }, ticks: { padding: 10, font: {size: 11} } }
+                },
+                animation: { duration: 1500, easing: 'easeOutExpo' }
+            }
+        });
+
+        const fleetStatusCtx = document.getElementById('fleetStatusChart').getContext('2d');
+        new Chart(fleetStatusCtx, {
+            type: 'bar',
+            data: {
+                labels: ['En Service', 'En Maintenance', 'Hors Service'],
+                datasets: [{
+                    label: 'Nombre de Voitures',
+                    data: [52, 8, 3],
+                    backgroundColor: ['#10B981', '#F59E0B', '#EF4444'],
+                    borderRadius: 6,
+                    borderSkipped: false,
+                    barThickness: 'flex',
+                    maxBarThickness: 30
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { backgroundColor: '#1F2937', titleFont: {size: 14}, bodyFont: {size: 12}, padding: 10, cornerRadius: 6 }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#E5E7EB', drawBorder: false }, ticks: { padding: 10, font: {size: 11} } },
+                    x: { grid: { display: false }, ticks: { padding: 10, font: {size: 11} } }
+                },
+                animation: { duration: 1000, easing: 'easeOutBack' }
+            }
+        });
+
+    </script>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+	  const showBtn = document.getElementById('showUserProfile');
+	  const saveBtn = document.getElementById('saveProfile');
+	  const togglePassword = document.getElementById('togglePassword');
+	  const userModalEl = document.getElementById('userModal');
+	  const userModal = new bootstrap.Modal(userModalEl);
+
+	  // Ouvrir le modal avec données AJAX
+	  showBtn.addEventListener('click', (e) => {
+	    e.preventDefault();
+	    fetch('/api/user/profille')
+	      .then(res => res.json())
+	      .then(user => {
+	        document.getElementById('firstName').value = user.firstName || '';
+	        document.getElementById('lastName').value = user.lastName || '';
+	        document.getElementById('phone').value = user.telephone || '';
+	        document.getElementById('email').value = user.email || '';
+	        document.getElementById('password').value = '';
+	        userModal.show();
+	      })
+	      .catch(err => alert('Erreur récupération profil: ' + err));
+	  });
+
+	  // Toggle mot de passe
+	  togglePassword.addEventListener('click', () => {
+	    const pwd = document.getElementById('password');
+	    pwd.type = pwd.type === 'password' ? 'text' : 'password';
+	    togglePassword.classList.toggle('fa-eye-slash');
+	  });
+
+	  // Enregistrer profil
+	  saveBtn.addEventListener('click', () => {
+	    const userData = {
+	      firstName: document.getElementById('firstName').value,
+	      lastName: document.getElementById('lastName').value,
+	      telephone: document.getElementById('phone').value,
+	      email: document.getElementById('email').value,
+	      password: document.getElementById('password').value
+	    };
+
+	    fetch('/api/user/proprofile', {
+	    	  method: 'PUT',
+	    	  headers: { 'Content-Type': 'application/json' },
+	    	  body: JSON.stringify(userData)
+	    	})
+	    	.then(res => {
+	    	    if (!res.ok) throw new Error('Erreur mise à jour');
+	    	    return res.text(); // <-- lire comme texte
+	    	})
+	    	.then(text => {
+	    	    // Le serveur renvoie juste un message texte
+	    	    alert(text || 'Profil mis à jour !');
+	    	    userModal.hide();
+	    	})
+	    	.catch(err => alert('Erreur mise à jour: ' + err));
+
+	  });
+
+	  // Nettoyer backdrop si problème
+	  userModalEl.addEventListener('hidden.bs.modal', () => {
+	    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+	    document.body.classList.remove('modal-open');
+	    document.body.style.overflow = 'auto';
+	  });
+	});
+
+</script>
+    
+</body>
+</html>

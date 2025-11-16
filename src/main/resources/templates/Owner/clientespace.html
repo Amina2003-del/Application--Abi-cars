@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord Avancé</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome pour les icônes -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <!-- Flag-icon-css pour les drapeaux -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet">
+    <!-- Chart.js pour les graphiques -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+    <!-- FullCalendar -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome pour les icônes -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+   
+<link rel="stylesheet" th:href="@{/assets/css/client.css}">
+</head>
+<style>
+
+.modal-backdrop {
+    z-index: 1040 !important;
+}
+
+.modal {
+    z-index: 1050 !important;
+}
+
+/* Empêcher le body de bouger */
+body.modal-open {
+    overflow: hidden;
+    padding-right: 0px !important;
+}
+
+/* Style pour le dropdown utilisateur */
+.dropdown-menu-custom {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    min-width: 180px;
+    z-index: 1060;
+}
+
+.user-profile {
+    cursor: pointer;
+    position: relative;
+}
+
+
+
+
+
+
+
+
+
+</style>
+<body>
+    <!-- Barre de navigation supérieure -->
+   <nav class="navbar-custom-tailwind" th:fragment="navbar">
+    <div class="navbar-left">
+        <span class="brand">ABIcars</span>
+    </div>
+    <div class="navbar-right">
+        <!-- Bouton menu hamburger pour responsive (visible seulement sur mobile) -->
+        <div class="nav-icon-btn mobile-menu-toggle" id="mobileMenuToggle">
+            <i class="fas fa-bars"></i>
+        </div>
+        
+        <div class="nav-icon-btn" id="alertsIconCustom">
+            <!-- Contenu des alertes si besoin -->
+        </div>
+        <div class="nav-icon-btn" id="languageSwitchCustom">
+            <span class="flag-icon flag-icon-fr"></span>
+        </div>
+        <div class="user-profile" id="userProfileCustom"> <!-- Utilisation du style user-profile -->
+            <i class="fas fa-user-circle"></i> <!-- Icône Font Awesome plus stylée -->
+            <span th:text="${currentUser != null ? currentUser.firstName + ' ' + currentUser.lastName : 'Invité'}"></span>
+            <i class="fas fa-chevron-down fa-xs"></i>
+        </div>
+        <div class="dropdown-menu-custom" id="userDropdownCustom">
+            <a href="#" id="showUserProfile">
+                <i class="fas fa-user-edit"></i>Mon profil
+            </a>
+          <a th:href="@{/Siteoffeciel/index}" >
+  <i class="fas fa-sign-out-alt"></i>Se déconnecter
+</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Modal -->
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      
+      <div class="modal-header bg-primary text-white rounded-top">
+        <h5 class="modal-title" id="userModalLabel">Profil Utilisateur</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body user-info">
+        <form id="userProfileForm">
+          <div class="row g-3">
+
+            <div class="col-md-6">
+              <label for="firstName" class="form-label">Prénom</label>
+              <input type="text" class="form-control" id="firstName" name="firstName">
+            </div>
+
+            <div class="col-md-6">
+              <label for="lastName" class="form-label">Nom</label>
+              <input type="text" class="form-control" id="lastName" name="lastName">
+            </div>
+
+            <div class="col-md-6">
+              <label for="phone" class="form-label">Téléphone</label>
+              <input type="tel" class="form-control" id="phone" name="phone">
+            </div>
+
+            <div class="col-md-6">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email">
+            </div>
+
+            <div class="col-12 position-relative">
+              <label for="password" class="form-label">Nouveau mot de passe</label>
+              <input type="password" class="form-control pe-5" id="password" name="password">
+              <i class="fas fa-eye"
+     id="togglePassword"
+     style="position:absolute; top:50%; right:1rem; transform: translateY(-50%); cursor:pointer; margin-top:15px;"></i>
+</div>
+
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+        <button type="button" class="btn btn-primary" id="saveProfile">Enregistrer</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+    <!-- Modal pour les alertes (Style non-Bootstrap personnalisé) -->
+    <div class="modal-custom-non-bootstrap" id="alertsModalCustom">
+        <div class="modal-header-custom-non-bootstrap">
+            <h3>Notifications Récentes</h3>
+            <span class="close-btn" id="closeAlertsModalCustom">×</span>
+        </div>
+        <div class="modal-body-custom-non-bootstrap">
+            <div class="alert-item">
+                <div>
+                    <span class="alert-title">Maintenance Urgente</span>
+                    <p class="text-sm text-gray-600">Voiture #XYZ à vérifier.</p>
+                </div>
+                <div class="text-right">
+                    <span class="alert-time">10 min</span>
+                    <span class="alert-status ml-2">Urgent</span>
+                </div>
+            </div>
+             <div class="alert-item">
+                <div>
+                    <span class="alert-title">Nouveau Message</span>
+                    <p class="text-sm text-gray-600">De Jean Dupont.</p>
+                </div>
+                <div class="text-right">
+                    <span class="alert-time">30 min</span>
+                    <span class="alert-status ml-2" style="background-color: #0d6efd;">Nouveau</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barre latérale (Style Tailwind) -->
+    <aside id="sidebarCustom" class="sidebar-custom-tailwind sidebar-expanded">
+        <div class="sidebar-header">
+            <div class="brand-logo-wrapper">
+                <i class="fas fa-tachometer-alt brand-icon"></i>
+                <span class="brand-text" id="sidebarBrandText">Tableau Bord</span>
+            </div>
+            <button id="toggleSidebarCustom" class="toggle-btn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="/Owner/message" class="sidebar-item ">
+                <i class="fas fa-envelope menu-icon text-sky-400"></i>
+                <span class="sidebar-text">Messages</span>
+            </a>
+            <a href="/Owner/clientespace" class="sidebar-item active">
+                <i class="fas fa-users menu-icon text-fuchsia-400"></i>
+                <span class="sidebar-text">Clients</span>
+            </a>
+            <a href="/Owner/litige" class="sidebar-item">
+                <i class="fas fa-gavel menu-icon text-rose-500"></i>
+                <span class="sidebar-text">Litiges</span>
+            </a>
+            <a href="/Owner/voitures" class="sidebar-item">
+                <i class="fas fa-car-side menu-icon text-emerald-500"></i>
+                <span class="sidebar-text">Voitures</span>
+            </a>
+            <a href="/Owner/reservation" class="sidebar-item">
+                <i class="fas fa-calendar-check menu-icon text-amber-500"></i>
+                <span class="sidebar-text">Réservations</span>
+            </a>
+            <a href="/Owner/notifications" class="sidebar-item">
+                <i class="fas fa-bell menu-icon text-violet-500"></i>
+                <span class="sidebar-text">Notifications</span>
+            </a>
+                 <a href="/Owner/entretiens" class="sidebar-item">
+    <i class="fas fa-wrench menu-icon text-orange-400"></i>
+    <span class="sidebar-text">Entretiens</span>
+</a>
+            <a href="/Owner/paiement" class="sidebar-item">
+                <i class="fas fa-credit-card menu-icon text-cyan-500"></i>
+                <span class="sidebar-text">Paiement</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Contenu principal -->
+    <main id="mainContent" class="main-content sidebar-expanded">
+        <div class="container">
+            <div class="header-actions">
+                <div></div>
+<input type="text" id="searchInput" class="search-input" placeholder="Rechercher par nom ou email..." oninput="searchClients()">
+            </div>
+            <div class="table-responsive">
+                <table id="clientsTable" class="table table-striped table-hover table-bordered">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Nom</th>
+                            <th>Email</th>
+                            <th>Téléphone</th>
+                            <th>Numéro de Permis</th>
+                            <th>Adresse</th>
+                            <th>Statut</th>                            
+                            <th>Location en cours</th>
+                            <th>Note</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody >
+                    </tbody>
+                </table>
+            </div>
+            <nav aria-label="Pagination" class="mt-3">
+                <ul class="pagination justify-content-end" id="pagination">
+                    <!-- Pagination générée dynamiquement -->
+                </ul>
+            </nav>
+        </div>
+    </main>
+
+    <!-- Modal Profil -->
+    <!-- Modal Profil -->
+<!-- Modal Profil -->
+<div id="modalProfile" class="custom-modal">
+  <div class="modal-inner">
+    <button class="close-btn" onclick="closeModal('modalProfile')">&times;</button>
+    <h2>👤 Profil Client</h2>
+    <div id="profileContent" class="modal-body"></div>
+    <button class="btn-action" onclick="closeModal('modalProfile')">Fermer</button>
+  </div>
+</div>
+
+<!-- Modal Avis -->
+<div id="modalAvis" class="custom-modal">
+  <div class="modal-inner">
+    <button class="close-btn" onclick="closeModal('modalAvis')">&times;</button>
+    <h2>⭐ Avis du Client</h2>
+    <div id="avisContent" class="modal-body"></div>
+    <button class="btn-action" onclick="closeModal('modalAvis')">Fermer</button>
+  </div>
+</div>
+
+
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Scripts -->
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+function loadClients() {
+    $.ajax({
+        url: '/Owner/list',
+        method: 'GET',
+        success: function(clients) {
+            let tbody = '';
+            clients.forEach(client => {
+
+                let starsHtml = 'N/A';
+                if (client.note !== null && client.note !== undefined) {
+                    const roundedNote = Math.round(client.note);
+                    const fullStars = `<span style="color: gold;">${'★'.repeat(roundedNote)}</span>`;
+                    const emptyStars = `<span style="color: lightgray;">${'☆'.repeat(5 - roundedNote)}</span>`;
+                    starsHtml = `${fullStars}${emptyStars} (${client.note.toFixed(1)})`;
+                }
+
+                tbody += `<tr>
+                    <td>${client.firstName} ${client.lastName}</td>
+                    <td>${client.email}</td>
+                    <td>${client.tel}</td>
+                    <td>${client.numeroPermis}</td>
+                    <td>
+                    <div class="text-sm text-gray-700 max-w-xs truncate" title="${client.adresse}">
+                        ${client.adresse ? client.adresse : '—'}
+                    </div>
+                </td>
+                    <td>${client.enabled == 1 ? 'Actif' : 'Bloqué'}</td>
+                    <td>
+                      ${client.voitureReservee ? 
+                        ('Oui - ' + client.voitureReservee.marque + ' ' + client.voitureReservee.modele + ' (' + client.voitureReservee.immatriculation + ')') 
+                        : 'Non'}
+                    </td>
+                    <td>${starsHtml}</td>
+                    <td>
+                    <button onclick="voirProfile(${client.id})" title="Voir Profil" class="btn btn-info btn-sm p-1" style="font-size: 0.7rem; line-height: 1;">
+                      <i class="fas fa-user" style="font-size: 0.8rem;"></i>
+                    </button>
+                    <button onclick="${client.enabled ? 'bloquerClient' : 'debloquerClient'}(${client.id})"
+                        title="${client.enabled ? 'Bloquer' : 'Débloquer'} Client"
+                        class="btn btn-${client.enabled ? 'danger' : 'success'} btn-sm p-1" style="font-size: 0.7rem; line-height: 1;">
+                      <i class="fas fa-${client.enabled ? 'ban' : 'check'}" style="font-size: 0.8rem;"></i>
+                    </button>
+                    <button onclick="voirAvis(${client.id})" title="Voir Avis" class="btn btn-warning btn-sm p-1" style="font-size: 0.7rem; line-height: 1;">
+                      <i class="fas fa-comments" style="font-size: 0.8rem;"></i>
+                    </button>
+                  </td>
+
+                </tr>`;
+            });
+            $('#clientsTable tbody').html(tbody);
+        }
+    });
+}
+
+function openModal(id) {
+    document.getElementById(id).style.display = "block";
+}
+
+function closeModal(id) {
+    document.getElementById(id).style.display = "none";
+}
+
+window.onclick = function(event) {
+    ['modalProfile', 'modalAvis'].forEach(id => {
+        let modal = document.getElementById(id);
+        if (event.target === modal) {
+            closeModal(id);
+        }
+    });
+}
+
+// Charger et afficher profil client (infos, réservations, avis, litiges)
+function voirProfile(utilisateurId) {
+    console.log("🚀 voirProfile appelée avec ID:", utilisateurId);
+
+    if (!utilisateurId || utilisateurId === 'undefined') {
+        alert("⚠️ Impossible de charger le profil : ID utilisateur manquant.");
+        console.error("❌ ID utilisateur invalide ou non défini :", utilisateurId);
+        return;
+    }
+
+    console.log("📤 Chargement du profil de l'utilisateur ID =", utilisateurId);
+
+    fetch(`/Owner/profile/${utilisateurId}`)
+        .then(res => {
+            if (!res.ok) {
+                throw new Error("Erreur HTTP " + res.status + " lors du chargement du profil.");
+            }
+            return res.text();
+        })
+        .then(text => {
+            console.log("📥 Réponse brute reçue :", text.substring(0, 500));
+            const client = JSON.parse(text);
+
+            client.reservations = client.reservations || [];
+            client.voituresReservees = client.voituresReservees || [];
+            client.avis = client.avis || [];
+            client.litiges = client.litiges || [];
+            console.log("Profil Client :", client);
+
+            const html = `
+            	<div style="font-family: 'Segoe UI', sans-serif; line-height: 1.6;">
+            	    <h3 style="color: #333; border-bottom: 2px solid #ccc; padding-bottom: 5px;">🧍 Informations Personnelles</h3>
+            	    <div style="padding-left: 10px;">
+            	        <p><b>Nom:</b> ${client.firstName} ${client.lastName}</p>
+            	        <p><b>Email:</b> <a href="mailto:${client.email}">${client.email}</a></p>
+            	        <p><b>Téléphone:</b> ${client.tel}</p>
+            	        <p><b>Permis:</b> ${client.numeroPermis}</p>
+            	        <p><b>Statut:</b> ${client.enabled ? '✅ <span style="color:green;">Actif</span>' : '🚫 <span style="color:red;">Bloqué</span>'}</p>
+            	    </div>
+
+            	    <h3 style="color: #333; border-bottom: 2px solid #ccc; margin-top: 20px;">📆 Réservations Actives</h3>
+            	    <div style="padding-left: 10px;">
+            	        ${client.reservations.length ? `
+            	            <ul style="padding-left: 20px;">
+            	                ${client.reservations.map(r => `
+            	                    <li>
+            	                        🚗 <b>${r.marque || 'Marque inconnue'} ${r.modele || ''}</b> 
+            	                        (${r.immatriculation || 'Immat inconnue'})<br>
+            	                        🕒 du <b>${r.dateDebut || 'Date inconnue'}</b> au <b>${r.dateFin || 'Date inconnue'}</b>
+            	                    </li>
+            	                `).join('')}
+            	            </ul>
+            	        ` : '<p>Aucune réservation active.</p>'}
+            	    </div>
+
+            	    <h3 style="color: #333; border-bottom: 2px solid #ccc; margin-top: 20px;">🚘 Voitures Réservées</h3>
+            	    <div style="padding-left: 10px;">
+            	        ${client.voituresReservees.length ? `
+            	            <ul style="padding-left: 20px;">
+            	                ${client.voituresReservees.map(v => `
+            	                    <li>
+            	                        🚘 <b>${v.marque || 'Marque inconnue'} ${v.modele || ''}</b> 
+            	                        (${v.immatriculation || 'Immat inconnue'})<br>
+            	                        📍 <b>Ville:</b> ${v.ville || 'Ville inconnue'} | ⚙️ <b>Boîte:</b> ${v.boite || 'Boîte inconnue'}
+            	                    </li>
+            	                `).join('')}
+            	            </ul>
+            	        ` : '<p>Aucune voiture réservée.</p>'}
+            	    </div>
+
+            	    <h3 style="color: #333; border-bottom: 2px solid #ccc; margin-top: 20px;">⭐ Avis</h3>
+            	    <div style="padding-left: 10px;">
+            	        ${client.avis.length ? `
+            	            <ul style="padding-left: 20px;">
+            	                ${client.avis.map(a => `
+            	                    <li>⭐ <b>${a.note}</b>/5 - "<i>${a.commentaire}</i>"</li>
+            	                `).join('')}
+            	            </ul>
+            	        ` : '<p>Aucun avis.</p>'}
+            	    </div>
+
+            	    <h3 style="color: #333; border-bottom: 2px solid #ccc; margin-top: 20px;">⚠️ Litiges</h3>
+            	    <div style="padding-left: 10px;">
+            	        ${client.litiges.length ? `
+            	            <ul style="padding-left: 20px;">
+            	                ${client.litiges.map(l => `
+            	                    <li>⚠️ ${l.description} ${l.statut ? `(<b>${l.statut}</b>)` : ''}</li>
+            	                `).join('')}
+            	            </ul>
+            	        ` : '<p>Aucun litige.</p>'}
+            	    </div>
+            	</div>
+            	`;
+
+            document.getElementById('profileContent').innerHTML = html;
+            openModal('modalProfile');
+        })
+        .catch(err => alert("Erreur chargement profil : " + err.message));
+}
+
+// Bloquer ou débloquer client
+function bloquerClient(utilisateurId) {
+    fetch(`/Owner/block/${utilisateurId}`, { method: 'POST' })
+        .then(() => {
+            alert('Client bloqué');
+            location.reload();
+        });
+}
+
+function debloquerClient(utilisateurId) {
+    fetch(`/Owner/unblock/${utilisateurId}`, { method: 'POST' })
+        .then(() => {
+            alert('Client débloqué');
+            location.reload();
+        });
+}
+
+// Voir les avis d’un client dans la modale
+function voirAvis(utilisateurId) {
+    fetch(`/Owner/avis/${utilisateurId}`)
+        .then(res => res.json())
+        .then(data => {
+            let nombreReservations = data.nombreReservationsNotees || 0;
+            let avis = data.avis || [];
+
+            let html = `<p><b>Nombre de réservations notées :</b> ${nombreReservations}</p>`;
+
+            if (avis.length > 0) {
+                html += '<ul>';
+                avis.forEach(a => {
+                    html += `<li><b>Note:</b> ${a.note}, <b>Commentaire:</b> ${a.commentaire}</li>`;
+                });
+                html += '</ul>';
+            } else {
+                html += '<p>Aucun avis trouvé.</p>';
+            }
+
+            document.getElementById('avisContent').innerHTML = html;
+            openModal('modalAvis');
+        })
+        .catch(err => alert("Erreur lors du chargement des avis : " + err.message));
+}
+
+
+$(document).ready(function () {
+    loadClients();
+});
+</script>
+<script>
+function renderClientsTable(clientsList) {
+    const tbody = document.querySelector('#clientsTable tbody');
+    tbody.innerHTML = '';
+
+    const searchTerm = document.getElementById('searchInput').value.trim();
+
+    if (!clientsList || clientsList.length === 0) {
+        if (searchTerm === '') {
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center">Aucun client n\'a réservé vos voitures.</td></tr>';
+        } else {
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center">Aucun client trouvé pour "' + searchTerm + '".</td></tr>';
+        }
+        return;
+    }
+
+    // 🔥 CORRECTION : Utiliser le même affichage que loadClients()
+    let tbodyHtml = '';
+    clientsList.forEach(client => {
+        let starsHtml = 'N/A';
+        if (client.note !== null && client.note !== undefined) {
+            const roundedNote = Math.round(client.note);
+            const fullStars = `<span style="color: gold;">${'★'.repeat(roundedNote)}</span>`;
+            const emptyStars = `<span style="color: lightgray;">${'☆'.repeat(5 - roundedNote)}</span>`;
+            starsHtml = `${fullStars}${emptyStars} (${client.note.toFixed(1)})`;
+        }
+
+        tbodyHtml += `<tr>
+            <td>${client.firstName} ${client.lastName}</td>
+            <td>${client.email}</td>
+            <td>${client.tel}</td>
+            <td>${client.numeroPermis}</td>
+            <td>
+            <div class="text-sm text-gray-700 max-w-xs truncate" title="${client.adresse}">
+                ${client.adresse ? client.adresse : '—'}
+            </div>
+            </td>
+            <td>${client.enabled == 1 ? 'Actif' : 'Bloqué'}</td>
+            <td>
+              ${client.voitureReservee ? 
+                ('Oui - ' + client.voitureReservee.marque + ' ' + client.voitureReservee.modele + ' (' + client.voitureReservee.immatriculation + ')') 
+                : 'Non'}
+            </td>
+            <td>${starsHtml}</td>
+            <td>
+            <button onclick="voirProfile(${client.id})" title="Voir Profil" class="btn btn-info btn-sm p-1" style="font-size: 0.7rem; line-height: 1;">
+              <i class="fas fa-user" style="font-size: 0.8rem;"></i>
+            </button>
+            <button onclick="${client.enabled ? 'bloquerClient' : 'debloquerClient'}(${client.id})"
+                title="${client.enabled ? 'Bloquer' : 'Débloquer'} Client"
+                class="btn btn-${client.enabled ? 'danger' : 'success'} btn-sm p-1" style="font-size: 0.7rem; line-height: 1;">
+              <i class="fas fa-${client.enabled ? 'ban' : 'check'}" style="font-size: 0.8rem;"></i>
+            </button>
+            <button onclick="voirAvis(${client.id})" title="Voir Avis" class="btn btn-warning btn-sm p-1" style="font-size: 0.7rem; line-height: 1;">
+              <i class="fas fa-comments" style="font-size: 0.8rem;"></i>
+            </button>
+          </td>
+        </tr>`;
+    });
+    
+    tbody.innerHTML = tbodyHtml;
+    console.log(`✅ ${clientsList.length} clients affichés (recherche: "${searchTerm}")`);
+}
+
+function searchClients() {
+    const searchTerm = document.getElementById('searchInput').value.trim();
+    let url = '/Owner/clientsWithReservations';
+    if (searchTerm) {
+        url += `?search=${encodeURIComponent(searchTerm)}`;
+    }
+
+    console.log('🔍 Recherche avec URL:', url);
+
+    fetch(url)
+        .then(res => {
+            if (!res.ok) throw new Error('Erreur réseau: ' + res.status);
+            return res.json();
+        })
+        .then(clients => {
+            console.log('📋 Clients reçus:', clients);
+            console.log('👥 Nombre de clients:', clients.length);
+            
+            if (clients.length > 0) {
+                console.log('🔍 Structure du premier client:', JSON.stringify(clients[0], null, 2));
+            }
+            
+            renderClientsTable(clients);
+        })
+        .catch(err => {
+            console.error('❌ Erreur AJAX:', err);
+            alert('Erreur lors de la recherche des clients: ' + err.message);
+        });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM chargé - Initialisation');
+    
+    // Charger tous les clients au démarrage
+    loadClients();
+
+    // Recherche en temps réel
+    let searchTimeout;
+    document.getElementById('searchInput').addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            if (searchTerm === '') {
+                // Si champ vide, charger tous les clients
+                loadClients();
+            } else {
+                // Sinon, faire une recherche
+                searchClients();
+            }
+        }, 500);
+    });
+
+    document.getElementById('searchInput').focus();
+});
+</script>
+<script>
+  // On attend que la page soit chargée
+  document.addEventListener('DOMContentLoaded', () => {
+    const userProfile = document.getElementById('userProfileCustom');  // élément déclencheur
+    const userDropdown = document.getElementById('userDropdownCustom'); // menu à afficher/masquer
+
+    if (!userProfile || !userDropdown) return;
+
+    userProfile.addEventListener('click', (event) => {
+      event.stopPropagation(); // empêche la propagation du clic vers window
+
+      // Toggle affichage menu
+      if (userDropdown.style.display === 'block') {
+        userDropdown.style.display = 'none';
+      } else {
+        userDropdown.style.display = 'block';
+      }
+    });
+
+    // Fermer le menu si on clique en dehors
+    window.addEventListener('click', () => {
+      userDropdown.style.display = 'none';
+    });
+  });
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+	  const showBtn = document.getElementById('showUserProfile');
+	  const saveBtn = document.getElementById('saveProfile');
+	  const togglePassword = document.getElementById('togglePassword');
+	  const userModalEl = document.getElementById('userModal');
+	  const userModal = new bootstrap.Modal(userModalEl);
+
+	  // Ouvrir le modal avec données AJAX
+	  showBtn.addEventListener('click', (e) => {
+	    e.preventDefault();
+	    fetch('/api/user/profille')
+	      .then(res => res.json())
+	      .then(user => {
+	        document.getElementById('firstName').value = user.firstName || '';
+	        document.getElementById('lastName').value = user.lastName || '';
+	        document.getElementById('phone').value = user.telephone || '';
+	        document.getElementById('email').value = user.email || '';
+	        document.getElementById('password').value = '';
+	        userModal.show();
+	      })
+	      .catch(err => alert('Erreur récupération profil: ' + err));
+	  });
+
+	  // Toggle mot de passe
+	  togglePassword.addEventListener('click', () => {
+	    const pwd = document.getElementById('password');
+	    pwd.type = pwd.type === 'password' ? 'text' : 'password';
+	    togglePassword.classList.toggle('fa-eye-slash');
+	  });
+
+	  // Enregistrer profil
+	  saveBtn.addEventListener('click', () => {
+	    const userData = {
+	      firstName: document.getElementById('firstName').value,
+	      lastName: document.getElementById('lastName').value,
+	      telephone: document.getElementById('phone').value,
+	      email: document.getElementById('email').value,
+	      password: document.getElementById('password').value
+	    };
+
+	    fetch('/api/user/proprofile', {
+	    	  method: 'PUT',
+	    	  headers: { 'Content-Type': 'application/json' },
+	    	  body: JSON.stringify(userData)
+	    	})
+	    	.then(res => {
+	    	    if (!res.ok) throw new Error('Erreur mise à jour');
+	    	    return res.text(); // <-- lire comme texte
+	    	})
+	    	.then(text => {
+	    	    // Le serveur renvoie juste un message texte
+	    	    alert(text || 'Profil mis à jour !');
+	    	    userModal.hide();
+	    	})
+	    	.catch(err => alert('Erreur mise à jour: ' + err));
+
+	  });
+
+	  // Nettoyer backdrop si problème
+	  userModalEl.addEventListener('hidden.bs.modal', () => {
+	    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+	    document.body.classList.remove('modal-open');
+	    document.body.style.overflow = 'auto';
+	  });
+	});
+
+</script>
+<script>
+
+
+// Gestion de la sidebar/navbar
+const sidebarCustomEl = document.getElementById('sidebarCustom');
+const contentMainEl = document.getElementById('content');
+const toggleSidebarCustomBtnEl = document.getElementById('toggleSidebarCustom');
+const sidebarToggleIconEl = toggleSidebarCustomBtnEl.querySelector('i');
+
+toggleSidebarCustomBtnEl.addEventListener('click', () => {
+    const isExpanded = sidebarCustomEl.classList.contains('sidebar-expanded');
+    if (isExpanded) {
+        sidebarCustomEl.classList.remove('sidebar-expanded');
+        sidebarCustomEl.classList.add('sidebar-collapsed');
+        contentMainEl.style.marginLeft = '80px';
+        sidebarToggleIconEl.classList.remove('fa-chevron-left');
+        sidebarToggleIconEl.classList.add('fa-chevron-right');
+    } else {
+        sidebarCustomEl.classList.remove('sidebar-collapsed');
+        sidebarCustomEl.classList.add('sidebar-expanded');
+        contentMainEl.style.marginLeft = '260px';
+        sidebarToggleIconEl.classList.remove('fa-chevron-right');
+        sidebarToggleIconEl.classList.add('fa-chevron-left');
+    }
+});
+
+if (sidebarCustomEl.classList.contains('sidebar-expanded')) {
+    contentMainEl.style.marginLeft = '260px';
+} else {
+    contentMainEl.style.marginLeft = '80px';
+}
+
+
+
+
+
+
+
+</script>
+<script>
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileToggle = document.getElementById('mobileMenuToggle');
+    const sidebar = document.getElementById('sidebarCustom');
+    const body = document.body;
+
+    if (mobileToggle && sidebar) {
+        mobileToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Toggle la classe pour afficher/masquer la sidebar en mode responsive
+            sidebar.classList.toggle('sidebar-open');
+            body.classList.toggle('sidebar-open'); // Optionnel : bloque le scroll du body quand ouvert
+            
+            // Rotate l'icône (optionnel, pour effet visuel)
+            const icon = mobileToggle.querySelector('i');
+            if (icon) {
+                icon.classList.toggle('rotate-180');
+            }
+        });
+    }
+
+    // Fermer la sidebar si clic hors d'elle en mode responsive
+    document.addEventListener('click', function(e) {
+        const isMobile = window.innerWidth <= 1024;
+        if (isMobile && sidebar && sidebar.classList.contains('sidebar-open') && 
+            !sidebar.contains(e.target) && !mobileToggle.contains(e.target)) {
+            sidebar.classList.remove('sidebar-open');
+            body.classList.remove('sidebar-open');
+            
+            // Reset icône
+            const icon = mobileToggle.querySelector('i');
+            if (icon) {
+                icon.classList.remove('rotate-180');
+            }
+        }
+    });
+
+    // Adapter au redimensionnement de fenêtre (intègre avec le JS précédent si existant)
+    window.addEventListener('resize', function() {
+        const isMobile = window.innerWidth <= 1024;
+        if (isMobile) {
+            // Forcer état mobile
+            if (sidebar) sidebar.classList.remove('sidebar-expanded', 'sidebar-collapsed');
+        } else {
+            // Fermer si ouvert en mobile
+            if (sidebar) {
+                sidebar.classList.remove('sidebar-open');
+                body.classList.remove('sidebar-open');
+            }
+        }
+    });
+});
+
+
+
+
+
+</script>
+</body>
+</html>

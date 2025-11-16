@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr-FR">
+   
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="description" content="gauto | Modèle HTML de location de voiture de Themescare">
+      <meta name="keyword" content="taxi,voiture,location,transport">
+      <meta name="author" content="Themescare">
+      <!-- Titre -->
+    <title>FAQ | ABIcars</title>
+      <!-- Favicon -->
+<link rel="stylesheet" th:href="@{/assets/css/bootstrap.css}">
+<link rel="stylesheet" th:href="@{/assets/css/font-awesome.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/magnific-popup.css}">
+<link rel="stylesheet" th:href="@{/assets/css/owl.carousel.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/owl.theme.default.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/animate.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/jquery.datepicker.css}">
+<link rel="stylesheet" th:href="@{/assets/css/nice-select.css}">
+<link rel="stylesheet" th:href="@{/assets/css/lightgallery.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/jquery-clockpicker.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/slicknav.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/style.css}">
+<link rel="stylesheet" th:href="@{/assets/css/responsive.css}">
+<link rel="stylesheet" th:href="@{/assets/css/alertes.css}">
+
+    <link rel="stylesheet" th:href="@{/assets/css/faq.css}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Leaflet CSS -->
+    <!-- Flatpickr CSS -->
+    
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/assets/img/logoApps (2).png}">
+</head>
+   <body>
+       
+      <!-- Zone d'En-tête Supérieure Début -->
+    
+      <!-- Zone d'En-tête Supérieure Fin -->
+       
+                      <div th:replace="Siteoffeciel/headers.html :: header"></div>
+
+      <!-- Zone d'En-tête Principale Fin -->
+       
+      <!-- Zone de Menu Principal Début -->
+     
+      <!-- Zone de Menu Principal Fin -->
+       
+      <!-- Zone de Fil d'Ariane Début -->
+      <div class="faq-wrapper">
+        <h1>Foire Aux Questions (FAQ)</h1>
+
+        <div class="faq-container">
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h2>Comment créer un compte ?</h2>
+                    <div class="faq-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="faq-answer">
+                    <p>Pour créer un compte, cliquez sur "S'inscrire" et remplissez le formulaire avec vos informations personnelles.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h2>Comment réserver un véhicule ?</h2>
+                    <div class="faq-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="faq-answer">
+                    <p>Après avoir créé votre compte, sélectionnez la voiture et les dates souhaitées, puis suivez les étapes de réservation.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h2>Quels moyens de paiement sont acceptés ?</h2>
+                    <div class="faq-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="faq-answer">
+                    <p>Les paiements sont sécurisés via <strong>PayPal</strong> ou virement bancaire.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h2>Puis-je annuler une réservation ?</h2>
+                    <div class="faq-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="faq-answer">
+                    <p>Oui, vous pouvez annuler une réservation selon nos conditions d'annulation indiquées lors de la réservation.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h2>Comment contacter le support ?</h2>
+                    <div class="faq-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="faq-answer">
+                    <p>Vous pouvez nous contacter à tout moment à <strong>contact@ABICars.ma</strong> ou via notre formulaire en ligne.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h2>Mes informations sont-elles sécurisées ?</h2>
+                    <div class="faq-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="faq-answer">
+                    <p>Oui, nous protégeons vos données personnelles conformément à notre Politique de confidentialité et aux lois en vigueur.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h2>Que faire en cas de problème avec la voiture ?</h2>
+                    <div class="faq-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="faq-answer">
+                    <p>Contactez immédiatement le propriétaire ou notre support via la messagerie intégrée pour résoudre le problème.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h2>Puis-je modifier mes informations personnelles ?</h2>
+                    <div class="faq-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="faq-answer">
+                    <p>Oui, vous pouvez modifier vos informations depuis votre compte utilisateur à tout moment.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+      <!-- Zone de Liste des Voitures Fin -->
+       
+               <div th:replace="Siteoffeciel/footer.html :: footer"></div>
+
+       
+      <!--Jquery js-->
+      <script th:src="@{/assets/js/jquery.min.js}"></script>
+      <!-- Popper JS -->
+      <script th:src="@{/assets/js/popper.min.js}"></script>
+      <!--Bootstrap js-->
+      <script th:src="@{/assets/js/bootstrap.min.js}"></script>
+      <!--Owl-Carousel js-->
+      <script th:src="@{/assets/js/owl.carousel.min.js}"></script>
+      <!--Lightgallery js-->
+      <script th:src="@{/assets/js/lightgallery-all.js}"></script>
+      <script th:src="@{/assets/js/custom_lightgallery.js}"></script>
+      <!--Slicknav js-->
+      <script th:src="@{/assets/js/jquery.slicknav.min.js}"></script>
+      <!--Magnific js-->
+      <script th:src="@{/assets/js/jquery.magnific-popup.min.js}"></script>
+      <!--Nice Select js-->
+      <script th:src="@{/assets/js/jquery.nice-select.min.js}"></script>
+      <!-- Datepicker JS -->
+      <script th:src="@{/assets/js/jquery.datepicker.min.js}"></script>
+      <!--ClockPicker JS-->
+      <script th:src="@{/assets/js/jquery-clockpicker.min.js}"></script>
+      <!--Main js-->
+      <script th:src="@{/assets/js/main.js}"></script>
+            <script th:src="@{/assets/js/script.js}"></script>
+              <script>
+        function toggleFaq(element) {
+            const faqItem = element.parentElement;
+            const allItems = document.querySelectorAll('.faq-item');
+            
+            allItems.forEach(item => {
+                if (item !== faqItem) {
+                    item.classList.remove('active');
+                }
+            });
+            
+            faqItem.classList.toggle('active');
+        }
+    </script>
+      
+   </body>
+</html>

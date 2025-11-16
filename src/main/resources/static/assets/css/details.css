@@ -1,0 +1,286 @@
+.swiper {
+  position: relative; /* nécessaire pour le positionnement absolu du SVG */
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 40px 0;
+  background-color: #f9f9f9;
+  border-radius: 16px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+.swiper-wrapper {
+  position: relative;
+  z-index: 2; /* assure que le contenu est devant le SVG animé */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.svg-background {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.06;
+  z-index: 0;
+  pointer-events: none; /* le SVG ne gêne pas les interactions */
+}
+.btn-animated {
+  display: inline-block;
+  padding: 12px 28px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #004a99;
+  background: linear-gradient(45deg, #00cfff, #004a99);
+  border: none;
+  border-radius: 30px;
+  box-shadow: 0 8px 15px rgba(0, 204, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+}
+
+.btn-animated::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -50%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transform: translateX(0) translateY(-50%) rotate(25deg);
+  transition: all 0.7s ease;
+  z-index: 0;
+}
+
+.btn-animated:hover {
+  color: #ffffff;
+  box-shadow: 0 10px 25px rgba(0, 204, 255, 0.6);
+  background: linear-gradient(45deg, #004a99, #00cfff);
+}
+
+.btn-animated:hover::before {
+  transform: translateX(100%) translateY(-50%) rotate(25deg);
+}
+
+.btn-animated:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 204, 255, 0.7);
+}
+
+
+/* Important : pour que le contenu soit au-dessus du SVG */
+
+
+/* Card Voiture */
+.card {
+  width: 100%;
+  max-width: 360px;
+  background: #004d99;
+  border: none;
+  border-radius: 18px;
+  color: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 77, 153, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 10px 25px rgba(0, 153, 255, 0.3);
+}
+
+span {
+  color: white;                    /* Texte blanc */
+  font-style: italic;              /* Italique */
+  font-family:'Times New Roman', serif;
+}
+
+
+/* Image */
+.card img {
+  height: 220px;
+  width: 100%;
+  object-fit: cover;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+}
+
+/* Badge "ville" */
+.card .badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #3399ff;
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 6px 12px;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 0 8px rgba(0, 153, 255, 0.5);
+  z-index: 10;
+}
+
+.card .badge i {
+  margin-right: 5px;
+}
+
+/* Contenu textuel */
+.card .p-3 {
+  background-color: #004a99;
+}
+
+.card h5 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.card p {
+  font-size: 0.85rem;
+  color: #d9e6ff;
+  margin-bottom: 0.4rem;
+}
+
+.card p i {
+  color: #aad4ff;
+}
+
+/* Footer : prix + bouton */
+.card .d-flex {
+  margin-top: 0.5rem;
+}
+
+.card .text-success {
+  color: #66ff99 !important;
+  font-size: 0.95rem;
+  font-weight: bold;
+}
+
+/* Bouton détails */
+.btn-outline-dark {
+  border-color: #ffffff55;
+  color: #ffffff;
+  font-size: 0.8rem;
+  padding: 5px 10px;
+}
+
+.btn-outline-dark:hover {
+  background-color: #ffffff22;
+  color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card {
+    max-width: 90%;
+  }
+}
+/* Global Swiper */
+
+
+/* Card effet Glass / Neon */
+.card {
+  width: 100%;
+  max-width: 360px;
+  border-radius: 18px;
+  background: rgba(0, 51, 102, 0.4);
+  backdrop-filter: blur(10px);
+  color: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0, 102, 255, 0.2);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.card:hover {
+  transform: scale(1.04);
+  box-shadow: 0 18px 45px rgba(0, 153, 255, 0.4);
+}
+
+/* Image */
+.card img {
+  height: 220px;
+  width: 100%;
+  object-fit: cover;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+}
+
+/* Badge ville */
+.card .badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #00aaff;
+  color: #fff;
+  padding: 6px 14px;
+  font-size: 0.75rem;
+  border-radius: 30px;
+  box-shadow: 0 0 10px rgba(0, 170, 255, 0.7);
+  display: flex;
+  align-items: center;
+  z-index: 10;
+}
+
+.card .badge i {
+  margin-right: 5px;
+}
+
+/* Détails voiture */
+.card .p-3 {
+  padding: 1rem;
+  background: rgba(0, 26, 64, 0.5);
+}
+
+.card h5 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  color: #e6f2ff;
+}
+
+.card p {
+  font-size: 0.85rem;
+  color: #b3d9ff;
+  margin-bottom: 0.4rem;
+}
+
+.card p i {
+  color: #66bfff;
+}
+
+/* Footer prix + bouton */
+.card .d-flex {
+  margin-top: 0.5rem;
+}
+
+.card .text-success {
+  color: #00ff99 !important;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* Bouton détails */
+.btn-outline-dark {
+  border: 1px solid #00cfff;
+  color: #00cfff;
+  font-size: 0.8rem;
+  padding: 5px 10px;
+  border-radius: 20px;
+  transition: background-color 0.3s ease, color 0.3s;
+}
+
+.btn-outline-dark:hover {
+  background-color: #00cfff;
+  color: #003a80;
+}

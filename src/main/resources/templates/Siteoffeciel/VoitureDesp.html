@@ -1,0 +1,1586 @@
+
+
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voitures de location - Résultats de recherche avancés</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Leaflet CSS (pour la carte GPS) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+      
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/airbnb.css">
+
+    <!-- Vos autres styles (liens ThymeLeaf) -->
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/assets/img/logoApps.png}">
+    <link rel="stylesheet" th:href="@{/assets/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/magnific-popup.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/owl.carousel.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/owl.theme.default.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/animate.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/jquery.datepicker.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/nice-select.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/lightgallery.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/jquery-clockpicker.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/slicknav.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/homes.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/alertes.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/responsive.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://www.paypal.com/sdk/js?client-id=Aaac35KPsFncc0__vbZhtVG0XuGCPclsBS3xhpn7CJB_0mwtjgoY8boSxs_v7AbUVCmx_DZLnvCa92Pd&currency=EUR"></script>
+    
+    
+    <!-- ================== NOUVEAU CSS POUR LES CARTES VOITURES ================== -->
+    <style>
+        /* --- Section Car Listing --- */
+        .car-listing-section {
+            background-color: #f8f9fa;
+        }
+        
+
+        .section-title {
+            font-weight: 700;
+            color: #333;
+        }
+
+        /* --- Elegant Car Card --- */
+        .car-card-elegant {
+            background-color: #ffffff;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .car-card-elegant:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .car-image-container {
+            position: relative;
+        }
+
+        .car-card-elegant img {
+            width: 100%;
+    height: auto; /* adapte la hauteur automatiquement */
+            object-fit: cover;
+            display: block;
+        }
+
+        .car-price {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+   
+.det:hover{
+color:#ffffff;
+}
+        .car-price strong {
+            font-size: 1.1rem;
+        }
+/* --- Style "Pilule Discrète" pour les infos propriétaire --- */
+.owner-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    background-color: #eaf5fd; /* Un bleu très clair et doux */
+    color: #2980b9; /* Un bleu plus foncé pour le texte, bon contraste */
+    padding: 6px 15px;
+    border-radius: 50px; /* Crée la forme de pilule */
+    margin-bottom: 20px;
+    border: 1px solid #d6eaf8;
+    transition: transform 0.2s ease-out;
+}
+
+.owner-info:hover {
+    transform: scale(1.03); /* Léger agrandissement au survol */
+}
+
+.owner-info i {
+    font-size: 1rem;
+    /* La couleur est héritée de .owner-info */
+}
+
+.owner-info .owner-label {
+    display: none; /* Pour un look plus épuré, on peut masquer le label */
+}
+
+.owner-info .owner-name {
+    font-weight: 600;
+}
+
+        .car-details {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .car-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .car-features {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            flex-wrap: wrap; /* Pour les petits écrans */
+        }
+
+        .car-features span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 5px;
+        }
+
+        .car-features i {
+            color: #3498db;
+        }
+        /* Correction pour les inputs texte */
+.step input[type="text"].form-control,
+.step input[type="email"].form-control {
+    background-image: none !important; /* Supprime les icônes */
+    padding-right: 1rem; /* Rééquilibre le padding si une icône était présente */
+}
+
+/* Renforce la suppression des styles natifs */
+.step .form-control {
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 0;
+}
+        /* --- Style "Icône Animée" pour le bouton détails --- */
+.details-btn {
+    background: #f8f9fa; /* Un fond très léger pour le différencier */
+    border: 1px solid #f8f9fa;
+    color: #495057;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.85rem;
+    display: inline-flex; /* Important pour les transformations */
+    align-items: center;
+    transition: all 0.3s ease;
+    overflow: hidden; /* Cache les parties du texte qui sortent lors de l'animation */
+}
+
+/* Cibler l'icône et le texte séparément */
+.details-btn .fa-eye,
+.details-btn .btn-text {
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.details-btn:hover {
+    border-color: #dbeaf4;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Animation au survol */
+.details-btn:hover .fa-eye {
+    transform: scale(1.2); /* L'icône grossit */
+}
+
+.details-btn:hover .btn-text {
+    transform: translateX(4px); /* Le texte se décale légèrement vers la droite */
+}
+
+        .rent-btn {
+            background-color: #3498db;
+            border-color: #3498db;
+            border-radius: 8px;
+            padding: 10px;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+
+        .rent-btn:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+/* Styles pour la modale de réservation */
+#reservationModal .modal-dialog {
+    max-width: 900px; /* Augmentation pour plus d'espace */
+    margin: 1.75rem auto;
+}
+
+#reservationModal .modal-content {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+#reservationModal .modal-header {
+    background-color: #3498db;
+    color: #ffffff;
+    border-bottom: none;
+    padding: 1.5rem;
+}
+
+#reservationModal .modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+#reservationModal .btn-close {
+    color: #ffffff;
+    opacity: 0.8;
+    font-size: 1.5rem;
+}
+
+#reservationModal .btn-close:hover {
+    opacity: 1;
+}
+
+/* Indicateur de progression */
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    max-width: 350px;
+    margin: 1.5rem auto 2.5rem;
+    position: relative;
+}
+
+.progress-steps::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #e0e0e0;
+    z-index: 1;
+}
+
+.step-circle {
+    width: 35px;
+    height: 35px;
+    background-color: #e0e0e0;
+    border: 2px solid #3498db;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 600;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.step-circle[data-step="1"] { background-color: #3498db; }
+.step-circle[data-step="2"] { background-color: #e0e0e0; }
+.step-circle[data-step="3"] { background-color: #e0e0e0; }
+
+.step.active .step-circle[data-step="1"],
+.step.active .step-circle[data-step="2"],
+.step.active .step-circle[data-step="3"] {
+    background-color: #3498db;
+}
+
+.progress-steps .step-circle.active {
+    transform: scale(1.2);
+    box-shadow: 0 0 12px rgba(52, 152, 219, 0.5);
+}
+
+/* Étapes */
+.step {
+    display: none;
+    padding: 2rem;
+}
+
+.step.active {
+    display: block;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.step h6 {
+    font-size: 1.25rem;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+}
+
+.step h6 i {
+    color: #3498db;
+    margin-right: 0.5rem;
+}
+
+/* Conteneur des formulaires */
+.step .form-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem; /* Espacement entre les groupes */
+}
+
+/* Groupe d'inputs */
+.step .input-group {
+    flex: 1;
+    min-width: 250px; /* Largeur minimale pour chaque groupe */
+    display: flex;
+    flex-direction: column;
+}
+
+.step .form-label {
+    font-weight: 500;
+    color: #34495e;
+    margin-bottom: 0.25rem;
+    text-align: left;
+}
+
+.step .form-control {
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    width: 100%; /* Pleine largeur dans le groupe */
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    -webkit-appearance: none; /* Supprime l'apparence de select */
+    -moz-appearance: none; /* Supprime l'apparence de select sur Firefox */
+    appearance: none; /* Supprime l'apparence de select */
+}
+
+.step .form-control:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 6px rgba(52, 152, 219, 0.3);
+    outline: none;
+}
+
+.step .form-control[type="date"] {
+    padding: 0.5rem 1rem; /* Ajuste pour les champs de date */
+}
+
+.step .text-danger {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    color: #e74c3c;
+}
+
+/* Radio buttons */
+.step .form-check {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 1.5rem;
+}
+
+.step .form-check-label {
+    color: #34495e;
+    font-weight: 500;
+    margin-left: 0.5rem;
+}
+
+.step .form-check-input:checked + .form-check-label {
+    color: #3498db;
+}
+
+/* Boutons d'icônes */
+.btn-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: #3498db;
+    color: #ffffff;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    font-size: 1.1rem;
+}
+
+.btn-icon:hover {
+    background-color: #2980b9;
+    transform: scale(1.1);
+}
+
+.btn-icon.prev {
+    background-color: #7f8c8d;
+}
+
+.btn-icon.prev:hover {
+    background-color: #606d71;
+}
+
+.btn-icon.confirm {
+    background-color: #2ecc71;
+}
+
+.btn-icon.confirm:hover {
+    background-color: #27ae60;
+}
+
+/* Liste de confirmation */
+#confirmationDetails .list-group-item {
+    background-color: transparent;
+    border: none;
+    padding: 0.75rem 0;
+    color: #34495e;
+}
+
+#confirmationDetails .list-group-item strong {
+    color: #2c3e50;
+}
+
+/* Détails de paiement conditionnels */
+#cheque-details {
+    display: none;
+    margin-top: 1.5rem;
+}
+
+#cheque-details.active {
+    display: block;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #reservationModal .modal-dialog {
+        margin: 0.5rem;
+    }
+    .progress-steps {
+        max-width: 250px;
+    }
+    .step h6 {
+        font-size: 1rem;
+    }
+    .step .form-container {
+        flex-direction: column; /* Empile les groupes verticalement */
+    }
+    .step .input-group {
+        min-width: 100%; /* Pleine largeur sur petits écrans */
+    }
+    .step .form-control {
+        font-size: 0.95rem;
+    }
+    .btn-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+}
+
+        /* --- Swiper Customization --- */
+        .elegant-car-slider {
+            padding-bottom: 50px; 
+    width: 100%;
+        }
+        .modal-backdrop {
+    z-index: 1040 !important; /* Assure que l'overlay est derrière la modale (z-index par défaut de Bootstrap) */
+    background-color: rgba(0, 0, 0, 0.5); /* Opacité standard */
+}
+.modal {
+    z-index: 1050 !important; }
+
+        .elegant-car-slider .swiper-button-next,
+        .elegant-car-slider .swiper-button-prev {
+            color: #3498db;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            width: 90px;
+            height: 44px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            transition: background-color 0.2s ease;
+        }
+        
+        .elegant-car-slider .swiper-button-next:hover,
+        .elegant-car-slider .swiper-button-prev:hover {
+            background-color: #fff;
+        }
+
+        .elegant-car-slider .swiper-button-next:after,
+        .elegant-car-slider .swiper-button-prev:after {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .elegant-car-slider .swiper-pagination-bullet {
+            background-color: #bdc3c7;
+            width: 10px;
+            height: 10px;
+            opacity: 1;
+        }
+
+        .elegant-car-slider .swiper-pagination-bullet-active {
+            background-color: #3498db;
+        }
+    </style>
+</head>
+<body>
+
+    <div th:replace="Siteoffeciel/headers.html :: header"></div>
+
+   <header class="main-header">
+    <div class="container">
+        <div class="search-bar-container">
+            <div class="search-field position-relative">
+                <i class="fas fa-map-marker-alt search-icon"></i>
+                <input type="text" id="villeInput" placeholder="Entrez une ville..." autocomplete="off" th:value="${selectedCity}">
+                <div id="suggestions" class="suggestion-box"></div>
+            </div>
+            <div class="search-field">
+                <i class="fas fa-calendar-days search-icon calendar-icon"></i>
+                <input id="dateRange" type="text" placeholder="Date de début — Date de fin">
+                
+                <!-- 🔥 AJOUTER CES CHAMPS CACHÉS POUR LES DATES -->
+                <input type="hidden" id="dateDebutHidden" name="dateDebut">
+                <input type="hidden" id="dateFinHidden" name="dateFin">
+                <input type="hidden" id="agenceIdHidden" th:value="${agenceId}">
+                
+            </div>
+            <button class="search-btn">Rechercher</button>
+        </div>
+    </div>
+</header>
+
+    <main class="container-fluid main-content p-0">
+        <!-- ================== NOUVELLE SECTION AVEC LE SLIDER DE VOITURES ================== -->
+    <section class="car-listing-section py-5">
+    <div class="container">
+        <!-- Titre de la section -->
+        <h2 class="section-title text-center mb-5">
+            Nos Véhicules Disponibles
+        </h2>
+        
+        <!-- Message si aucun véhicule trouvé -->
+        <div th:if="${noCarsFound}" class="no-cars-message">
+            <i class="fas fa-car fa-3x mb-3 text-muted"></i>
+            <p>Aucun véhicule disponible pour 
+                <strong><span th:text="${selectedCity}">cette ville</span></strong>
+            </p>
+        </div>
+        
+        <!-- Slider des véhicules -->
+        <div class="swiper elegant-car-slider">
+            <div class="swiper-wrapper">
+                <!-- Boucle sur chaque véhicule -->
+                <th:block th:each="car : ${cars}">
+                    <div class="swiper-slide">
+                        <div class="car-card-elegant">
+                            
+                            <!-- Container de l'image -->
+                            <div class="car-image-container">
+    <img th:src="@{/Siteoffeciel/images/{ownerId}/{img}(ownerId=${car.proprietaire.id}, img=${car.imagePrincipaleURL})}"
+         th:alt="'Image de ' + ${car.marque + ' ' + car.modele}"
+         alt="Image du véhicule">
+
+                                
+                                <!-- Prix affiché sur l'image -->
+                                <div class="car-price">
+                                    <strong th:text="${car.prixJournalier} + '€'">150€</strong> / jour
+                                </div>
+                            </div>
+                            
+                            <!-- Détails du véhicule -->
+                            <div class="car-details">
+                                <!-- Nom du véhicule -->
+                                <h5 class="car-title" th:text="${car.fullName}">
+                                    BMW M4
+                                </h5>
+                                
+                                <!-- Caractéristiques du véhicule -->
+                                <div class="car-features">
+                                    <!-- Propriétaire -->
+       <p class="owner-info">
+    <i class="fa-solid fa-building"></i>
+    <span th:text="${car.proprietaire.raisonSociale}">Raison Sociale</span>
+</p>
+
+                                    
+                                    <!-- Nombre de places -->
+                                    <span>
+                                        <i class="fas fa-user-friends"></i>
+                                        <span th:text="${car.places}">4</span> places
+                                    </span>
+                                    
+                                    <!-- Nombre de portes -->
+                                    <span>
+                                        <i class="fas fa-door-closed"></i>
+                                        <span th:text="${car.categorie}">2</span> 
+                                    </span>
+                                    
+                                    <!-- Type de boîte -->
+                                    <span>
+                                        <i class="fas fa-cogs"></i>
+                                        <span th:text="${car.boite}">Auto</span>
+                                    </span>
+                                    
+                                    <!-- Carburant -->
+                                    <span>
+                                        <i class="fas fa-gas-pump"></i>
+                                        <span th:text="${car.carburant}">Essence</span>
+                                    </span>
+                                    
+                                    <!-- Immatriculation -->
+                                    <span>
+                                        <i class="fas fa-id-card"></i>
+                                        Immatriculation: 
+                                        <strong th:text="${car.immatriculation}">123-ABC-45</strong>
+                                    </span>
+                                    
+                                    <br>
+                                    
+                                    <!-- Kilométrage -->
+                                    <span>
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        Kilométrage: 
+                                        <strong th:text="${car.kilometrage}">120000</strong> km
+                                    </span>
+                                </div>
+                                
+                                <!-- Boutons d'action -->
+                                <div class="d-flex justify-content-between align-items-center gap-2">
+                                    <!-- Bouton pour voir les détails -->
+                                    <button type="button" 
+                                            class="btn btn-outline-dark btn-xs details-btn"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#carGalleryModal"
+                                            th:attr="data-carid=${car.id}">
+                                        <i class="fa fa-eye me-1"></i> 
+                                     <p class="det">   Détails </p>
+                                    </button>
+                                    
+                                    <!-- Bouton pour louer -->
+                                 <button class="btn btn-primary mt-auto w-100 reserve-btn" th:data-car-id="${car.id}" th:data-car-price="${car.prixJournalier}">
+                            <i class="fa-solid fa-car"></i> Louer maintenant
+
+                        </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="swiper-pagination"></div>
+            
+            <!-- Boutons de navigation -->
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    </div>
+</section>
+
+     <div class="modal fade" id="carGalleryModal" tabindex="-1" aria-labelledby="carGalleryLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="carGalleryLabel">Galerie de la voiture</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+
+      <div class="modal-body">
+        <div id="galleryContent">
+          <!-- Ici on injectera la galerie d’images via JS -->
+          <p>Chargement des images...</p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+        
+        <div class="container">
+             <div class="row">
+                <!-- Ici vous pouvez ajouter d'autres contenus, comme les résultats de recherche filtrés -->
+             </div>
+        </div>
+    </main>
+ <div class="modal fade" id="reservationModal" tabindex="-1" aria-labelledby="reservationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reservationModalLabel">Réservation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="progress-steps">
+                            <div class="step-circle" data-step="1">1</div>
+                            <div class="step-circle" data-step="2">2</div>
+                            <div class="step-circle" data-step="3">3</div>
+                        </div>
+                        <div id="step1" class="step active">
+                            <h6><i class="fa-solid fa-user me-2"></i> Informations personnelles</h6>
+                      <form id="personalInfoForm">
+    <div class="mb-3">
+        <label for="fullName" class="form-label">Nom complet</label>
+        <input type="text" class="form-control" id="fullName" name="fullName" required>
+        <div class="text-danger" id="error-fullName"></div>
+    </div>
+     <div class="mb-3">
+        <label for="prenom" class="form-label">Prenom complet</label>
+        <input type="text" class="form-control" id="prenom" name="prenom" required>
+        <div class="text-danger" id="error-lastName"></div>
+    </div>
+    <div class="mb-3">
+        <label for="mail" class="form-label">Email</label>
+        <input type="email" class="form-control" id="mail" name="mail" required>
+        <div class="text-danger" id="error-email"></div>
+    </div>
+    
+    <div class="mb-3">
+        <label for="telephone" class="form-label">Téléphone</label>
+        <input type="tel" class="form-control" id="telephone" name="telephone" required>
+        <div class="text-danger" id="error-phone"></div>
+    </div>
+
+    <!-- Nouveau champ Adresse -->
+    <div class="mb-3">
+        <label for="adresse" class="form-label">Adresse</label>
+        <input type="text" class="form-control" id="adresse" name="adresse" required>
+        <div class="text-danger" id="error-adresse"></div>
+    </div>
+<div class="mb-3">
+        <label for="permis" class="form-label">N° Permis</label>
+        <input type="text" class="form-control" id="permis" name="permis" required>
+        <div class="text-danger" id="error-adresse"></div>
+    </div>
+
+    <div class="d-flex justify-content-end">
+        <button type="button" class="btn-icon next" title="Suivant">
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </div>
+</form>
+
+                        </div>
+                        <div id="step2" class="step">
+                            <h6><i class="fa-solid fa-car me-2"></i> Détails de la réservation</h6>
+                            <form id="reservationDetailsForm">
+                                <div class="mb-3">
+                                    <label for="pickupAddress" class="form-label">Adresse de prise en charge</label>
+                                    <input type="text" class="form-control" id="pickupAddress" name="pickupAddress" required>
+                                    <div class="text-danger" id="error-pickupAddress"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="returnAddress" class="form-label">Adresse de retour</label>
+                                    <input type="text" class="form-control" id="returnAddress" name="returnAddress">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="startDate" class="form-label">Date de début</label>
+                                    <input type="date" class="form-control" id="startDate" name="startDate" required>
+                                    <div class="text-danger" id="error-startDate"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="endDate" class="form-label">Date de fin</label>
+                                    <input type="date" class="form-control" id="endDate" name="endDate" required>
+                                    <div class="text-danger" id="error-endDate"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Mode de paiement</label>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="paymentMethod" id="paypal" value="paypal" required>
+                                            <label class="form-check-label" for="paypal"><i class="fa-brands fa-paypal me-1"></i> PayPal</label>
+                                        </div>
+                                         <div class="form-check form-check-inline">
+    <input class="form-check-input" type="radio" name="paymentMethod" id="virement" value="virement">
+    <label class="form-check-label" for="virement"><i class="fa-solid fa-money-check me-1"></i> Virement</label>
+</div>
+                                    </div>
+                                    <div class="text-danger" id="error-paymentMethod"></div>
+                               <div id="virement-details">
+    <div class="mb-3">
+        <label for="virementFile" class="form-label">Scanner Reçu</label>
+        <input type="file" class="form-control" id="virementFile" name="virementFile">
+        <div class="text-danger" id="error-virementFile"></div>
+    </div>
+</div>
+                 
+                                <div id="paypal-button-container"></div>
+                                <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn-icon prev" title="Précédent">
+                                        <i class="fa-solid fa-arrow-left"></i>
+                                    </button>
+                                    <button type="button" class="btn-icon next" title="Suivant">
+                                        <i class="fa-solid fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        </div>
+                        <div id="step3" class="step">
+                            <h6><i class="fa-solid fa-check-circle me-2"></i> Confirmation</h6>
+                            <p>Veuillez vérifier vos informations :</p>
+                            <ul id="confirmationDetails" class="list-group list-group-flush">
+                                <li class="list-group-item"><strong>Nom :</strong> <span id="confirm-fullName"></span></li>
+                                <li class="list-group-item"><strong>Email :</strong> <span id="confirm-email"></span></li>
+                                <li class="list-group-item"><strong>Téléphone :</strong> <span id="confirm-phone"></span></li>
+                                <li class="list-group-item"><strong>Adresse de prise en charge :</strong> <span id="confirm-pickupAddress"></span></li>
+                                <li class="list-group-item"><strong>Adresse de retour :</strong> <span id="confirm-returnAddress"></span></li>
+                                <li class="list-group-item"><strong>Dates :</strong> <span id="confirm-dates"></span></li>
+                                <li class="list-group-item"><strong>Paiement :</strong> <span id="confirm-paymentMethod"></span></li>
+                                <li class="list-group-item"><strong>Détails paiement :</strong> <span id="confirm-paymentDetails"></span></li>
+                            </ul>
+                            <div id="confirmationError" class="text-danger"></div>
+                            <div class="d-flex justify-content-between mt-3">
+                                <button type="button" class="btn-icon prev" title="Précédent">
+                                    <i class="fa-solid fa-arrow-left"></i>
+                                </button>
+                                <button type="button" class="btn-icon confirm" data-car-id="1407" title="Confirmer">
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+ 
+
+
+</div>
+    <div th:replace="Siteoffeciel/footer.html :: footer"></div>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Scripts JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+      <!--Jquery js-->
+    <!-- Popper JS -->
+    <script th:src="@{/assets/js/popper.min.js}"></script>
+    <!--Bootstrap js-->
+    <!--Owl-Carousel js-->
+    <script th:src="@{/assets/js/owl.carousel.min.js}"></script>
+    <!--Lightgallery js-->
+    <script th:src="@{/assets/js/lightgallery-all.js}"></script>
+    <script th:src="@{/assets/js/custom_lightgallery.js}"></script>
+    <!--Slicknav js-->
+    <script th:src="@{/assets/js/jquery.slicknav.min.js}"></script>
+    <!--Magnific js-->
+    <script th:src="@{/assets/js/jquery.magnific-popup.min.js}"></script>
+    <!--Nice Select js-->
+    <script th:src="@{/assets/js/jquery.nice-select.min.js}"></script>
+    <!-- Datepicker JS -->
+    <script th:src="@{/assets/js/jquery.datepicker.min.js}"></script>
+    <!--ClockPicker JS-->
+    <script th:src="@{/assets/js/jquery-clockpicker.min.js}"></script>
+    <!--Main js-->
+    <script th:src="@{/assets/js/main.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- ================== NOUVEAU : Swiper JS ================== -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+    <!-- Script pour la carte (existant) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Animation d'apparition des cartes au défilement ---
+            const carCards = document.querySelectorAll('.car-card, .car-card-elegant'); // Ajout de .car-card-elegant
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            carCards.forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+     <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const carGalleryModal = document.getElementById('carGalleryModal');
+    const galleryContent = document.getElementById('galleryContent');
+
+    carGalleryModal.addEventListener('show.bs.modal', event => {
+      const button = event.relatedTarget; // bouton qui a déclenché le modal
+      const carId = button.getAttribute('data-carid');
+
+      galleryContent.innerHTML = '<p>Chargement des images...</p>';
+      console.log('carId:', carId);
+
+      fetch(`/Siteoffeciel/${carId}/images`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(images => {
+          if (!images || images.length === 0) {
+            galleryContent.innerHTML = '<p>Aucune image disponible.</p>';
+            return;
+          }
+
+          let carouselIndicators = '';
+          let carouselItems = '';
+
+          images.forEach((img, index) => {
+            carouselIndicators += `
+              <button type="button" data-bs-target="#carouselCar" data-bs-slide-to="${index}" ${index === 0 ? 'class="active"' : ''} aria-current="${index === 0 ? 'true' : 'false'}" aria-label="Slide ${index + 1}"></button>
+            `;
+            carouselItems += `
+              <div class="carousel-item ${index === 0 ? 'active' : ''}">
+                <img src="${img}" class="d-block w-100" alt="Image voiture">
+              </div>
+            `;
+          });
+
+          galleryContent.innerHTML = `
+            <div id="carouselCar" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-indicators">${carouselIndicators}</div>
+              <div class="carousel-inner">${carouselItems}</div>
+              <button class="carousel-control-prev" type="button" data-bs-target="#carouselCar" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Précédent</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#carouselCar" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Suivant</span>
+              </button>
+            </div>
+          `;
+
+          // Optionnel : réinitialiser le carousel au premier slide au chargement
+          const carouselElement = document.getElementById('carouselCar');
+          const carousel = bootstrap.Carousel.getInstance(carouselElement) || new bootstrap.Carousel(carouselElement);
+          carousel.to(0);
+        })
+        .catch(err => {
+          galleryContent.innerHTML = '<p>Erreur lors du chargement des images.</p>';
+          console.error('Erreur fetch images:', err);
+        });
+    });
+  });
+</script>
+    <!-- Script pour Flatpickr (calendrier) (existant) -->
+ 
+    <!-- Script pour la recherche de ville (existant) -->
+    <script>
+        // Votre code existant pour la recherche de ville ici...
+    </script>
+
+    <!-- Script pour la redirection (existant) -->
+    <script>
+        // Votre code existant pour la redirection ici...
+    </script>
+   
+    <!-- ================== NOUVEAU : Initialisation de Swiper JS ================== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const swiper = new Swiper('.elegant-car-slider', {
+                loop: true,
+                spaceBetween: 30,
+                
+                // Points de rupture pour la responsivité
+                breakpoints: {
+                    576: { // Pour les petits écrans et plus
+                        slidesPerView: 1,
+                        spaceBetween: 20
+                    },
+                    768: { // Pour les tablettes et plus
+                        slidesPerView: 2,
+                        spaceBetween: 30
+                    },
+                    1200: { // Pour les grands écrans
+                        slidesPerView: 3,
+                        spaceBetween: 30
+                    }
+                },
+
+                // Pagination
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+
+                // Flèches de navigation
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+            });
+        });
+    </script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function () {
+
+    // -------------------- DATE PICKER --------------------
+    const input = document.getElementById('dateRange');
+    const savedDateRange = localStorage.getItem('selectedDateRange');
+    const dateDebutHidden = document.getElementById('dateDebutHidden');
+    const dateFinHidden = document.getElementById('dateFinHidden');
+
+    // Fonction pour formater correctement les dates sans décalage UTC
+    function formatLocalDate(date) {
+        const tzOffset = date.getTimezoneOffset() * 60000;
+        const localISOTime = new Date(date.getTime() - tzOffset).toISOString();
+        return localISOTime.split('T')[0];
+    }
+
+    if (input) {
+        const picker = flatpickr(input, {
+            mode: "range",
+            dateFormat: "Y-m-d",
+            showMonths: 2,
+            locale: "fr",
+            onChange: function (selectedDates) {
+                if (selectedDates.length === 2) {
+                    const startDate = formatLocalDate(selectedDates[0]);
+                    const endDate = formatLocalDate(selectedDates[1]);
+                    
+                    console.log('📅 DATES SÉLECTIONNÉES:', startDate, endDate);
+                    
+                    if (dateDebutHidden) dateDebutHidden.value = startDate;
+                    if (dateFinHidden) dateFinHidden.value = endDate;
+
+                    localStorage.setItem('selectedDateStart', startDate);
+                    localStorage.setItem('selectedDateEnd', endDate);
+
+                    // Affichage français lisible
+                    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                    const date1 = selectedDates[0].toLocaleDateString('fr-FR', options);
+                    const date2 = selectedDates[1].toLocaleDateString('fr-FR', options);
+                    input.value = `${date1} — ${date2}`;
+                    localStorage.setItem('selectedDateRange', input.value);
+                }
+            }
+        });
+
+        // Restauration des valeurs au chargement
+        if (savedDateRange) {
+            input.value = savedDateRange;
+            picker.setDate(savedDateRange.split(' — ').map(date => new Date(date)), true);
+
+            const storedStart = localStorage.getItem('selectedDateStart');
+            const storedEnd = localStorage.getItem('selectedDateEnd');
+            if (storedStart && storedEnd && dateDebutHidden && dateFinHidden) {
+                dateDebutHidden.value = storedStart;
+                dateFinHidden.value = storedEnd;
+            }
+        }
+
+        // Clic sur icône calendrier
+        const icon = document.querySelector('.calendar-icon');
+        if (icon) icon.addEventListener('click', () => picker.open());
+    }
+
+    // -------------------- RECHERCHE VOITURES --------------------
+    console.log("🚀 INITIALISATION RECHERCHE VOITURES");
+
+    const villeInput = document.getElementById('villeInput');
+    const searchBtn = document.querySelector('.search-btn');
+    const suggestions = document.getElementById('suggestions');
+    const agenceIdHidden = document.getElementById('agenceIdHidden');
+
+    // ✅ Correction Thymeleaf : cities doit être une variable JS valide
+    const cities = /*[[${cities}]]*/ []; // ou [[${cities}]] si tu utilises th:inline="javascript"
+
+    const storedVille = localStorage.getItem('selectedVille');
+    const storedStart = localStorage.getItem('selectedDateStart');
+    const storedEnd = localStorage.getItem('selectedDateEnd');
+
+    console.log("🧾 Données stockées:", { storedVille, storedStart, storedEnd });
+
+    // 🏙️ Suggestions dynamiques
+    villeInput.addEventListener('input', function () {
+        const query = this.value.toLowerCase().trim();
+        suggestions.innerHTML = '';
+        if (query.length > 0 && Array.isArray(cities)) {
+            const filteredCities = cities.filter(city => city.toLowerCase().includes(query));
+            filteredCities.forEach(city => {
+                const div = document.createElement('div');
+                div.textContent = city;
+                div.classList.add('suggestion-item');
+                div.addEventListener('click', () => {
+                    villeInput.value = city;
+                    suggestions.style.display = 'none';
+                    localStorage.setItem('selectedVille', city);
+                    triggerSearch(city);
+                });
+                suggestions.appendChild(div);
+            });
+            suggestions.style.display = filteredCities.length ? 'block' : 'none';
+        } else {
+            suggestions.style.display = 'none';
+        }
+    });
+
+    // 🔍 Bouton Rechercher
+    searchBtn.addEventListener('click', function () {
+        const ville = villeInput.value.trim();
+        if (ville) {
+            localStorage.setItem('selectedVille', ville);
+            triggerSearch(ville);
+        } else {
+            alert('Veuillez entrer une ville.');
+        }
+    });
+
+    // 🧩 Fonction de recherche
+    function triggerSearch(ville) {
+        const dateDebut = dateDebutHidden ? dateDebutHidden.value : '';
+        const dateFin = dateFinHidden ? dateFinHidden.value : '';
+        const agenceId = agenceIdHidden ? agenceIdHidden.value : '';
+
+        console.log("📅 VALEURS DES CHAMPS CACHÉS:", { dateDebut, dateFin });
+
+        if (!dateDebut || !dateFin) {
+            alert("Veuillez sélectionner une période avant de rechercher.");
+            return;
+        }
+
+        let url = `/Siteoffeciel/VoitureDesp?ville=${encodeURIComponent(ville)}&dateDebut=${dateDebut}&dateFin=${dateFin}`;
+        if (agenceId) url += `&agenceId=${agenceId}`;
+        console.log("🔗 URL COMPLÈTE:", url);
+
+        window.location.href = url;
+    }
+
+    // 🧾 Pré-remplissage
+    if (storedVille) villeInput.value = storedVille;
+
+    // ⚡ Recherche automatique
+    setTimeout(() => {
+        const carCards = document.querySelectorAll('.car-card');
+        const params = new URLSearchParams(window.location.search);
+        const dateDebutParam = params.get('dateDebut');
+        const dateFinParam = params.get('dateFin');
+
+        if (carCards.length === 0 && !dateDebutParam && !dateFinParam && storedVille && storedStart && storedEnd) {
+            console.log("⚡ Recherche automatique déclenchée");
+            triggerSearch(storedVille);
+        }
+    }, 800);
+});
+</script>
+
+    <script>
+    $(document).ready(function() {
+   	    let currentStep = 1;
+   	    let carId = null;
+   	    let carPrice = null;
+   	    let reservationData = {};
+
+   	    // Génération mot de passe
+   	    function generatePassword(length = 12) {
+   	        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+   	        const randomValues = new Uint8Array(length);
+   	        crypto.getRandomValues(randomValues);
+   	        return Array.from(randomValues).map(v => chars[v % chars.length]).join('');
+   	    }
+
+   	    // Clic sur "Réserver"
+   	    $('.reserve-btn').on('click', function() {
+   	        carId = $(this).data('car-id');
+   	        carPrice = $(this).data('car-price');
+   	        currentStep = 1;
+   	        updateModalStep();
+   	        $('#reservationModal').modal('show');
+   	    });
+
+   	    // Mise à jour étapes
+   	function updateModalStep() {
+    $('.step').removeClass('active').hide();
+    $('#step' + currentStep).addClass('active').show();
+
+    $('.step-circle').removeClass('active completed');
+    $('.step-circle[data-step="' + currentStep + '"]').addClass('active');
+    $('.step-circle').filter((_, el) => parseInt($(el).data('step')) < currentStep)
+                       .addClass('completed');
+
+    // CORRECTION : Ne réinitialiser reservationData QUE si on est à l'étape 1
+    if(currentStep === 1) {
+        reservationData = {
+            fullName: $('#fullName').val(),
+            prenom: $('#prenom').val(),
+            email: $('#mail').val(),
+            phone: $('#telephone').val(),
+            adresse: $('#adresse').val(),
+            permis: $('#permis').val(),
+            pickupAddress: $('#pickupAddress').val(),
+            returnAddress: $('#returnAddress').val() || $('#pickupAddress').val(),
+            startDate: $('#startDate').val(),
+            endDate: $('#endDate').val(),
+            paymentMethod: $('input[name="paymentMethod"]:checked').val()
+        };
+    }
+
+    if(currentStep === 3){
+        // CORRECTION : Mettre à jour seulement les champs de formulaire, pas paymentDetails
+        reservationData.fullName = $('#fullName').val() || reservationData.fullName;
+        reservationData.prenom = $('#prenom').val() || reservationData.prenom;
+        reservationData.email = $('#mail').val() || reservationData.email;
+        reservationData.phone = $('#telephone').val() || reservationData.phone;
+        reservationData.adresse = $('#adresse').val() || reservationData.adresse;
+        reservationData.permis = $('#permis').val() || reservationData.permis;
+        reservationData.pickupAddress = $('#pickupAddress').val() || reservationData.pickupAddress;
+        reservationData.returnAddress = $('#returnAddress').val() || reservationData.returnAddress || $('#pickupAddress').val();
+        reservationData.startDate = $('#startDate').val() || reservationData.startDate;
+        reservationData.endDate = $('#endDate').val() || reservationData.endDate;
+        reservationData.paymentMethod = $('input[name="paymentMethod"]:checked').val() ||  reservationData.paymentMethod;
+
+        $('#confirm-fullName').text(reservationData.fullName || '');
+        $('#confirm-email').text(reservationData.email || '');
+        $('#confirm-phone').text(reservationData.phone || '');
+        $('#confirm-pickupAddress').text(reservationData.pickupAddress || '');
+        $('#confirm-returnAddress').text(reservationData.returnAddress || 'Même adresse');
+        $('#confirm-dates').text(`${reservationData.startDate || ''} au ${reservationData.endDate || ''}`);
+        $('#confirm-paymentMethod').text(reservationData.paymentMethod || '');
+        $('#confirm-paymentDetails').text(reservationData.paymentDetails?.transactionId || reservationData.paymentDetails?.virementFile || 'N/A');
+        $('#confirm-totalPrice').text(reservationData.totalPrice ? reservationData.totalPrice + ' €' : 'N/A');
+
+        // DEBUG
+        console.log('🎯 Étape 3 - Données affichées:');
+        console.log('- paymentMethod:', reservationData.paymentMethod);
+        console.log('- paymentDetails:', reservationData.paymentDetails);
+        console.log('- transactionId:', reservationData.paymentDetails?.transactionId);
+    }
+}
+   	    // Changement mode paiement
+   	    $('input[name="paymentMethod"]').on('change', function() {
+   	        const isVirement = $(this).val() === 'virement';
+   	        $('#virement-details').toggle(isVirement);
+   	        $('#paypal-button-container').toggle(!isVirement);
+   	        if(!isVirement) initPaypalButton();
+   	    });
+
+   	    // Initialisation PayPal
+   	    function initPaypalButton() {
+   	        $('#paypal-button-container').empty();
+   	        paypal.Buttons({
+   	            createOrder: function(data, actions) {
+   	                const totalAmount = reservationData.totalPrice || carPrice;
+   	                return actions.order.create({
+   	                    purchase_units: [{ amount: { value: totalAmount, currency_code: 'EUR' } }]
+   	                });
+   	            },
+   	            onApprove: function(data, actions) {
+   	                return actions.order.capture().then(function(details) {
+   	                    reservationData.paymentMethod = 'paypal';
+   	                    reservationData.paymentDetails = { transactionId: details.id };
+   	                    currentStep = 3;
+   	                    updateModalStep();
+   	                });
+   	            }
+   	        }).render('#paypal-button-container');
+   	    }
+
+   	    // Bouton Suivant
+   	    $('.btn-icon.next').on('click', function(e){
+   	        e.preventDefault();
+
+   	        if(currentStep === 1){
+   	            const fullName = $('#fullName').val().trim();
+   	            const lastNameInput = $('#prenom').val().trim();
+   	            const email = $('#mail').val().trim();
+   	            const phone = $('#telephone').val().trim();
+   	            const adresse = $('#adresse').val().trim();	      
+   	            const permis = $('#permis').val().trim();
+
+   	            if(!fullName || !lastNameInput || !email || !phone || !adresse || !permis ){
+   	                alert('Veuillez remplir tous les champs.');
+   	                return;
+   	            }
+
+   	            // Vérification utilisateur
+   	            $.ajax({
+   	                url:'/Siteoffeciel/check-user',
+   	                method:'POST',
+   	                contentType:'application/json',
+   	                data: JSON.stringify({ email }),
+   	                success:function(data){
+   	                    reservationData = { 
+   	                        fullName, 
+   	                        prenom: lastNameInput, 
+   	                        email, 
+   	                        phone, 
+   	                        adresse,
+   	                        permis 
+   	                    };
+
+   	                    if(data.exists) {
+   	                        currentStep = 2;
+   	                        updateModalStep();
+   	                    } else {
+   	                        // Création nouvel utilisateur
+   	                        const password = generatePassword();
+   	                        const userData = {
+   	                            firstName: (fullName.split(' ')[0] || fullName).trim(),
+   	                            lastName: lastNameInput.trim(),
+   	                            email: email.trim(),
+   	                            telephone: phone.trim(),
+   	                            adresse: adresse.trim(),
+   	                            permis: $('#permis').val().trim(),
+   	                            role: 'client',
+   	                            password: password
+   	                        };
+
+   	                        fetch('/Siteoffeciel/create-user', {
+   	                            method: 'POST',
+   	                            headers: { 'Content-Type': 'application/json' },
+   	                            body: JSON.stringify(userData)
+   	                        })
+   	                        .then(response => {
+   	                            if (!response.ok) throw new Error("Erreur serveur lors de la création du compte.");
+   	                            return response.json();
+   	                        })
+   	                     .then(data => {
+   	                      if (data.statut === true) { // ou data.statut == "true" selon ton backend
+   	                          reservationData.password = password;
+   	                          Swal.fire({
+   	                              title: 'Compte créé avec succès !',
+   	                              html: `
+   	                                  <p>Email : <strong>${userData.email}</strong></p>
+   	                                  <p>Mot de passe temporaire : <strong>${password}</strong></p>
+   	                              `,
+   	                              icon: 'success',
+   	                              confirmButtonText: 'OK',
+   	                              allowOutsideClick: false
+   	                          }).then(() => {
+   	                              currentStep = 2;
+   	                              updateModalStep();
+   	                          });
+   	                      } else {
+   	                          throw new Error(data.note || 'Erreur création compte.');
+   	                      }
+   	                  })
+   	                  .catch(err => Swal.fire('Erreur', err.message, 'error'));
+
+   	                    }
+   	                },
+   	                error: function(err) {
+   	                    Swal.fire('Erreur', 'Erreur lors de la vérification de l\'utilisateur.', 'error');
+   	                }
+   	            });
+
+   	        } else if(currentStep === 2){
+   	            reservationData.pickupAddress = $('#pickupAddress').val();
+   	            reservationData.returnAddress = $('#returnAddress').val() || $('#pickupAddress').val();
+   	            reservationData.startDate = $('#startDate').val();
+   	            reservationData.endDate = $('#endDate').val();
+   	            reservationData.paymentMethod = $('input[name="paymentMethod"]:checked').val();
+
+   	            if(!reservationData.pickupAddress || !reservationData.startDate || !reservationData.endDate) {
+   	                alert('Veuillez remplir tous les champs obligatoires.');
+   	                return;
+   	            }
+
+   	            // Calcul prix par jour
+   	            const start = new Date(reservationData.startDate);
+   	            const end = new Date(reservationData.endDate);
+   	            const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+   	            reservationData.totalPrice = days * carPrice;
+
+   	            if(reservationData.paymentMethod === 'virement'){
+   	                const file = $('#virementFile')[0].files[0];
+   	                if(!file){ 
+   	                    alert('Veuillez uploader un reçu de virement.'); 
+   	                    return; 
+   	                }
+   	                reservationData.paymentDetails = { virementFile: file.name, totalPrice: reservationData.totalPrice };
+   	            }
+
+   	            currentStep = 3;
+   	            updateModalStep();
+   	        }
+   	    });
+
+   	    // Bouton Précédent
+   	    $('.btn-icon.prev').on('click', function(){
+   	        if(currentStep > 1){ 
+   	            currentStep--; 
+   	            updateModalStep(); 
+   	        }
+   	    });
+   	// Bouton Confirmer
+   	 $('.btn-icon.confirm').on('click', function(){
+   	     const formData = new FormData();
+   	     formData.append('reservation', new Blob([JSON.stringify({
+   	         carId: carId,
+   	         firstName: reservationData.fullName,
+   	         lastName: reservationData.prenom,
+   	         email: reservationData.email,
+   	         phone: reservationData.phone,
+   	         adresse: reservationData.adresse,
+   	         permis: reservationData.permis,
+   	         pickupAddress: reservationData.pickupAddress,
+   	         returnAddress: reservationData.returnAddress,
+   	         startDate: reservationData.startDate,
+   	         endDate: reservationData.endDate,
+   	         paymentMethod: reservationData.paymentMethod,
+   	         totalPrice: reservationData.totalPrice
+   	     })], {type:'application/json'}));
+
+   	     if(reservationData.paymentMethod === 'virement' && $('#virementFile')[0].files[0]){
+   	         formData.append('virementFile', $('#virementFile')[0].files[0]);
+   	     }
+
+   	     // Afficher un indicateur de chargement
+   	     Swal.fire({
+   	         title: 'Traitement en cours...',
+   	         text: 'Création de la réservation et génération de la facture',
+   	         allowOutsideClick: false,
+   	         didOpen: () => {
+   	             Swal.showLoading();
+   	         }
+   	     });
+
+   	     $.ajax({
+   	         url:'/Siteoffeciel/create-reservation',
+   	         method:'POST',
+   	         processData:false,
+   	         contentType:false,
+   	         data: formData,
+   	         success:function(data){
+   	             // CORRECTION : Vérifier que la réservation a bien été créée
+   	             if(data.success === true || data.statut === "true" || data.reservationId) {
+   	                 
+   	                 // Télécharger la facture PDF si l'URL est fournie
+   	                 if(data.factureUrl){
+   	                     fetch(data.factureUrl)
+   	                         .then(response => {
+   	                             if (!response.ok) throw new Error('Erreur lors du téléchargement du PDF');
+   	                             return response.blob();
+   	                         })
+   	                         .then(blob => {
+   	                             const url = window.URL.createObjectURL(blob);
+   	                             const a = document.createElement('a');
+   	                             a.href = url;
+   	                             a.download = `facture_reservation_${data.reservationId || Date.now()}.pdf`;
+   	                             document.body.appendChild(a);
+   	                             a.click();
+   	                             a.remove();
+   	                             window.URL.revokeObjectURL(url);
+   	                             
+   	                             // Afficher le succès APRÈS le téléchargement
+   	                             Swal.fire({
+   	                                 title: 'Réservation confirmée !',
+   	                                 html: `
+   	                                     <p>Votre réservation a été enregistrée avec succès.</p>
+   	                                     <p>Numéro de réservation: <strong>${data.reservationId || 'N/A'}</strong></p>
+   	                                     <p>La facture a été téléchargée automatiquement.</p>
+   	                                 `,
+   	                                 icon: 'success',
+   	                                 confirmButtonText: 'OK'
+   	                             }).then(() => {
+   	                                 $('#reservationModal').modal('hide');
+   	                                 window.location.reload();
+   	                             });
+   	                         })
+   	                         .catch(err => {
+   	                             console.error('Erreur téléchargement PDF:', err);
+   	                             // Afficher quand même le succès mais avec un avertissement
+   	                             Swal.fire({
+   	                                 title: 'Réservation confirmée !',
+   	                                 html: `
+   	                                     <p>Votre réservation a été enregistrée.</p>
+   	                                     <p class="text-warning">Erreur lors du téléchargement de la facture.</p>
+   	                                     <p>Contactez le support pour obtenir votre facture.</p>
+   	                                 `,
+   	                                 icon: 'warning',
+   	                                 confirmButtonText: 'OK'
+   	                             }).then(() => {
+   	                                 $('#reservationModal').modal('hide');
+   	                                 window.location.reload();
+   	                             });
+   	                         });
+   	                 } else {
+   	                     // Pas de facture URL mais réservation créée
+   	                     Swal.fire({
+   	                         title: 'Réservation confirmée !',
+   	                         html: `
+   	                             <p>Votre réservation a été enregistrée.</p>
+   	                             <p class="text-warning">Facture non générée.</p>
+   	                             <p>Contactez le support pour obtenir votre facture.</p>
+   	                         `,
+   	                         icon: 'warning',
+   	                         confirmButtonText: 'OK'
+   	                     }).then(() => {
+   	                         $('#reservationModal').modal('hide');
+   	                         window.location.reload();
+   	                     });
+   	                 }
+   	             } else {
+   	                 // La réservation n'a pas été créée
+   	                 throw new Error(data.message || 'Erreur lors de la création de la réservation');
+   	             }
+   	         },
+   	         error:function(xhr, status, error){
+   	             console.error('Erreur AJAX réservation:', error);
+   	             let errorMessage = 'Impossible de confirmer la réservation.';
+   	             
+   	             // Essayer d'extraire le message d'erreur du serveur
+   	             if(xhr.responseJSON && xhr.responseJSON.message) {
+   	                 errorMessage = xhr.responseJSON.message;
+   	             } else if(xhr.responseText) {
+   	                 errorMessage = xhr.responseText.substring(0, 200);
+   	             }
+   	             
+   	             Swal.fire('Erreur', errorMessage, 'error');
+   	         }
+   	     });
+   	 });
+
+   	    // Reset modal à la fermeture
+   	    $('#reservationModal').on('hidden.bs.modal', function(){
+   	        currentStep = 1;
+   	        reservationData = {};
+   	        carId = null;
+   	        carPrice = null;
+   	        $('.step').removeClass('active').hide();
+   	        $('#step1').addClass('active').show();
+   	        $('.step-circle').removeClass('active completed');
+   	        $('.step-circle[data-step="1"]').addClass('active');
+   	        $('.text-danger').text('');
+   	        $('form').trigger('reset');
+   	        $('#virement-details').hide();
+   	        $('#paypal-button-container').show().empty();
+   	    });
+   	});
+
+       </script>
+
+
+
+
+</body>
+</html>

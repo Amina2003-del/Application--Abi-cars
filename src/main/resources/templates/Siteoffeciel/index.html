@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voitures de location - Résultats de recherche avancés</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/airbnb.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/homes.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/responsive.css}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/assets/img/logoApps (2).png}">
+</head>
+<body>
+        <div th:replace="Siteoffeciel/headers.html :: header"></div>
+
+    <header class="main-header">
+        <div class="container">
+            <div class="search-bar-container">
+                <div class="search-field position-relative">
+    <i class="fas fa-map-marker-alt search-icon"></i>
+    <input type="text" id="villeInput" placeholder="Entrez une ville..." autocomplete="off">
+    <div id="suggestions" class="suggestion-box"></div>
+  </div>
+         <div class="search-field">
+  <i class="fas fa-calendar-days search-icon calendar-icon"></i>
+  <input id="dateRange" type="text" placeholder="Date de début — Date de fin">
+</div>
+     <input type="hidden" id="dateDebutHidden" name="dateDebut">
+                <input type="hidden" id="dateFinHidden" name="dateFin">
+                <input type="hidden" id="agenceIdHidden" th:value="${agenceId}">
+
+                <button type="button" class="search-btn">Rechercher</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container main-content">
+        <div class="row">
+          <!-- Filter & Map Column (Left) -->
+<aside class="col-lg-4">
+  <div id="locationMap" class="mb-4">Carte</div>
+
+  <div class="filter-section p-3 border rounded shadow-sm bg-light">
+    <h3 class="filter-title mb-4">
+      <i class="fas fa-filter me-2 text-primary"></i>Filtres populaires
+    </h3>
+
+    <!-- 🔘 Bouton Filtrer -->
+    <div class="text-end mb-3">
+      <button id="apply-filters" class="btn btn-outline-primary rounded-circle" title="Appliquer les filtres">
+        <i class="fas fa-filter"></i>
+      </button>
+    </div>
+
+    <!-- ⭐ Filtrage par étoiles (checkbox) -->
+    <div class="filter-box mb-4 p-3 border rounded bg-white">
+      <h4 class="filter-subtitle mb-3">
+        <i class="fas fa-star me-2 text-warning"></i>Filtrer par étoiles
+      </h4>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="5" id="star5">
+        <label class="form-check-label" for="star5">5 étoiles</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="4" id="star4">
+        <label class="form-check-label" for="star4">4 étoiles et plus</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="3" id="star3">
+        <label class="form-check-label" for="star3">3 étoiles et plus</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="2" id="star2">
+        <label class="form-check-label" for="star2">2 étoiles et plus</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="1" id="star1">
+        <label class="form-check-label" for="star1">1 étoile et plus</label>
+      </div>
+    </div>
+
+    <!-- 💰 Filtrage par prix -->
+    <div class="filter-box mb-4 p-3 border rounded bg-white">
+      <h4 class="filter-subtitle mb-3">
+        <i class="fas fa-euro-sign me-2 text-success"></i>Prix maximum par jour
+      </h4>
+      <input type="number" id="filter-price-max" class="form-control" min="0" placeholder="Ex : 50">
+    </div>
+  </div>
+</aside>
+
+
+        <!-- Results Column (Right) -->
+<section class="col-lg-8">
+    <!-- En-tête des résultats -->
+    <div class="col-lg-8">
+    <!-- En-tête des résultats -->
+    <div class="results-header d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded-3 shadow-sm">
+        <h1 class="results-title m-0">
+            <span class="city-name" th:text="${villeSelectionnee}">Casablanca</span> : 
+            <span class="results-count" th:text="${nombreAgences} + ' agence(s) trouvée(s)'">120 agence(s) trouvée(s)</span>
+        </h1>
+        
+        <div class="sort-dropdown">
+    
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="sortDropdown">
+        <li><a class="dropdown-item active" href="#" data-sort="price">Prix (croissant)</a></li>
+        <li><a class="dropdown-item" href="#" data-sort="price-desc">Prix (décroissant)</a></li>
+        <li><a class="dropdown-item" href="#" data-sort="name">Nom (A-Z)</a></li>
+        <li><a class="dropdown-item" href="#" data-sort="rating">Meilleures notes</a></li>
+    </ul>
+</div>
+</div>
+
+    <!-- Message si aucune voiture trouvée -->
+    <div th:if="${aucuneVoiture}" class="no-results text-center py-5 bg-white rounded-3 shadow-sm">
+    <i class="fas fa-car-alt fa-3x text-muted mb-3"></i>
+    <h3 class="text-muted mb-2">Aucune voiture trouvée</h3>
+    <p class="text-muted">
+        Aucun résultat ne correspond à votre recherche pour 
+        <span th:text="${villeSelectionnee}">cette ville</span>.
+    </p>
+    
+    <!-- REMPLACER le bouton par un lien -->
+    <a th:href="@{/Siteoffeciel/index}" class="btn btn-primary mt-3">
+        <i class="fas fa-search me-2"></i>Élargir la recherche
+    </a>
+</div>
+    <!-- Liste des agences -->
+   <!-- Liste des agences -->
+<div th:each="agence : ${agences}" 
+     class="car-card card h-100 border-0 shadow-sm hover-shadow transition-all"
+     th:data-price="${prixMinParAgence[agence.id] != null ? prixMinParAgence[agence.id] : 0}"
+     th:data-rating="${moyenneNoteParAgence[agence.id]}">
+        <div class="row g-0 h-100">
+
+            <!-- Image de la voiture -->
+            <div class="car-image col-md-4 overflow-hidden position-relative">
+<img th:src="@{/Siteoffeciel/logos/{agencyId}/{logoPath}(agencyId=${agence.id}, logoPath=${agence.logovoiturePath})}"
+                     th:alt="${agence.raisonsociale}"
+                     class="img-fluid h-100 w-100 object-fit-cover" />
+                <div class="price-badge bg-primary text-white p-2 position-absolute top-0 end-0 m-2 rounded"
+                     th:if="${prixMinParAgence[agence.id] != null}">
+                    <div class="h5 mb-0" th:text="${prixMinParAgence[agence.id]} + '€'">35€</div>
+                    <div class="small">par jour</div>
+                </div>
+            </div>
+
+            <!-- Détails de l'agence -->
+            <div class="card-body col-md-8 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h2 class="car-title card-title h5 mb-0">
+                        <span th:text="${agence.raisonsociale}">Nom agence</span>
+                    </h2>
+
+                    <!-- Notes -->
+                    <div th:each="o : ${ownersWithRating}"
+                         th:if="${o != null and o.owner != null and o.owner.id == agence.id}">
+                        <div class="d-flex flex-column align-items-end">
+                            <div th:if="${o.totalAvis != null and o.totalAvis > 0 and o.moyenneNote != null and o.moyenneNote > 0}"
+                                 class="rating text-warning small mb-1">
+                                <i class="fas fa-star" th:each="i : ${#numbers.sequence(1, T(java.lang.Math).floor(o.moyenneNote))}"></i>
+                                <i class="fas fa-star-half-alt" th:if="${(o.moyenneNote % 1) >= 0.5}"></i>
+                                <i class="far fa-star" th:each="i : ${#numbers.sequence(1, 5 - T(java.lang.Math).ceil(o.moyenneNote))}"></i>
+                                <span class="text-muted ms-1" th:text="${'(' + o.totalAvis + ')'}"></span>
+                            </div>
+                            <span class="badge" th:switch="${o.noteCategory}">
+                                <span th:case="'noNotes'" class="bg-secondary" th:text="'Pas de notes'"></span>
+                                <span th:case="'excellent'" class="bg-success" th:text="'Excellent'"></span>
+                                <span th:case="'medium'" class="bg-warning" th:text="'Moyen'"></span>
+                                <span th:case="'toImprove'" class="bg-danger" th:text="'À améliorer'"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ICE et description -->
+                <div class="car-specs mb-2">
+                    <div class="text-muted small">
+                        <i class="fas fa-id-card me-1"></i>
+                        <span>ICE :</span>
+                        <span th:text="${agence.ice}">123456789</span>
+                    </div>
+                </div>
+
+                <p class="desc card-text text-muted flex-grow-1" th:text="${agence.descriptionAgence}">
+                    Description ici
+                </p>
+
+                <!-- Bouton de réservation -->
+             <div class="d-flex justify-content-between align-items-end mt-3">
+    <a th:href="@{'/Siteoffeciel/VoitureDesp'(ville=${villeSelectionnee}, agenceId=${agence.id}, dateDebut=${dateDebut}, dateFin=${dateFin})}"
+       class="btn btn-primary btn-sm stretched-link">
+        <i class="fas fa-calendar-alt me-1"></i>
+        Voir les disponibilités
+    </a>
+</div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+</div>
+
+
+
+</section>
+
+    </main>
+        <div th:replace="Siteoffeciel/footer.html :: footer"></div>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    
+    <!-- Leaflet JS (pour la carte GPS) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- Initialisation de la carte GPS Interactive ---
+            // Coordonnées pour Casablanca (exemple)
+            const mapCenter = [33.5731, -7.5898]; 
+            
+            const map = L.map('locationMap').setView(mapCenter, 12);
+
+            // Ajout du fond de carte (OpenStreetMap)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Ajout d'un marqueur au centre de la carte
+            L.marker(mapCenter).addTo(map)
+                .bindPopup('Zone de recherche : Casablanca')
+                .openPopup();
+                
+            // --- Animation d'apparition des cartes au défilement ---
+            const carCards = document.querySelectorAll('.car-card');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1 // La carte devient visible dès que 10% de sa surface est à l'écran
+            });
+
+            carCards.forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const input = document.getElementById('dateRange');
+
+  if (input) {
+    const picker = flatpickr(input, {
+      mode: "range",
+      dateFormat: "Y-m-d", // utilisé pour le parsing, pas pour l'affichage final
+      minDate: "today",
+      showMonths: 2,
+      locale: "fr",
+      onChange: function (selectedDates) {
+        if (selectedDates.length === 2) {
+          const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+          const date1 = selectedDates[0].toLocaleDateString('fr-FR', options);
+          const date2 = selectedDates[1].toLocaleDateString('fr-FR', options);
+          input.value = `${date1} — ${date2}`;
+        }
+      }
+    });
+
+    // ouvrir le calendrier au clic sur l’icône
+    document.querySelector('.calendar-icon').addEventListener('click', () => {
+      picker.open();
+    });
+  }
+});
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Configuration pour l'autocomplétion des villes
+    const MIN_CHARS = 1;
+    const DEBOUNCE_DELAY = 300;
+    let currentRequest = null;
+    let searchEnabled = false; // ← NOUVEAU: Contrôle si la recherche est activée
+
+    // Activer la recherche seulement après une interaction utilisateur
+    function enableSearch() {
+        searchEnabled = true;
+        console.log('🔍 Recherche activée');
+    }
+
+    // Désactiver la recherche (pour le chargement initial)
+    function disableSearch() {
+        searchEnabled = false;
+    }
+
+    // Gestion de la recherche automatique des villes - NE PAS LANÇER LA RECHERCHE
+    $('#villeInput').on('input', function() {
+        const query = $(this).val().trim();
+        
+        if (currentRequest) {
+            currentRequest.abort();
+        }
+
+        if (query.length < MIN_CHARS) {
+            $('#suggestions').hide();
+            return;
+        }
+
+        clearTimeout($(this).data('timer'));
+        $(this).data('timer', setTimeout(() => {
+            executeSearch(query);
+        }, DEBOUNCE_DELAY));
+    });
+
+    function executeSearch(query) {
+        $('#suggestions').html('<div class="loading">Recherche en cours...</div>').show();
+
+        currentRequest = $.ajax({
+            url: '/villes/search',
+            method: 'GET',
+            dataType: 'json',
+            data: { term: query },
+            success: function(response) {
+                if (!response || typeof response !== 'object') {
+                    showError("Réponse serveur invalide");
+                    return;
+                }
+                try {
+                    displaySuggestions(Array.isArray(response) ? response : [response]);
+                } catch (e) {
+                    showError("Erreur de traitement des données");
+                    console.error(e);
+                }
+            },
+            error: function(xhr, status, error) {
+                if (status === 'abort') return;
+                showError("Erreur de connexion au serveur");
+                console.error("Détails de l'erreur:", status, error);
+            },
+            complete: function() {
+                currentRequest = null;
+            }
+        });
+    }
+
+    function displaySuggestions(data) {
+        if (!data || data.length === 0) {
+            $('#suggestions').html('<div class="no-results">Aucun résultat trouvé</div>').show();
+            return;
+        }
+
+        let suggestions = '';
+        const grouped = {};
+
+        data
+            .filter(ville => ville && ville.nom)
+            .sort((a, b) => a.nom.localeCompare(b.nom, 'fr'))
+            .forEach(ville => {
+                const firstLetter = ville.nom.charAt(0).toUpperCase();
+                grouped[firstLetter] = grouped[firstLetter] || [];
+                grouped[firstLetter].push(ville);
+            });
+
+        for (const [letter, villes] of Object.entries(grouped)) {
+            suggestions += `<div class="group-header">${letter}</div>`;
+            villes.forEach(ville => {
+                suggestions += `
+                    <div class="suggestion-item" data-ville="${ville.nom}">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span class="ville-nom">${ville.nom}</span>
+                        <span class="ville-details">${[ville.region, ville.pays || 'Maroc'].filter(Boolean).join(', ')}</span>
+                    </div>`;
+            });
+        }
+
+        $('#suggestions').html(suggestions).show();
+    }
+
+    function showError(message) {
+        $('#suggestions').html(`<div class="error">${message}</div>`).show();
+    }
+
+    // Gestion des clics sur les suggestions - CORRIGÉ
+    $(document).on('click', '#suggestions .suggestion-item', function() {
+        const ville = $(this).data('ville');
+        $('#villeInput').val(ville);
+        $('#suggestions').hide();
+        
+        // NE PAS lancer la recherche automatiquement - attendre le clic utilisateur
+        enableSearch(); // Active la recherche pour le prochain clic
+        console.log('📍 Ville sélectionnée:', ville, '- En attente du clic sur recherche');
+    });
+
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.search-field').length) {
+            $('#suggestions').hide();
+        }
+    });
+
+    $('#villeInput').on('keydown', function(e) {
+        if (e.key === 'Escape') {
+            $('#suggestions').hide();
+        } else if (e.key === 'Enter') {
+            // Rechercher quand on appuie sur Entrée - MAINTENANT CONTRÔLÉ
+            enableSearch();
+            performSearch($(this).val().trim());
+        }
+    });
+
+    // Gestionnaire pour le bouton de recherche - CORRIGÉ
+    $('.search-btn').on('click', function(e) {
+        e.preventDefault(); // ← IMPORTANT: Empêcher le comportement par défaut
+        
+        if (!searchEnabled) {
+            enableSearch(); // Active au premier clic
+        }
+        
+        performSearch($('#villeInput').val().trim());
+    });
+
+    // Fonction de recherche centralisée - AVEC CONTRÔLE
+    function performSearch(ville) {
+        // VÉRIFIER si la recherche est autorisée
+        if (!searchEnabled) {
+            console.log('⏸️ Recherche désactivée - attente interaction utilisateur');
+            return;
+        }
+
+        if (!ville) {
+            alert('Veuillez entrer une ville.');
+            return;
+        }
+
+        console.log('🚀 Lancement de la recherche pour:', ville);
+
+        // Enregistrer dans localStorage
+        localStorage.setItem('selectedVille', ville);
+
+        // Construire l'URL de redirection
+        let url = '/Siteoffeciel/index';
+        const params = new URLSearchParams();
+        
+        params.append('ville', ville);
+        
+        // Gestion des dates (si vous avez un datepicker)
+        const dateRange = $('#dateRange').val().trim();
+        if (dateRange) {
+            localStorage.setItem('selectedDateRange', dateRange);
+            
+            const dates = dateRange.split(' - ');
+            if (dates.length === 2) {
+                const startDate = convertToISODate(dates[0].trim());
+                const endDate = convertToISODate(dates[1].trim());
+                
+                if (startDate && endDate) {
+                    params.append('dateDebut', startDate);
+                    params.append('dateFin', endDate);
+                }
+            }
+        }
+
+        // Construire l'URL finale
+        if (params.toString()) {
+            url += '?' + params.toString();
+        }
+
+        console.log('🔍 Redirection vers:', url);
+
+        // Redirection
+        window.location.href = url;
+    }
+
+    // Fonction pour convertir les dates en format ISO
+    function convertToISODate(dateString) {
+        const parts = dateString.split('/');
+        if (parts.length === 3) {
+            return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+        }
+        return null;
+    }
+
+    // INITIALISATION - NE PAS ACTIVER LA RECHERCHE AUTOMATIQUEMENT
+    disableSearch(); // ← Désactive la recherche au chargement
+
+    // Remplir les champs au chargement de la page SANS lancer de recherche
+    const urlParams = new URLSearchParams(window.location.search);
+    const villeParam = urlParams.get('ville');
+    if (villeParam) {
+        $('#villeInput').val(decodeURIComponent(villeParam));
+        // NE PAS appeler performSearch() ici
+    }
+
+    // Récupérer depuis localStorage SANS lancer de recherche
+    const savedVille = localStorage.getItem('selectedVille');
+    const savedDateRange = localStorage.getItem('selectedDateRange');
+    
+    if (savedVille && !villeParam) {
+        $('#villeInput').val(savedVille);
+        // NE PAS appeler performSearch() ici
+    }
+    if (savedDateRange) {
+        $('#dateRange').val(savedDateRange);
+    }
+
+    // Activer la recherche au premier clic sur n'importe quel élément du formulaire
+    $('.search-field, #villeInput, .search-btn').on('click focus', function() {
+        enableSearch();
+    });
+
+    console.log('✅ Script chargé - Recherche désactivée en attente de clic utilisateur');
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+<script>
+  document.querySelector('.search-btn').addEventListener('click', function () {
+    const ville = document.getElementById('villeInput').value.trim();
+
+    // Si une ville est saisie → redirection avec paramètre
+    if (ville) {
+      window.location.href = `/Siteoffeciel/index?ville=${encodeURIComponent(ville)}`;
+    } 
+    // Si aucun texte → redirection sans paramètre pour afficher toutes les agences
+    else {
+      window.location.href = "/Siteoffeciel/index";
+    }
+  });
+
+  // Astuce : Si l'utilisateur efface manuellement le paramètre ?ville dans l'URL
+  // ou revient à la page sans paramètre, l'input reste vide (optionnel)
+  window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const ville = params.get('ville');
+    if (ville) {
+      document.getElementById('villeInput').value = decodeURIComponent(ville);
+    }
+  });
+</script>
+<script>
+  document.querySelector('.search-btn').addEventListener('click', () => {
+    const ville = document.getElementById('villeInput').value;
+    const date = document.getElementById('dateRange').value;
+
+    // Enregistrer dans localStorage
+    localStorage.setItem('selectedVille', ville);
+    localStorage.setItem('selectedDateRange', date);
+  });
+</script>
+
+<script type="text/javascript">
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialisation du dropdown Bootstrap
+    const dropdown = new bootstrap.Dropdown(document.getElementById('sortDropdown'));
+    
+    // Gestion des clics sur les items
+    document.querySelectorAll('.dropdown-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Retire 'active' de tous les items
+            document.querySelectorAll('.dropdown-item').forEach(i => {
+                i.classList.remove('active');
+            });
+            
+            // Ajoute 'active' à l'item cliqué
+            this.classList.add('active');
+            
+            // Met à jour l'affichage
+            const displayText = this.textContent.split('(')[0].trim();
+            document.querySelector('.sort-criteria').textContent = displayText;
+            
+            // Ferme le dropdown après sélection
+            dropdown.hide();
+            
+            // Logique de tri (exemple)
+            console.log('Tri par:', this.dataset.sort);
+            // Ajoutez ici votre fonction de tri réelle
+        });
+    });
+});
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function () {
+    const input = document.getElementById('dateRange');
+    const savedDateRange = localStorage.getItem('selectedDateRange');
+
+    if (input) {
+        const picker = flatpickr(input, {
+            mode: "range",
+            dateFormat: "Y-m-d", // format brut pour flatpickr
+            locale: "fr",
+            showMonths: 2,
+            onChange: function (selectedDates, dateStr) {
+                if (selectedDates.length === 2) {
+                    // Sauvegarder en ISO (pour flatpickr)
+                    localStorage.setItem('selectedDateRange', dateStr);
+
+                    // Afficher en FR
+                    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                    input.value =
+                        selectedDates[0].toLocaleDateString('fr-FR', options) +
+                        " — " +
+                        selectedDates[1].toLocaleDateString('fr-FR', options);
+                }
+            }
+        });
+
+        // Restaurer si déjà enregistré
+        if (savedDateRange) {
+            picker.setDate(savedDateRange.split(" to "), true);
+
+            const selectedDates = picker.selectedDates;
+            if (selectedDates.length === 2) {
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                input.value =
+                    selectedDates[0].toLocaleDateString('fr-FR', options) +
+                    " — " +
+                    selectedDates[1].toLocaleDateString('fr-FR', options);
+            }
+        }
+
+        // Ouvrir le calendrier au clic sur l’icône
+        document.querySelector('.calendar-icon').addEventListener('click', () => {
+            picker.open();
+        });
+    }
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const applyBtn = document.getElementById('apply-filters');
+
+    applyBtn.addEventListener('click', function() {
+        // Récupération des valeurs des filtres
+        const selectedStars = Array.from(document.querySelectorAll('.filter-section input[type="checkbox"]:checked'))
+                                   .map(cb => parseInt(cb.value));
+        const maxPrice = parseFloat(document.getElementById('filter-price-max').value) || Infinity;
+
+        // Parcours de toutes les cartes d'agences
+        document.querySelectorAll('.car-card').forEach(card => {
+            const rating = parseFloat(card.getAttribute('data-rating')) || 0;
+            const price = parseFloat(card.getAttribute('data-price')) || 0;
+
+            // Vérifie si l'agence correspond aux filtres
+            const starMatch = selectedStars.length === 0 || selectedStars.some(star => rating >= star);
+            const priceMatch = price <= maxPrice;
+
+            if(starMatch && priceMatch){
+                card.parentElement.style.display = 'block'; // Affiche la carte
+            } else {
+                card.parentElement.style.display = 'none'; // Masque la carte
+            }
+        });
+    });
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    const applyFiltersBtn = document.getElementById("apply-filters");
+    const priceInput = document.getElementById("filter-price-max");
+    const starCheckboxes = document.querySelectorAll(".form-check-input");
+    const agenceCards = document.querySelectorAll(".car-card");
+
+    // Créer ou récupérer le message "aucune agence trouvée"
+    let noResultBox = document.getElementById("no-result-box");
+    if (!noResultBox) {
+        noResultBox = document.createElement("div");
+        noResultBox.id = "no-result-box";
+        noResultBox.style.display = "none";
+        noResultBox.style.padding = "15px";
+        noResultBox.style.margin = "10px 0";
+        noResultBox.style.backgroundColor = "#f8d7da";
+        noResultBox.style.color = "#721c24";
+        noResultBox.style.border = "1px solid #f5c6cb";
+        noResultBox.style.borderRadius = "5px";
+        noResultBox.innerText = "Aucune agence ne correspond aux critères de filtrage.";
+        if (agenceCards.length > 0) {
+            agenceCards[0].parentNode.insertBefore(noResultBox, agenceCards[0]);
+        } else {
+            document.body.appendChild(noResultBox);
+        }
+    }
+
+    function applyFilters() {
+        const maxPrice = parseFloat(priceInput.value);
+        const selectedStars = Array.from(starCheckboxes)
+            .filter(cb => cb.checked)
+            .map(cb => parseInt(cb.value))
+            .sort((a,b) => b-a);
+        const minStars = selectedStars.length > 0 ? selectedStars[0] : 0;
+
+        let anyVisible = false;
+
+        agenceCards.forEach(card => {
+            // Supprime tout caractère non numérique (ex: €)
+            const price = parseFloat(card.dataset.price.replace(/[^\d.]/g, '')) || 0;
+            const rating = parseFloat(card.dataset.rating) || 0;
+
+            // Filtrage combiné
+            if ((isNaN(maxPrice) || price <= maxPrice) && rating >= minStars) {
+                card.style.display = "block";
+                anyVisible = true;
+            } else {
+                card.style.display = "none";
+            }
+        });
+
+        noResultBox.style.display = anyVisible ? "none" : "block";
+
+        // Réaffiche tout si aucun filtre
+        if ((priceInput.value === "" || priceInput.value === null) && selectedStars.length === 0) {
+            agenceCards.forEach(card => card.style.display = "block");
+            noResultBox.style.display = "none";
+        }
+    }
+
+
+    // Filtrage au clic
+    applyFiltersBtn.addEventListener("click", applyFilters);
+
+    // Optionnel: filtrage dynamique au changement de filtre
+    priceInput.addEventListener("input", applyFilters);
+    starCheckboxes.forEach(cb => cb.addEventListener("change", applyFilters));
+
+});
+</script>
+
+
+
+</body>
+</html>

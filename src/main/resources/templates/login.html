@@ -1,0 +1,150 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+       <link rel="stylesheet" th:href="@{/assets/css/bootstrap.css}">
+<link rel="stylesheet" th:href="@{/assets/css/font-awesome.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/magnific-popup.css}">
+<link rel="stylesheet" th:href="@{/assets/css/owl.carousel.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/owl.theme.default.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/animate.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/jquery.datepicker.css}">
+<link rel="stylesheet" th:href="@{/assets/css/nice-select.css}">
+<link rel="stylesheet" th:href="@{/assets/css/lightgallery.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/jquery-clockpicker.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/slicknav.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/login.css}">
+<link rel="stylesheet" th:href="@{/assets/css/responsive.css}">
+<link rel="stylesheet" th:href="@{/assets/css/alertes.css}">
+
+<title th:text="#{label.pages.login.title}"></title>
+<!-- petit logo -->
+<script th:inline="javascript">
+	function validate() {
+        if (document.f.username.value == "" && document.f.password.value == "") {
+            alert(/*[[#{message.username} + #{message.password}]]*/);
+            document.f.username.focus();
+            return false;
+        }
+        if (document.f.username.value == "") {
+            alert(/*[[#{message.username}]]*/);
+            document.f.username.focus();
+            return false;
+        }
+        if (document.f.password.value == "") {
+            alert(/*[[#{message.password}]]*/);
+            document.f.password.focus();
+            return false;
+        }
+    }
+    
+</script>
+<style type="text/css">
+.logologin{
+	margin-left:100px;
+}
+</style>
+</head>
+<body>
+<div th:if="${param.message != null}" class="alert1 alert alert-info" th:text="${param.message[0]}">message</div>
+
+
+<div th:if="${param.error != null}" class="alert alert-danger" th:text="${session[SPRING_SECURITY_LAST_EXCEPTION]}">error</div>
+
+    <section class="gauto-login-area section_70">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-12">
+                  <div class="login-box">
+                     <div class="login-page-heading">
+                        <i class="fa fa-key"></i>
+                        <h3>Se Connecter</h3>
+            </div>
+            <form id="formLogin" name='f' action="login" method='POST' onsubmit="return validate();">
+           <!--    <h3 style="text-align: center;"th:text="#{label.form.loginTitle}">Header</h3> -->
+                 <span id="welcometext">&nbsp;</span>
+                <div class="account-form-group">
+                           <input type="text" placeholder="Email" name="username" required="required">
+                           <span id="emailError" class="alert alert-danger" style="display:none"></span>
+                           <i class="fa fa-envelope-o"></i>
+                           
+                        </div>
+                       <div class="account-form-group password-wrapper" style="position: relative;">
+   <input type="password" placeholder="Mot de passe" name="password" id="password" required="required">
+   <span id="passwordError" class="alert alert-danger" style="display:none"></span>
+   <i class="fa fa-lock"></i>
+   <i class="fa fa-eye toggle-password" id="togglePassword"  style="left: 490px;"></i>
+</div>
+
+                        <div class="remember-row">
+                           <p class="checkbox remember signup">
+                              <input class="checkbox-spin" type="checkbox" id="Freelance">
+                              <label for="Freelance"><span></span>accepter les termes & conditions</label>
+                           </p>
+                        </div>
+                
+                 <button type="submit" class="gauto-theme-btn"  name="envoyer" th:value="#{label.form.submit}">Connecter maintenant</button>
+                     
+ 
+            </form>
+            <div id="loginMessage"></div>
+            
+               <!-- <br/> Current Locale :  <span th:text="${#locale}"></span><br/><br/>   -->
+              <div class="login-sign-up">
+    <a class="cart-btn-1 signup" th:href="@{/registration.html}" th:text="#{label.form.loginSignUp}">
+        <i class="fas fa-user-plus"></i>
+    </a>
+    <a class="cart-btn-1 forgot-password" th:href="@{/Admin/forgot_password}" th:text="#{message.resetPassword}">
+        <i class="fas fa-key"></i>
+    </a>
+</div>
+            
+<button type="button" class="gauto-theme-btn" onclick="location.href='/oauth2/authorization/google'">
+    <i class="fa fa-google"></i> Connexion avec Google
+</button>
+                                             
+                      
+                  </div>     
+    </div>
+    </div>
+    </div>
+    </div>
+    
+    </section>
+     <script th:src="@{/assets/js/jquery.min.js}"></script>
+      <!-- Popper JS -->
+      <script th:src="@{/assets/js/popper.min.js}"></script>
+      <!--Bootstrap js-->
+      <script th:src="@{/assets/js/bootstrap.min.js}"></script>
+      <!--Owl-Carousel js-->
+      <script th:src="@{/assets/js/owl.carousel.min.js}"></script>
+      <!--Lightgallery js-->
+      <script th:src="@{/assets/js/lightgallery-all.js}"></script>
+      <script th:src="@{/assets/js/custom_lightgallery.js}"></script>
+      <!--Slicknav js-->
+      <script th:src="@{/assets/js/jquery.slicknav.min.js}"></script>
+      <!--Magnific js-->
+      <script th:src="@{/assets/js/jquery.magnific-popup.min.js}"></script>
+      <!--Nice Select js-->
+      <script th:src="@{/assets/js/jquery.nice-select.min.js}"></script>
+      <!-- Datepicker JS -->
+      <script th:src="@{/assets/js/jquery.datepicker.min.js}"></script>
+      <!--ClockPicker JS-->
+      <script th:src="@{/assets/js/jquery-clockpicker.min.js}"></script>
+      <!--Main js-->
+      <script th:src="@{/assets/js/main.js}"></script>
+      <script>
+   document.getElementById("togglePassword").addEventListener("click", function () {
+      const passwordInput = document.getElementById("password");
+      const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+      passwordInput.setAttribute("type", type);
+
+      // Change icon style
+      this.classList.toggle("fa-eye");
+      this.classList.toggle("fa-eye-slash");
+   });
+</script>
+
+      
+</body>
+</html>

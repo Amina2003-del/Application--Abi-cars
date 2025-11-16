@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr-FR">
+   
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="description" content="gauto | Modèle HTML de Location de Voitures par Themescare">
+      <meta name="keyword" content="taxi,voiture,location,transport">
+      <meta name="author" content="Themescare">
+      <!-- Titre -->
+      <title>Carbnb</title>
+      <!-- Favicon -->
+             <link rel="stylesheet" th:href="@{/assets/css/bootstrap.css}">
+<link rel="stylesheet" th:href="@{/assets/css/font-awesome.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/magnific-popup.css}">
+<link rel="stylesheet" th:href="@{/assets/css/owl.carousel.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/owl.theme.default.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/animate.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/jquery.datepicker.css}">
+<link rel="stylesheet" th:href="@{/assets/css/nice-select.css}">
+<link rel="stylesheet" th:href="@{/assets/css/lightgallery.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/jquery-clockpicker.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/slicknav.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/style.css}">
+<link rel="stylesheet" th:href="@{/assets/css/responsive.css}">
+<link rel="stylesheet" th:href="@{/assets/css/mettrelocation.css}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body>
+
+<div class="dashboard">
+    <!-- Sidebar -->
+   <aside class="sidebar">
+       
+        <nav class="sidebar-menu">
+            <a th:href="@{/Voitures/location}" class="active"><i class="fa fa-car"></i> Mettre ma Location</a>
+            <a th:href="@{/Voitures/avis}" ><i class="fa fa-star"></i> Consulter les Avis</a>
+            <a th:href="@{/Voitures/reservation}" ><i class="fa fa-calendar"></i> Réservations</a>
+            <a th:href="@{/Voitures/message}" ><i class="fa fa-gavel"></i> Litiges</a>
+            <a th:href="@{/Voitures/login}"><i class="fa fa-sign-out"></i> Déconnexion</a>
+        </nav>
+    </aside>
+
+    <!-- Contenu principal -->
+    <main class="main-content">
+        <div class="main-header">
+            <h1>Ajouter une Voiture en Location</h1>
+        </div>
+
+        <div class="form-section">
+            <form id="locationForm" action="/Voitures/mettrelocation" method="POST" enctype="multipart/form-data">
+                
+                <div class="form-grid">
+
+                    <!-- Marque -->
+                    <div class="form-group">
+                        <label for="marque">Marque</label>
+                        <input type="text" id="marque" name="marque" placeholder="Ex: Audi" required>
+                    </div>
+                      <div class="form-group">
+                        <label for="kilometrage">Kilometrage</label>
+                        <input type="text" id="kilo" name="kilometrage" placeholder="Ex: K/L" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Déscription</label>
+                        <input type="text" id="desc" name="description" placeholder="Ex: Tres bon etat" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nbrplace">Nombre des places</label>
+                        
+ <select id="nombrePlaces" name="nombrePlaces" class="form-select" required>
+                                    <option value="">Sélectionnez</option>
+                                    <option value="2">2</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="7">7</option>
+                                    <option value="9">9</option>
+                                </select>
+                                                 
+                                                    </div>
+                    <div class="form-group">
+                        <label for="marque">Ville</label>
+                        <input type="text" id="ville" name="ville" placeholder="Ex: Rabat" required>
+                    </div>
+                    <!-- Modèle -->
+                    <div class="form-group">
+                        <label for="modele">Modèle</label>
+                        <input type="text" id="modele" name="modele" placeholder="Ex: A4" required>
+                    </div>
+<div class="form-group">
+                        <label for="immatriculation">Immatriculation</label>
+                        <input type="text" id="immatriculation" name="Immatriculation" placeholder="Ex: AD-2345" required>
+                    </div>
+                    <!-- Année -->
+                    <div class="form-group">
+                        <label for="annee">Année</label>
+                                <input type="text" id="annee" name="annee" class="form-control datepicker-year" placeholder="Sélectionnez l'année" required>
+                    </div>
+
+                    <!-- Type -->
+                    <div class="form-group">
+                        <label for="type">Type</label>
+                        <select id="type" name="type" required>
+                            <option value="">Choisir...</option>
+                            <option value="SUV">SUV</option>
+                            <option value="Berline">Berline</option>
+                            <option value="Citadine">Citadine</option>
+                            <option value="4x4">4x4</option>
+                        </select>
+                    </div>
+                          <div class="form-group">
+                        <label for="categorie">Categorie</label>
+                        <select id="type" name="categorie" required>
+                            <option value="">Choisir...</option>
+                            <option value="Économique">Économique</option>
+                            <option value="Confort">Confort</option>
+                            <option value="Premium">Premium</option>
+                            <option value="Premium">Luxe</option>
+                            
+                        </select>
+                    </div>
+                    
+                    
+                    
+                    <div class="form-group">
+                        <label for="type">TypeCarburant</label>
+                                    <select id="carburant" name="carburant" required>
+        <option value="">Choisir...</option>
+        <option value="Essence">Essence</option>
+        <option value="Diesel">Diesel</option>
+        <option value="Électrique">Électrique</option>
+        <option value="Hybride">Hybride</option>
+        <option value="GPL">GPL</option>
+    </select>
+                    </div>
+        <div class="form-group">
+    <label for="boite">Boîte de vitesses</label>
+    <select id="boite" name="boite" required>
+        <option value="">Choisir...</option>
+        <option value="Manuelle">Manuelle</option>
+        <option value="Automatique">Automatique</option>
+    </select>
+</div>
+
+                    <!-- Prix -->
+                    <div class="form-group">
+                        <label for="prix">Prix par jour (€)</label>
+                        <input type="number" id="prix" name="prix" min="1" required>
+                    </div>
+
+                    <!-- Disponibilité -->
+                    <div class="form-group">
+                        <label for="disponibilite">Disponibilité</label>
+                        <select id="disponibilite" name="disponibilite" required>
+                            <option value="Disponible">Disponible</option>
+                            <option value="Indisponible">Indisponible</option>
+                        </select>
+                    </div>
+
+                    <!-- Image -->
+                    <div class="form-group">
+                        <label for="image">Image de la voiture</label>
+                        <input type="file" id="image" name="image" accept="image/*" required>
+                    </div>
+
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">
+                        <i class="fa fa-plus-circle"></i> Ajouter la Voiture
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+</div>
+
+<script th:src="@{/assets/js/jquery.min.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script th:src="@{/assets/js/mettrelocation.js}"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.getElementById('locationForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Empêcher le rechargement par défaut
+
+    var form = this;
+    var formData = new FormData(form);
+
+    fetch(form.action, {  // Utiliser directement l'attribut action du formulaire
+        method: form.method, // Utiliser directement la méthode (POST)
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(errMsg => {
+                throw new Error(errMsg);  // Retourner le message d'erreur du serveur
+            });
+        }
+        return response.text(); // Si tout est OK
+    })
+    .then(data => {
+        // Si tout est OK, afficher la popup de succès
+        Swal.fire({
+            title: 'Ajout réussi 🎉',
+            text: 'La voiture a été ajoutée avec succès !',
+            icon: 'success',
+            confirmButtonText: 'Continuer',
+            timer: 2500,
+            timerProgressBar: true
+        });
+
+        // Réinitialiser le formulaire après succès
+        form.reset();
+    })
+    .catch(error => {
+        Swal.fire({
+            title: 'Erreur',
+            text: error.message || 'Une erreur inattendue est survenue.',
+            icon: 'error',
+            confirmButtonText: 'Réessayer'
+        });
+    });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Propriétaire - Gestion des Réservations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
+<link rel="stylesheet" th:href="@{/assets/css/entretiens.css}">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+   
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen p-4 sm:p-6 font-sans antialiased">
+ <nav class="navbar-custom-tailwind" th:fragment="navbar">
+    <div class="navbar-left">
+        <span class="brand">ABIcars</span>
+    </div>
+    <div class="navbar-right">
+        <!-- Bouton menu hamburger pour responsive (visible seulement sur mobile) -->
+        <div class="nav-icon-btn mobile-menu-toggle" id="mobileMenuToggle">
+            <i class="fas fa-bars"></i>
+        </div>
+        
+        <div class="nav-icon-btn" id="alertsIconCustom">
+            <!-- Contenu des alertes si besoin -->
+        </div>
+        <div class="nav-icon-btn" id="languageSwitchCustom">
+            <span class="flag-icon flag-icon-fr"></span>
+        </div>
+        <div class="user-profile" id="userProfileCustom"> <!-- Utilisation du style user-profile -->
+            <i class="fas fa-user-circle"></i> <!-- Icône Font Awesome plus stylée -->
+            <span th:text="${currentUser != null ? currentUser.firstName + ' ' + currentUser.lastName : 'Invité'}"></span>
+            <i class="fas fa-chevron-down fa-xs"></i>
+        </div>
+        <div class="dropdown-menu-custom" id="userDropdownCustom">
+            <a href="#" id="showUserProfile">
+                <i class="fas fa-user-edit"></i>Mon profil
+            </a>
+           <a th:href="@{/Siteoffeciel/index}" >
+  <i class="fas fa-sign-out-alt"></i>Se déconnecter
+</a>
+        </div>
+    </div>
+</nav>
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      
+      <div class="modal-header bg-primary text-white rounded-top">
+        <h5 class="modal-title" id="userModalLabel">Profil Utilisateur</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body user-info">
+        <form id="userProfileForm">
+          <div class="row g-3">
+
+            <div class="col-md-6">
+              <label for="firstName" class="form-label">Prénom</label>
+              <input type="text" class="form-control" id="firstName" name="firstName">
+            </div>
+
+            <div class="col-md-6">
+              <label for="lastName" class="form-label">Nom</label>
+              <input type="text" class="form-control" id="lastName" name="lastName">
+            </div>
+
+            <div class="col-md-6">
+              <label for="phone" class="form-label">Téléphone</label>
+              <input type="tel" class="form-control" id="phone" name="phone">
+            </div>
+
+            <div class="col-md-6">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email">
+            </div>
+
+            <div class="col-12 position-relative">
+              <label for="password" class="form-label">Nouveau mot de passe</label>
+              <input type="password" class="form-control pe-5" id="password" name="password">
+                        <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+            </div>
+
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+        <button type="button" class="btn btn-primary" id="saveProfile">Enregistrer</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+    <header class="text-center mb-8">
+    </header>
+ 
+   
+    <!-- Alerte de notification -->
+<!-- Alerte dynamique -->
+<!-- Pour afficher TOUS les retards -->
+<div th:each="entretienRetard : ${entretiensEnRetard}" 
+     th:if="${!entretiensEnRetard.empty}"
+     class="alert max-w-3xl mx-auto bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-r-md mb-4" 
+     style="margin-top: 7rem;">
+    <p class="text-sm">
+        Votre <strong th:text="${entretienRetard.car.marque + ' ' + entretienRetard.car.modele}">Voiture</strong>
+        est en retard pour l'entretien des 
+        <strong th:text="${entretienRetard.type}">type</strong>
+        depuis le 
+        <strong th:text="${#temporals.format(entretienRetard.prochaineDateEstimee, 'dd/MM/yyyy')}">date</strong>.
+        Veuillez planifier une intervention.
+    </p>
+</div>
+
+    <!-- Section principale : Tableau des entretiens -->
+<main class="main-content">  <!-- ← AJOUTÉ : Classe pour media queries -->
+    <!-- Section principale : Tableau des entretiens (style inline SUPPRIMÉ) -->
+    <section class="max-w-5xl bg-white rounded-lg shadow-soft p-4 sm:p-6 mb-8 mx-auto">  <!-- ← SUPPRIMÉ : style="margin-left: 370px; margin-right: auto;" ; AJOUTÉ : mx-auto pour centrer -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+            <h2 class="text-xl sm:text-2xl font-medium mb-4 sm:mb-0">Mes entretiens</h2>
+            <button id="openModalBtn" class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow-soft transition-elegant text-sm font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                Ajouter un entretien
+            </button>
+        </div>
+
+        <!-- Filtres (déjà responsive avec Tailwind) -->
+        <div class="flex flex-col sm:flex-row gap-3 mb-6 border-t pt-4">
+            <select id="filterStatut" class="w-full sm:w-auto p-2 text-sm border border-gray-300 rounded-md bg-white focus:border-blue-500">
+                <option>Filtrer par statut</option>
+                <th:block th:each="statut : ${statuts}">
+                    <option th:value="${statut}" th:text="${statut}"></option>
+                </th:block>
+            </select>
+            <select id="filterType" class="w-full sm:w-auto p-2 text-sm border border-gray-300 rounded-md bg-white focus:border-blue-500">
+                <option>Filtrer par type</option>
+                <option value="">-- Sélectionner --</option>
+                <th:block th:each="type : ${types}">
+                    <option th:value="${type}" th:text="${type}"></option>
+                </th:block>
+            </select>
+            <select id="filterVoiture" class="w-full sm:w-auto p-2 text-sm border border-gray-300 rounded-md bg-white focus:border-blue-500">
+                <option>Filtrer par voiture</option>
+                <th:block th:each="voiture : ${cars}">
+                    <option th:value="${voiture.id}" th:text="${voiture.marque + ' ' + voiture.modele}"></option>
+                </th:block>
+            </select>
+            <button id="resetFilters" 
+                    class="w-10 h-10 p-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 text-gray-600 hover:text-gray-800 focus:border-blue-500 transition-colors flex items-center justify-center"
+                    title="Réinitialiser les filtres">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div class="overflow-x-auto">  <!-- ← Bon pour scroll horizontal sur mobile -->
+            <table class="w-full text-sm min-w-full">  <!-- ← AJOUTÉ : min-w-full pour forcer largeur complète -->
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="p-3 text-left font-medium">Voiture</th>
+                        <th class="p-3 text-left font-medium">Type d'entretien</th>
+                        <th class="p-3 text-left font-medium">Date prévue</th>
+                        <th class="p-3 text-left font-medium">Statut</th>
+                        <th class="p-3 text-left font-medium">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="entretien : ${entretiens}" class="border-b border-gray-200 hover:bg-gray-50 transition-elegant">
+                        <td th:text="${entretien.car != null ? entretien.car.marque + ' ' + entretien.car.modele : 'Voiture non trouvée'}">Voiture</td>
+                        <td class="p-3" th:text="${entretien.type}">Type</td>
+                        <td class="p-3" th:text="${#temporals.format(entretien.dateDebut, 'dd/MM/yyyy')}">Date</td>
+                        <td class="p-3 font-medium" th:classappend="${entretien.statut.name() == 'EN_RETARD' ? 'text-red-600' : (entretien.statut.name() == 'A_VENIR' ? 'text-yellow-600' : 'text-green-600')}">
+                            <span th:text="${entretien.statut.name()}">Statut</span>
+                        </td>
+                        <td class="p-3 flex gap-2">
+                            <!-- Boutons inchangés... -->
+                            <button class="btn-details" data-id="${entretien.id}" title="Voir les détails">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                    <path fill-rule="evenodd" d="M.458 10C3.732 4.943 7.522 3 10 3s6.268 1.943 9.542 7c-3.274 5.057-7.03 7-9.542 7S3.732 15.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                                </svg>
+                            </button>
+                            <button class="btn-modifier" data-id="${entretien.id}" data-type="${entretien.type}" data-date-debut="${#temporals.format(entretien.dateDebut, 'yyyy-MM-dd')}" data-date-fin="${entretien.dateFin != null ? #temporals.format(entretien.dateFin, 'yyyy-MM-dd') : ''}" data-prochain-km-estime="${entretien.prochainKmEstime}" data-prochaine-date-estimee="${entretien.prochaineDateEstimee != null ? #temporals.format(entretien.prochaineDateEstimee, 'yyyy-MM-dd') : ''}" title="Modifier">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"/>
+                                    <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"/>
+                                </svg>
+                            </button>
+                            <button class="btn-supprimer" data-id="${entretien.id}" title="Supprimer">
+                                <svg class="w-4 h-4 text-red-600 hover:text-red-800" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H3a1 1 0 000 2h1v10a2 2 0 002 2h8a2 2 0 002-2V6h1a1 1 0 100-2h-2V3a1 1 0 00-1-1H6zm2 4a1 1 0 012 0v8a1 1 0 11-2 0V6zm4 0a1 1 0 012 0v8a1 1 0 11-2 0V6z" clip-rule="evenodd"/>
+                                </svg>
+                            </button>
+                            <button class="btn-panne" data-id="${entretien.id}" title="Déclarer une panne">
+                                <svg class="w-4 h-4 text-yellow-600 hover:text-yellow-800" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.366-.446.972-.446 1.338 0l7.071 8.632c.39.476.029 1.169-.57 1.169H1.756c-.6 0-.96-.693-.57-1.169l7.071-8.632zM11 13a1 1 0 10-2 0 1 1 0 002 0zm-1-6a1 1 0 00-.993.883L9 8v3a1 1 0 001.993.117L11 11V8a1 1 0 00-1-1z" />
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+    
+    <div id="advancedModal" class="modal fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 hidden opacity-0 z-50">
+        <div class="modal-content bg-white rounded-xl shadow-2xl w-full max-w-3xl transform transition-all">
+            <!-- Header -->
+            <div class="flex justify-between items-center p-5 border-b">
+                 <h3 class="text-xl font-semibold text-gray-900">Assistant d'ajout d'entretien</h3>
+                <button id="closeModalBtn" class="text-gray-400 hover:text-gray-700 transition-colors rounded-full p-1">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+
+            <!-- Barre de progression -->
+            <div class="p-6">
+                <div class="flex items-center">
+                    <div id="step-indicator-1" class="progress-step flex-1 flex flex-col items-center border-b-4 pb-4 active">
+                        <div class="step-circle w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-500">1</div>
+                        <div class="step-label text-sm mt-2 font-medium">Infos</div>
+                    </div>
+                    <div id="connector-1" class="progress-connector flex-auto border-t-2 h-0"></div>
+                    <div id="step-indicator-2" class="progress-step flex-1 flex flex-col items-center border-b-4 pb-4 border-gray-200 text-gray-400">
+                        <div class="step-circle w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center font-bold">2</div>
+                        <div class="step-label text-sm mt-2 font-medium">Détails</div>
+                    </div>
+                    <div id="connector-2" class="progress-connector flex-auto border-t-2 h-0"></div>
+                    <div id="step-indicator-3" class="progress-step flex-1 flex flex-col items-center border-b-4 pb-4 border-gray-200 text-gray-400">
+                        <div class="step-circle w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center font-bold">3</div>
+                        <div class="step-label text-sm mt-2 font-medium">Facture</div>
+                    </div>
+                    <div id="connector-3" class="progress-connector flex-auto border-t-2 h-0"></div>
+                    <div id="step-indicator-4" class="progress-step flex-1 flex flex-col items-center border-b-4 pb-4 border-gray-200 text-gray-400">
+                        <div class="step-circle w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center font-bold">4</div>
+                        <div class="step-label text-sm mt-2 font-medium">Résumé</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conteneur des étapes du formulaire -->
+            <div class="p-6 pt-0">
+                <form id="multi-step-form">
+                    <!-- Étape 1: Infos générales -->
+                    <div class="form-step active" data-step="1">
+                        <h4 class="text-lg font-semibold mb-4 text-gray-800">Informations générales</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label for="car" class="block text-sm font-medium text-gray-700">Voiture concernée</label>
+                                <select id="car" name="car" class="mt-1 w-full p-2.5 border border-gray-300 rounded-lg shadow-sm" required>
+                                    <option value="">-- Sélectionner --</option>
+                                    <th:block th:each="voiture : ${cars}">
+        <option th:value="${voiture.id}" th:text="${voiture.marque + ' ' + voiture.modele}"></option>
+    </th:block>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="type" class="block text-sm font-medium text-gray-700">Type d’entretien</label>
+                                <select id="type" name="type" class="mt-1 w-full p-2.5 border border-gray-300 rounded-lg shadow-sm" required>
+                                     <option value="">-- Sélectionner --</option>
+                                    <th:block th:each="type : ${types}">
+        <option th:value="${type}" th:text="${type}"></option>
+    </th:block>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+  
+                    <!-- Étape 2: Détails et coûts -->
+                  <div class="form-step" data-step="2">
+    <h4 class="text-lg font-semibold mb-4 text-gray-800">Détails et Coûts</h4>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+        <div>
+            <label for="dateDebut" class="block text-sm font-medium text-gray-700">Date de réalisation</label>
+            <input type="date" id="dateDebut" name="dateDebut" class="mt-1 w-full p-2.5 border border-gray-300 rounded-lg shadow-sm" required>
+        </div>
+
+        <div>
+            <label for="dateFin" class="block text-sm font-medium text-gray-700">Date de fin</label>
+            <input type="date" id="dateFin" name="dateFin" class="mt-1 w-full p-2.5 border border-gray-300 rounded-lg shadow-sm">
+        </div>
+
+        <div>
+            <label for="cost" class="block text-sm font-medium text-gray-700">Coût (€)</label>
+            <input type="number" id="cost" name="cost" step="0.01" class="mt-1 w-full p-2.5 border border-gray-300 rounded-lg shadow-sm" placeholder="Ex: 150.50" required>
+        </div>
+
+        <div>
+            <label for="periodique" class="inline-flex items-center mt-6">
+                <input type="checkbox" id="periodique" name="periodique" class="form-checkbox h-5 w-5 text-blue-600">
+                <span class="ml-2 text-gray-700">Entretien périodique</span>
+            </label>
+        </div>
+
+        <div>
+            <label for="prochainKmEstime" class="block text-sm font-medium text-gray-700">Prochain kilométrage estimé</label>
+            <input type="number" id="prochainKmEstime" name="prochainKmEstime" class="mt-1 w-full p-2.5 border border-gray-300 rounded-lg shadow-sm" placeholder="Ex: 50000">
+        </div>
+
+        <div>
+            <label for="prochaineDateEstimee" class="block text-sm font-medium text-gray-700">Prochaine date estimée</label>
+            <input type="date" id="prochaineDateEstimee" name="prochaineDateEstimee" class="mt-1 w-full p-2.5 border border-gray-300 rounded-lg shadow-sm">
+        </div>
+
+        <div class="sm:col-span-2">
+            <label for="remarks" class="block text-sm font-medium text-gray-700">Remarques / Garage</label>
+            <textarea id="remarks" name="remarks" rows="3" class="mt-1 w-full p-2.5 border border-gray-300 rounded-lg shadow-sm" placeholder="Ajouter des détails..."></textarea>
+        </div>
+
+      
+
+    </div>
+</div>
+
+
+                    <!-- Étape 3: Facture -->
+                    <div class="form-step" data-step="3">
+                         <h4 class="text-lg font-semibold mb-4 text-gray-800">Documentation</h4>
+                         <label id="invoice-dropzone" class="mt-1 flex flex-col items-center justify-center w-full h-48 px-4 transition bg-gray-50 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:border-blue-500">
+                             <div id="upload-prompt" class="flex flex-col items-center text-gray-500">
+                                <svg class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                                <span class="font-medium mt-2">Cliquer ou glisser un fichier</span>
+                                <span class="text-xs mt-1">PDF, PNG, JPG (MAX. 5MB)</span>
+                             </div>
+                             <div id="file-preview" class="hidden items-center gap-4 text-gray-700">
+                                <svg class="w-12 h-12 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" /></svg>
+                                <div>
+                                    <p id="file-name" class="font-medium"></p>
+                                    <p id="file-size" class="text-sm"></p>
+                                </div>
+                                <button type="button" id="remove-file" class="ml-auto text-red-500 hover:text-red-700">×</button>
+                             </div>
+                         </label>
+                         <input type="file" id="invoice-input" name="invoice" class="hidden">
+                    </div>
+
+                     <!-- Étape 4: Résumé -->
+                    <div class="form-step" data-step="4">
+                        <h4 class="text-lg font-semibold mb-4 text-gray-800">Veuillez vérifier les informations</h4>
+                        <div id="summary-content" class="space-y-3 text-sm"></div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Footer avec boutons de navigation -->
+            <div class="flex justify-between items-center gap-4 p-5 bg-gray-50 rounded-b-xl border-t mt-2">
+                <button type="button" id="prevBtn" class="px-5 py-2.5 bg-white text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-100 transition-all font-semibold invisible">Précédent</button>
+                <button type="button" id="nextBtn" class="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-semibold shadow ml-auto">Suivant</button>
+                <button type="submit" id="submitBtn" form="multi-step-form" class="hidden px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-semibold shadow">Soumettre l'entretien</button>
+            </div>
+        </div>
+    </div>
+    <div id="modalDetails" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 transition-opacity duration-300">
+  <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-2xl transform scale-95 opacity-0 transition-all duration-300"
+       id="modalContent">
+    <div class="flex justify-between items-center border-b pb-3 mb-4">
+      <h2 class="text-xl font-semibold text-blue-700">🛠️ Détails de l'entretien</h2>
+      <button onclick="closeDetailsModal()" class="text-gray-400 hover:text-red-500 text-lg font-bold">&times;</button>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-700">
+      <div><strong>🚗 Voiture :</strong> <span id="detailCar" class="text-gray-800 font-medium"></span></div>
+      <div><strong>📄 Type :</strong> <span id="detailType" class="text-gray-800 font-medium"></span></div>
+      <div><strong>📅 Date début :</strong> <span id="detailDateDebut" class="text-gray-800 font-medium"></span></div>
+      <div><strong>📅 Date fin :</strong> <span id="detailDateFin" class="text-gray-800 font-medium"></span></div>
+      <div><strong>🔁 Périodique :</strong> <span id="detailPeriodique" class="text-gray-800 font-medium"></span></div>
+      <div><strong>📍 Prochain KM estimé :</strong> <span id="detailKm" class="text-gray-800 font-medium"></span></div>
+      <div><strong>🗓️ Prochaine date estimée :</strong> <span id="detailDateEstimee" class="text-gray-800 font-medium"></span></div>
+      <div class="sm:col-span-2"><strong>📝 Remarques :</strong> <span id="detailRemarks" class="text-gray-800 font-medium"></span></div>
+    </div>
+
+    <div class="mt-6 text-right">
+      <button onclick="closeDetailsModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Fermer</button>
+    </div>
+  </div>
+</div>
+<div id="modalDetails" class="fixed inset-0 bg-gray-900 bg-opacity-70 hidden flex items-center justify-center z-50 transition-transform duration-500">
+    <div class="bg-white rounded-2xl shadow-xl p-5 w-full max-w-md transform -translate-x-full opacity-0 transition-all duration-500"
+         id="modalContent">
+        <div class="flex justify-between items-center border-b-2 border-purple-500 pb-3 mb-4">
+            <h2 class="text-2xl font-bold text-purple-700">📋 Détails de l'entretien</h2>
+            <button onclick="closeEntretienModal()" class="text-gray-600 hover:text-purple-700 text-xl font-semibold">&times;</button>
+        </div>
+
+        <div class="space-y-3">
+            <div class="bg-purple-50 p-3 rounded-lg border-l-4 border-purple-500">
+                <strong class="text-purple-800">Voiture :</strong>
+                <span id="entretienCar" class="text-purple-900 font-medium ml-2"></span>
+            </div>
+            <div class="bg-purple-50 p-3 rounded-lg border-l-4 border-purple-500">
+                <strong class="text-purple-800">Type :</strong>
+                <span id="entretienType" class="text-purple-900 font-medium ml-2"></span>
+            </div>
+            <div class="bg-purple-50 p-3 rounded-lg border-l-4 border-purple-500">
+                <strong class="text-purple-800">Date de début :</strong>
+                <span id="entretienDateDebut" class="text-purple-900 font-medium ml-2"></span>
+            </div>
+            <div class="bg-purple-50 p-3 rounded-lg border-l-4 border-purple-500">
+                <strong class="text-purple-800">Date de fin :</strong>
+                <span id="entretienDateFin" class="text-purple-900 font-medium ml-2"></span>
+            </div>
+            <div class="bg-purple-50 p-3 rounded-lg border-l-4 border-purple-500">
+                <strong class="text-purple-800">Périodique :</strong>
+                <span id="entretienPeriodique" class="text-purple-900 font-medium ml-2"></span>
+            </div>
+            <div class="bg-purple-50 p-3 rounded-lg border-l-4 border-purple-500">
+                <strong class="text-purple-800">Prochain KM estimé :</strong>
+                <span id="entretienKm" class="text-purple-900 font-medium ml-2"></span>
+            </div>
+            <div class="bg-purple-50 p-3 rounded-lg border-l-4 border-purple-500">
+                <strong class="text-purple-800">Prochaine date estimée :</strong>
+                <span id="entretienDateEstimee" class="text-purple-900 font-medium ml-2"></span>
+            </div>
+            <div class="bg-purple-50 p-3 rounded-lg border-l-4 border-purple-500">
+                <strong class="text-purple-800">Remarques :</strong>
+                <span id="entretienRemarks" class="text-purple-900 font-medium ml-2"></span>
+            </div>
+        </div>
+
+        <div class="mt-6 text-right">
+            <button onclick="closeEntretienModal()" class="px-6 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-all duration-200">
+                Fermer
+            </button>
+        </div>
+    </div>
+</div>
+<div id="modalPanne" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex justify-center items-center z-50 transition-opacity duration-300">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 transform transition-all duration-300 scale-95">
+        <!-- En-tête de la modale -->
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold text-yellow-800">Déclarer une panne</h3>
+            <button id="btnClosePanneModal" class="text-yellow-600 hover:text-yellow-800 transition-colors">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Formulaire -->
+        <form id="formPanne" class="space-y-4">
+            <input type="hidden" id="panneId" name="panneId">
+
+            <!-- Voiture -->
+            <div>
+                <label for="panneCarDisplay" class="block text-sm font-medium text-yellow-700">Voiture concernée</label>
+                <input type="text" id="panneCarDisplay" name="panneCarDisplay"  class="mt-1 w-full p-2.5 border border-yellow-300 rounded-lg bg-gray-100 text-gray-700" readonly>
+            </div>
+
+            <!-- Date de début -->
+            <div>
+                <label for="panneDateDebut" class="block text-sm font-medium text-yellow-700">Date de début</label>
+                <input type="date" id="panneDateDebut" name="dateDebut" class="mt-1 w-full p-2.5 border border-yellow-300 rounded-lg focus:ring-yellow-500 focus:border-yellow-500" required>
+            </div>
+
+            <!-- Date de fin -->
+            <div>
+                <label for="panneDateFin" class="block text-sm font-medium text-yellow-700">Date de fin</label>
+                <input type="date" id="panneDateFin" name="dateFin" class="mt-1 w-full p-2.5 border border-yellow-300 rounded-lg focus:ring-yellow-500 focus:border-yellow-500">
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label for="panneDescription" class="block text-sm font-medium text-yellow-700">Description de la panne</label>
+                <textarea id="panneDescription" name="description" rows="3" class="mt-1 w-full p-2.5 border border-yellow-300 rounded-lg focus:ring-yellow-500 focus:border-yellow-500" placeholder="Décrivez la panne..."></textarea>
+            </div>
+
+            <!-- Boutons -->
+            <div class="flex justify-end gap-3">
+                <button type="button" id="btnCancelPanneModal" class="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg hover:bg-yellow-200 transition-all">Annuler</button>
+                <button type="submit" class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-all">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="modalModifier" class="hidden fixed inset-0 bg-amber-900 bg-opacity-50 flex justify-center items-center z-50 transition-opacity duration-300">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 transform transition-all duration-300 scale-95">
+        <!-- En-tête de la modale -->
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold text-amber-800">Modifier un entretien</h3>
+            <button id="btnCloseModal" class="text-amber-600 hover:text-amber-800 transition-colors">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Formulaire -->
+        <form id="formModifier" class="space-y-4">
+            <input type="hidden" id="entretienId" name="entretienId">
+
+            <!-- Voiture -->
+            <div>
+                <label for="car" class="block text-sm font-medium text-amber-700">Voiture concernée</label>
+                <select id="cars" name="car" class="mt-1 w-full p-2.5 border border-amber-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" required>
+                    <option value="">-- Sélectionner --</option>
+                    <th:block th:each="voiture : ${cars}">
+                        <option th:value="${voiture.id}" th:text="${voiture.marque + ' ' + voiture.modele}"></option>
+                    </th:block>
+                </select>
+            </div>
+
+            <!-- Type -->
+            <div>
+                <label for="inputType" class="block text-sm font-medium text-amber-700">Type d'entretien</label>
+                <select id="inputType" name="type" class="mt-1 w-full p-2.5 border border-amber-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" required>
+                    <option value="">-- Sélectionner --</option>
+                    <th:block th:each="type : ${types}">
+                        <option th:value="${type}" th:text="${type}"></option>
+                    </th:block>
+                </select>
+            </div>
+
+            <!-- Date de début -->
+            <div>
+                <label for="inputDateDebut" class="block text-sm font-medium text-amber-700">Date de réalisation</label>
+                <input type="date" id="inputDateDebut" name="dateDebut" class="mt-1 w-full p-2.5 border border-amber-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" required>
+            </div>
+
+            <!-- Date de fin -->
+            <div>
+                <label for="inputDateFin" class="block text-sm font-medium text-amber-700">Date de fin</label>
+                <input type="date" id="inputDateFin" name="dateFin" class="mt-1 w-full p-2.5 border border-amber-300 rounded-lg focus:ring-amber-500 focus:border-amber-500">
+            </div>
+
+            <!-- Coût -->
+           
+
+            <!-- Prochain kilométrage estimé -->
+            <div>
+                <label for="prochainKmEstimes" class="block text-sm font-medium text-amber-700">Prochain kilométrage estimé</label>
+                <input type="number" id="prochainKmEstimes" name="prochainKmEstimes" class="mt-1 w-full p-2.5 border border-amber-300 rounded-lg focus:ring-amber-500 focus:border-amber-500" placeholder="Ex: 50000">
+            </div>
+
+            <!-- Prochaine date estimée -->
+            <div>
+                <label for="prochaineDateEstimees" class="block text-sm font-medium text-amber-700">Prochaine date estimée</label>
+                <input type="date" id="prochaineDateEstimees" name="prochaineDateEstimees" class="mt-1 w-full p-2.5 border border-amber-300 rounded-lg focus:ring-amber-500 focus:border-amber-500">
+            </div>
+
+            <!-- Remarques -->
+           
+            <!-- Boutons -->
+            <div class="flex justify-end gap-3">
+                <button type="button" id="btnCancelModal" class="px-4 py-2 bg-amber-100 text-amber-800 rounded-lg hover:bg-amber-200 transition-all">Annuler</button>
+                <button type="submit" class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-all">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+  
+    <div class="modal-custom-non-bootstrap" id="alertsModalCustom">
+        <div class="modal-header-custom-non-bootstrap">
+            <h3>Alertes récentes</h3>
+            <span class="close-btn" id="closeAlertsModalCustom">×</span>
+        </div>
+        <div class="modal-body-custom-non-bootstrap">
+            <div class="alert-item">
+                <div class="alert-content">
+                    <div class="alert-title">Maintenance voiture #123</div>
+                    <div class="alert-message">Vérification des freins requise.</div>
+                </div>
+                <div class="alert-meta">
+                    <div class="alert-time">Il y a 15 min</div>
+                    <span class="alert-status status-urgent">Urgent</span>
+                </div>
+            </div>
+            <div class="alert-item">
+                <div class="alert-content">
+                    <div class="alert-title">Réservation en attente</div>
+                    <div class="alert-message">Confirmer la réservation de M. Durand.</div>
+                </div>
+                <div class="alert-meta">
+                    <div class="alert-time">Il y a 2 heures</div>
+                    <span class="alert-status status-waiting">En attente</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <aside id="sidebarCustom" class="sidebar-custom-tailwind sidebar-expanded">
+        <div class="sidebar-header">
+            <div class="brand-logo-wrapper">
+                <i class="fas fa-car-alt brand-icon"></i>
+                <span class="brand-text" id="sidebarBrandText">ABIcars</span>
+            </div>
+            <button id="toggleSidebarCustom" class="toggle-btn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="/Owner/dashbord" class="sidebar-item">
+                <i class="fas fa-tachometer-alt menu-icon text-blue-400"></i>
+                <span class="sidebar-text">Tableau de Bord</span>
+            </a>
+            <a href="/Owner/message" class="sidebar-item">
+                <i class="fas fa-envelope menu-icon text-sky-400"></i>
+                <span class="sidebar-text">Messages</span>
+            </a>
+            <a href="/Owner/clientespace" class="sidebar-item">
+                <i class="fas fa-users menu-icon text-fuchsia-400"></i>
+                <span class="sidebar-text">Clients</span>
+            </a>
+            <a href="/Owner/litige" class="sidebar-item">
+                <i class="fas fa-gavel menu-icon text-rose-500"></i>
+                <span class="sidebar-text">Litiges</span>
+            </a>
+            <a href="/Owner/voitures" class="sidebar-item">
+                <i class="fas fa-car-side menu-icon text-emerald-500"></i>
+                <span class="sidebar-text">Voitures</span>
+            </a>
+            <a href="/Owner/reservation" class="sidebar-item ">
+                <i class="fas fa-calendar-check menu-icon text-amber-500"></i>
+                <span class="sidebar-text">Réservations</span>
+            </a>
+            <a href="/Owner/notifications" class="sidebar-item">
+                <i class="fas fa-bell menu-icon text-violet-500"></i>
+                <span class="sidebar-text">Notifications</span>
+            </a>
+              <a href="/Owner/entretiens" class="sidebar-item active">
+    <i class="fas fa-wrench menu-icon text-orange-400"></i>
+    <span class="sidebar-text">Entretiens</span>
+</a>
+            <a href="/Owner/paiement" class="sidebar-item">
+                <i class="fas fa-credit-card menu-icon text-cyan-500"></i>
+                <span class="sidebar-text">Paiement</span>
+            </a>
+        </nav>
+    </aside>
+   <!-- Modal -->
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    
+      <script>
+$(document).ready(function() {
+    // Charger les données de l'utilisateur
+    $('#showUserProfile').click(function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: '/api/user/profille',
+            type: 'GET',
+            success: function(user) {
+                $('#firstName').val(user.firstName);
+                $('#lastName').val(user.lastName);
+                $('#phone').val(user.telephone);
+                $('#email').val(user.email);
+                $('#password').val(''); // Champ mot de passe vide par défaut
+            },
+            error: function(xhr) {
+                alert('Erreur lors de la récupération des informations: ' + xhr.responseText);
+            }
+        });
+    });
+
+    // Basculer l'affichage du mot de passe
+    $('#togglePassword').click(function() {
+        const passwordField = $('#password');
+        const type = passwordField.attr('type') === 'password' ? 'text' : 'password';
+        passwordField.attr('type', type);
+        $(this).toggleClass('fa-eye fa-eye-slash');
+    });
+
+    // Enregistrer les modifications
+    $('#saveProfile').click(function() {
+        const userData = {
+            firstName: $('#firstName').val(),
+            lastName: $('#lastName').val(),
+            phone: $('#phone').val(),
+            email: $('#email').val(),
+            password: $('#password').val()
+        };
+
+        $.ajax({
+            url: '/api/user/proprofile',
+            type: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify(userData),
+            success: function(response) {
+                alert('Profil mis à jour avec succès !');
+                $('#userModal').modal('hide');
+            },
+            error: function(xhr) {
+                alert('Erreur lors de la mise à jour du profil: ' + xhr.responseText);
+            }
+        });
+    });
+});
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // === GESTION DU MODAL ===
+        const modal = document.getElementById('advancedModal');
+        const openModalBtn = document.getElementById('openModalBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const formSteps = document.querySelectorAll('.form-step');
+
+        let currentStep = 1;
+        const formData = {};
+
+        // --- OUVERTURE / FERMETURE MODAL ---
+        openModalBtn.addEventListener('click', () => {
+            modal.classList.remove('hidden', 'opacity-0');
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            modal.classList.add('hidden', 'opacity-0');
+        });
+
+        // --- NAVIGATION ENTRE ÉTAPES ---
+        nextBtn.addEventListener('click', () => {
+            if (validateStep(currentStep)) {
+                saveStepData(currentStep);
+                if (currentStep < formSteps.length) {
+                    currentStep++;
+                    updateFormSteps();
+                    updateProgress();
+                }
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentStep > 1) {
+                currentStep--;
+                updateFormSteps();
+                updateProgress();
+            }
+        });
+
+        function updateFormSteps() {
+            formSteps.forEach(step => {
+                step.classList.toggle('active', parseInt(step.dataset.step) === currentStep);
+            });
+            if (currentStep === 4) generateSummary();
+        }
+
+        function updateProgress() {
+            for (let i = 1; i <= formSteps.length; i++) {
+                const step = document.getElementById(`step-indicator-${i}`);
+                const connector = document.getElementById(`connector-${i - 1}`);
+                step.classList.toggle('active', i === currentStep);
+                step.classList.toggle('completed', i < currentStep);
+                if (connector) connector.classList.toggle('completed', i <= currentStep);
+            }
+
+            prevBtn.classList.toggle('invisible', currentStep === 1);
+            nextBtn.classList.toggle('hidden', currentStep === formSteps.length);
+            submitBtn.classList.toggle('hidden', currentStep !== formSteps.length);
+        }
+
+        function validateStep(step) {
+            const currentFormStep = document.querySelector(`.form-step[data-step="${step}"]`);
+            const inputs = currentFormStep.querySelectorAll('input[required], select[required]');
+            let isValid = true;
+
+            inputs.forEach(input => {
+                input.classList.remove('input-error');
+                if (!input.value.trim()) {
+                    input.classList.add('input-error');
+                    isValid = false;
+                }
+            });
+
+            return isValid;
+        }
+
+        function saveStepData(step) {
+            const currentFormStep = document.querySelector(`.form-step[data-step="${step}"]`);
+            const inputs = currentFormStep.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                if (input.name) {
+                    if(input.type === "checkbox") {
+                        // Checkbox : true/false
+                        formData[input.name] = input.checked;
+                    } else {
+                        formData[input.name] = input.value;
+                    }
+                }
+            });
+        }
+        function generateSummary() {
+            const summaryContent = document.getElementById('summary-content');
+            summaryContent.innerHTML = `
+                <div class="flex justify-between py-2 border-b"><span class="font-medium text-gray-500">Voiture :</span> <span class="font-semibold">${formData.car || 'N/A'}</span></div>
+                <div class="flex justify-between py-2 border-b"><span class="font-medium text-gray-500">Type :</span> <span class="font-semibold">${formData.type || 'N/A'}</span></div>
+                <div class="flex justify-between py-2 border-b"><span class="font-medium text-gray-500">Date de début :</span> <span class="font-semibold">${formData.dateDebut || 'N/A'}</span></div>
+                <div class="flex justify-between py-2 border-b"><span class="font-medium text-gray-500">Date de fin :</span> <span class="font-semibold">${formData.dateFin || 'N/A'}</span></div>
+                <div class="flex justify-between py-2 border-b"><span class="font-medium text-gray-500">Coût :</span> <span class="font-semibold">${formData.cost ? formData.cost + ' €' : 'N/A'}</span></div>
+                <div class="flex justify-between py-2 border-b"><span class="font-medium text-gray-500">Périodique :</span> <span class="font-semibold">${formData.periodique ? 'Oui' : 'Non'}</span></div>
+                <div class="flex justify-between py-2 border-b"><span class="font-medium text-gray-500">Prochain KM estimé :</span> <span class="font-semibold">${formData.prochainKmEstime || 'N/A'}</span></div>
+                <div class="flex justify-between py-2 border-b"><span class="font-medium text-gray-500">Prochaine date estimée :</span> <span class="font-semibold">${formData.prochaineDateEstimee || 'N/A'}</span></div>
+                <div class="flex justify-between py-2 border-b"><span class="font-medium text-gray-500">Remarques :</span> <span class="font-semibold text-right">${formData.remarks || 'Aucune'}</span></div>
+                <div class="flex justify-between py-2"><span class="font-medium text-gray-500">Facture :</span> <span class="font-semibold">${formData.invoice ? 'Fichier joint' : 'Aucun fichier'}</span></div>
+            `;
+        
+        }
+
+
+        // --- GESTION DU FICHIER FACTURE ---
+        const dropzone = document.getElementById('invoice-dropzone');
+        const fileInput = document.getElementById('invoice-input');
+        const uploadPrompt = document.getElementById('upload-prompt');
+        const filePreview = document.getElementById('file-preview');
+
+        dropzone.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', handleFile);
+
+        function handleFile() {
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                formData.invoice = file.name;
+
+                document.getElementById('file-name').textContent = file.name;
+                document.getElementById('file-size').textContent = `${(file.size / 1024).toFixed(1)} KB`;
+
+                uploadPrompt.classList.add('hidden');
+                filePreview.classList.remove('hidden');
+                filePreview.classList.add('flex');
+            }
+        }
+
+        document.getElementById('remove-file').addEventListener('click', (e) => {
+            e.stopPropagation();
+            fileInput.value = '';
+            formData.invoice = '';
+            uploadPrompt.classList.remove('hidden');
+            filePreview.classList.add('hidden');
+        });
+
+        // --- ENVOI DU FORMULAIRE ---
+       submitBtn.addEventListener('click', () => {
+    const form = new FormData();
+    form.append("carId", formData.car);  // Assure-toi que 'car' est défini ailleurs
+    form.append("type", formData.type);
+    form.append("dateDebut", formData.dateDebut);
+    form.append("dateFin", formData.dateFin || "");
+    form.append("cost", formData.cost);
+    form.append("remarks", formData.remarks || "");
+    form.append("periodique", formData.periodique === true ? "true" : "false");
+    form.append("prochainKmEstime", formData.prochainKmEstime || "");
+    form.append("prochaineDateEstimee", formData.prochaineDateEstimee || "");
+
+    if (fileInput.files.length > 0) {
+        form.append("invoice", fileInput.files[0]);
+    }
+
+    fetch("/Owner/api/entretiens", {
+        method: "POST",
+        body: form
+    })
+    .then(response => {
+        if (!response.ok) throw new Error("Erreur lors de l'enregistrement");
+        return response.json();
+        })
+   .then(data => {
+    alert("✅ Entretien ajouté avec succès !");
+    modal.classList.add('hidden', 'opacity-0');
+    location.reload();
+})
+
+    .catch(err => {
+        console.error(err);
+        alert("❌ Une erreur est survenue lors de l'enregistrement.");
+    });
+       
+});
+    });
+  
+</script>
+<script>
+$(document).ready(function() {
+    // Fonction pour réinitialiser les filtres
+    function resetFilters() {
+        console.log('🔄 Réinitialisation des filtres');
+        
+        // Animation du bouton
+        const resetBtn = $('#resetFilters');
+        resetBtn.addClass('reset-animation');
+        setTimeout(() => {
+            resetBtn.removeClass('reset-animation');
+        }, 500);
+        
+        // Réinitialiser les sélecteurs
+        $('#filterStatut').val('Filtrer par statut');
+        $('#filterType').val('Filtrer par type');
+        $('#filterVoiture').val('Filtrer par voiture');
+        
+        // Réappliquer les filtres
+        applyFilters();
+
+        // Message de confirmation temporaire
+        showTempMessage('Filtres réinitialisés', 'success');
+    }
+
+    // Fonction pour afficher un message temporaire
+    function showTempMessage(message, type) {
+        // Supprimer l'ancien message s'il existe
+        $('.temp-message').remove();
+        
+        const colorClass = type === 'success' ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700';
+        
+        const messageElement = $(`
+            <div class="temp-message fixed top-4 right-4 ${colorClass} border px-4 py-2 rounded-md shadow-lg z-50 transition-opacity duration-300">
+                ${message}
+            </div>
+        `);
+        
+        $('body').append(messageElement);
+        
+        // Faire disparaître après 2 secondes
+        setTimeout(() => {
+            messageElement.fadeOut(300, function() {
+                $(this).remove();
+            });
+        }, 2000);
+    }
+
+    // Function to handle filtering
+    function applyFilters() {
+        // Get selected values from dropdowns
+        const statut = $('#filterStatut').val();
+        const type = $('#filterType').val();
+        const voiture = $('#filterVoiture').val();
+
+        console.log('🔍 Filtres appliqués:', { statut, type, voiture });
+
+        // Prepare data for AJAX request
+        const filterData = {
+            statut: statut !== 'Filtrer par statut' ? statut : '',
+            type: type !== 'Filtrer par type' ? type : '',
+            voiture: voiture !== 'Filtrer par voiture' ? voiture : ''
+        };
+
+        console.log('📤 Données envoyées:', filterData);
+
+        // Show loading
+        $('tbody').html('<tr><td colspan="5" class="p-3 text-center">Chargement...</td></tr>');
+
+        // Make AJAX request
+        $.ajax({
+            url: '/Owner/filter',
+            type: 'GET',
+            data: filterData,
+            dataType: 'json',
+            success: function(response) {
+                console.log('✅ Réponse reçue:', response);
+                console.log('📊 Nombre d\'entretiens:', response ? response.length : 0);
+
+                // Clear existing table rows
+
+                // Check if response contains data
+                if (response && response.length > 0) {
+                	   $('tbody').empty();
+                    // Populate table with filtered data
+                    response.forEach(function(entretien) {
+                    	console.log(entretien); // Vérifiez la structure des données
+                        const row = `
+                            <tr class="border-b border-gray-200 hover:bg-gray-50 transition-elegant">
+                        	<td class="p-3 font-medium">
+                            ${entretien.car ? entretien.car.marque + ' ' + entretien.car.modele : 'Véhicule non spécifié'}
+                        </td>             <td class="p-3">${entretien.type}</td>
+                                <td class="p-3">${formatDate(entretien.dateDebut)}</td>
+                                <td class="p-3 font-medium ${getStatusColor(entretien.statut)}">
+                                    <span>${formatStatus(entretien.statut)}</span>
+                                </td>
+                                <td class="p-3 flex gap-2">
+                                    <button class="btn-details p-2 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 transition-elegant" 
+                                            data-id="${entretien.id}" title="Voir les détails">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                            <path fill-rule="evenodd" d="M.458 10C3.732 4.943 7.522 3 10 3s6.268 1.943 9.542 7c-3.274 5.057-7.03 7-9.542 7S3.732 15.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </button>
+                                    <button class="btn-modifier p-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-elegant"
+                                            data-id="${entretien.id}"
+                                            data-type="${entretien.type}"
+                                            data-date-debut="${entretien.dateDebut}"
+                                            data-date-fin="${entretien.dateFin || ''}"
+                                            title="Modifier">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"/>
+                                            <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </button>
+                                    <button class="btn-supprimer p-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200 transition-elegant"
+                                            data-id="${entretien.id}"
+                                            title="Supprimer">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H3a1 1 0 000 2h1v10a2 2 0 002 2h8a2 2 0 002-2V6h1a1 1 0 100-2h-2V3a1 1 0 00-1-1H6zm2 4a1 1 0 012 0v8a1 1 0 11-2 0V6zm4 0a1 1 0 012 0v8a1 1 0 11-2 0V6z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </button>
+                                    <button class="btn-panne p-2 bg-yellow-100 text-yellow-600 rounded-md hover:bg-yellow-200 transition-elegant"
+                                            data-id="${entretien.id}"
+                                            title="Déclarer une panne">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M8.257 3.099c.366-.446.972-.446 1.338 0l7.071 8.632c.39.476.029 1.169-.57 1.169H1.756c-.6 0-.96-.693-.57-1.169l7.071-8.632zM11 13a1 1 0 10-2 0 1 1 0 002 0zm-1-6a1 1 0 00-.993.883L9 8v3a1 1 0 001.993.117L11 11V8a1 1 0 00-1-1z" />
+                                        </svg>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                        $('tbody').append(row);
+                    });
+                } else {
+                    // Show message when no results
+                    $('tbody').append('<tr><td colspan="5" class="p-3 text-center">Aucun résultat trouvé</td></tr>');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error filtering data:', error);
+                $('tbody').empty().append('<tr><td colspan="5" class="p-3 text-center text-red-600">Erreur lors du filtrage</td></tr>');
+            }
+        });
+    }
+
+    // Format date function (assuming date comes in ISO format)
+   // ✅ Fonction universelle de formatage de date
+function formatDate(dateInput) {
+    if (!dateInput) return '';
+
+    // Cas 1 : format tableau [yyyy, mm, dd]
+    if (Array.isArray(dateInput)) {
+        const [year, month, day] = dateInput;
+        return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+    }
+
+    // Cas 2 : format texte ISO (ex: "2025-10-09")
+    const date = new Date(dateInput);
+    if (isNaN(date)) return '';
+    return date.toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+}
+
+
+    // Format status text
+    function formatStatus(status) {
+        return status;
+    }
+
+    // Get status color class
+    function getStatusColor(status) {
+        switch(status) {
+            case 'EN_RETARD':
+                return 'text-red-600';
+            case 'A_VENIR':
+                return 'text-yellow-600';
+            default:
+                return 'text-green-600';
+        }
+    }
+
+    // 🔥 ÉCOUTEUR POUR LE BOUTON RESET (AJOUT IMPORTANT)
+    $('#resetFilters').on('click', resetFilters);
+
+    // Event listeners for filter changes
+    $('#filterStatut, #filterType, #filterVoiture').on('change', function() {
+        applyFilters();
+    });
+
+    // Initial load
+    applyFilters();
+    console.log("applyFilters() appelée !");
+
+});
+
+
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+	  const modal = document.getElementById('modalModifier');
+	  const form = document.getElementById('formModifier');
+	  const closeBtn = document.getElementById('btnCloseModal');
+	  const cancelBtn = document.getElementById('btnCancelModal');
+	  // Fonction pour valider les champs requis
+	  const validateForm = () => {
+	    const requiredFields = form.querySelectorAll('input[required], select[required]');
+	    let isValid = true;
+	    requiredFields.forEach(field => {
+	      field.classList.remove('border-red-500');
+	      if (!field.value.trim()) {
+	        field.classList.add('border-red-500');
+	        isValid = false;
+	      }
+	    });
+	    return isValid;
+	  };
+
+	  // ✅ Clic bouton "Modifier" → charger entretien par API
+	  document.querySelector('tbody').addEventListener('click', event => {
+	    const btn = event.target.closest('.btn-modifier');
+	    if (!btn) return;
+
+	    const entretienId = btn.dataset.id;
+
+	    fetch(`/Owner/entretienes/${entretienId}`)  // ✅ CORRIGÉ ici
+	      .then(res => res.json())
+	      .then(data => {
+	        document.getElementById('entretienId').value = entretienId;
+	        document.getElementById('cars').value = data.carId;
+	        document.getElementById('inputType').value = data.type;
+	        document.getElementById('inputDateDebut').value = data.dateDebut;
+	        document.getElementById('inputDateFin').value = data.dateFin || '';
+	        document.getElementById('prochainKmEstimes').value = data.prochainKmEstime || '';
+	        document.getElementById('prochaineDateEstimees').value = data.prochaineDateEstimee || '';
+	        console.log('prochainKmEstime reçu :', data.prochainKmEstime);
+
+	        // Afficher la modale
+	        modal.classList.remove('hidden');
+	      })
+	      .catch(err => {
+	        console.error('Erreur chargement entretien', err);
+	        alert("Erreur lors du chargement de l'entretien");
+	      });
+	  });
+
+	  // Fermer la modale
+	 if (closeBtn) {
+  closeBtn.addEventListener('click', () => {
+    modal.classList.add('hidden');
+  });
+}
+
+if (cancelBtn) {
+  cancelBtn.addEventListener('click', () => {
+    modal.classList.add('hidden');
+  });
+}
+
+	  // Soumettre le formulaire
+	  if (form) {
+	    form.addEventListener('submit', e => {
+	      e.preventDefault();
+
+	      if (!validateForm()) {
+	        Toastify({
+	          text: 'Veuillez remplir tous les champs requis',
+	          duration: 3000,
+	          backgroundColor: 'linear-gradient(to right, #f59e0b, #d97706)',
+	        }).showToast();
+	        return;
+	      }
+
+	      const formData = {
+	        carId: document.getElementById('cars').value,
+	        type: document.getElementById('inputType').value,
+	        dateDebut: document.getElementById('inputDateDebut').value,
+	        dateFin: document.getElementById('inputDateFin').value || null,
+	        prochainKmEstime: parseInt(document.getElementById('prochainKmEstimes').value) || null,
+	        prochaineDateEstimee: document.getElementById('prochaineDateEstimees').value || null,
+	      };
+
+	      const entretienId = document.getElementById('entretienId').value;
+
+	      fetch(`/Owner/entretien/${entretienId}`, {
+	        method: 'PUT',
+	        headers: {
+	          'Content-Type': 'application/json',
+	        },
+	        body: JSON.stringify(formData),
+	      })
+	        .then(res => {
+	          if (!res.ok) throw new Error('Erreur lors de la mise à jour');
+	          return res.json();
+	        })
+	        .then(() => {
+	          Toastify({
+	            text: 'Entretien mis à jour avec succès !',
+	            duration: 3000,
+	            backgroundColor: 'linear-gradient(to right, #10b981, #059669)',
+	          }).showToast();
+	          modal.classList.add('hidden');
+	          setTimeout(() => location.reload(), 500);
+	        })
+	        .catch(err => {
+	          Toastify({
+	            text: err.message,
+	            duration: 3000,
+	            backgroundColor: 'linear-gradient(to right, #ef4444, #b91c1c)',
+	          }).showToast();
+	        });
+	    });
+	  }
+	});
+//Fonction pour ouvrir le modal et le remplir
+
+
+</script>
+<script>
+$(document).ready(function () {
+    $('tbody').on('click', '.btn-supprimer', function () {
+        const id = $(this).data('id');
+        const button = $(this);
+        const row = button.closest('tr');
+        
+        console.log('🗑️  Soft delete entretien ID:', id);
+
+        Swal.fire({
+            title: 'Supprimer cet entretien ?',
+            text: 'L\'entretien sera archivé mais conservé dans la base.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#3b82f6',
+            confirmButtonText: 'Oui, archiver',
+            cancelButtonText: 'Annuler'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+
+                $.ajax({
+                    url: `/Owner/supp/${id}`,
+                    type: 'DELETE',
+                    success: function (response) {
+                        console.log('✅ Soft delete réussi - ID:', id);
+                        
+                        // Supprimer la ligne du tableau
+                        row.fadeOut(400, function() {
+                            $(this).remove();
+                            
+                            // Si plus d'entretiens, afficher message
+                            if ($('tbody tr').length === 0) {
+                                $('tbody').append(
+                                    '<tr><td colspan="5" class="p-6 text-center text-gray-500">' +
+                                    '<i class="fas fa-inbox text-4xl mb-2 opacity-50"></i><br>' +
+                                    'Aucun entretien trouvé</td></tr>'
+                                );
+                            }
+                        });
+
+                        Toastify({
+                            text: 'Entretien archivé avec succès !',
+                            duration: 3000,
+                            backgroundColor: 'linear-gradient(to right, #10b981, #059669)',
+                        }).showToast();
+                    },
+                    error: function (xhr) {
+                        console.error('❌ Erreur soft delete:', xhr);
+                        
+                        button.prop('disabled', false).html(`
+                            <svg class="w-4 h-4 text-red-600 hover:text-red-800" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H3a1 1 0 000 2h1v10a2 2 0 002 2h8a2 2 0 002-2V6h1a1 1 0 100-2h-2V3a1 1 0 00-1-1H6zm2 4a1 1 0 012 0v8a1 1 0 11-2 0V6zm4 0a1 1 0 012 0v8a1 1 0 11-2 0V6z" clip-rule="evenodd"/>
+                            </svg>
+                        `);
+
+                        Toastify({
+                            text: 'Erreur lors de l\'archivage',
+                            duration: 3000,
+                            backgroundColor: 'linear-gradient(to right, #ef4444, #b91c1c)',
+                        }).showToast();
+                    }
+                });
+            }
+        });
+    });
+});
+
+</script>
+<script>
+$(document).ready(function () {
+    // Délégation d'événements pour les boutons btn-details
+    $('tbody').on('click', '.btn-details', function () {
+        const entretienId = $(this).data('id');
+        console.log('Bouton détails cliqué, ID:', entretienId); // Débogage
+
+        openDetailsModal(entretienId);
+    });
+
+    // Fonction pour ouvrir et remplir la modale
+    function openDetailsModal(entretienId) {
+        fetch(`/Owner/entretienes/${entretienId}`)
+            .then(res => {
+                if (!res.ok) throw new Error(`Erreur HTTP ${res.status}: ${res.statusText}`);
+                return res.json();
+            })
+            .then(data => {
+                // Vérifier si les données et l'objet car existent
+               const carInfo = (data.marque && data.modele) 
+                    ? `${data.marque} ${data.modele}` 
+                    : (data.carId ? `ID: ${data.carId}` : 'N/A');
+
+                // Remplir les champs de la modale
+                $('#detailCar').text(carInfo);
+                $('#detailType').text(data.type || 'N/A');
+                $('#detailDateDebut').text(formatDate(data.dateDebut) || 'N/A');
+                $('#detailDateFin').text(data.dateFin ? formatDate(data.dateFin) : 'N/A');
+                $('#detailPeriodique').text(data.periodique ? 'Oui' : 'Non');
+                $('#detailKm').text(data.prochainKmEstime || 'N/A');
+                $('#detailDateEstimee').text(data.prochaineDateEstimee ? formatDate(data.prochaineDateEstimee) : 'N/A');
+                $('#detailRemarks').text(data.remarks || 'Aucune');
+
+                // Afficher la modale avec animation
+                const modal = $('#modalDetails');
+                const content = $('#modalContent');
+                modal.removeClass('hidden');
+                setTimeout(() => {
+                    content.removeClass('scale-95 opacity-0').addClass('scale-100 opacity-100');
+                }, 10);
+            })
+            .catch(err => {
+                console.error('Erreur lors du chargement des détails:', err);
+                Toastify({
+                    text: `Erreur lors du chargement des détails: ${err.message}`,
+                    duration: 3000,
+                    backgroundColor: 'linear-gradient(to right, #ef4444, #b91c1c)',
+                    position: 'top-right',
+                    className: 'rounded-md',
+                }).showToast();
+            });
+    }
+
+    // Fonction pour fermer la modale
+    window.closeDetailsModal = function () {
+        const modal = $('#modalDetails');
+        const content = $('#modalContent');
+        content.removeClass('scale-100 opacity-100').addClass('scale-95 opacity-0');
+        setTimeout(() => {
+            modal.addClass('hidden');
+        }, 300);
+    };
+
+    // Fonction pour formater la date
+    function formatDate(dateString) {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('fr-FR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    }
+});
+
+
+
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('modalPanne');
+    const form = document.getElementById('formPanne');
+    const closeBtn = document.getElementById('btnClosePanneModal');
+    const cancelBtn = document.getElementById('btnCancelPanneModal');
+
+    // Fonction pour valider les champs requis
+    const validateForm = () => {
+        const requiredFields = form.querySelectorAll('input[required]');
+        let isValid = true;
+        requiredFields.forEach(field => {
+            field.classList.remove('border-red-500');
+            if (!field.value.trim()) {
+                field.classList.add('border-red-500');
+                isValid = false;
+            }
+        });
+        return isValid;
+    };
+
+    // Clic sur le bouton "Déclarer une panne"
+    document.querySelector('tbody').addEventListener('click', event => {
+        const btn = event.target.closest('.btn-panne');
+        if (!btn) return;
+
+        const entretienId = btn.dataset.id;
+        console.log('Bouton panne cliqué, ID:', entretienId);
+
+        // Récupérer les données de l'entretien pour pré-remplir la voiture
+        fetch(`/Owner/entretienes/${entretienId}`)
+            .then(res => {
+                if (!res.ok) throw new Error(`Erreur HTTP ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                // Vérifier que les données de la voiture existent
+              if (data.carId && data.marque && data.modele) {
+        const panneCarId = document.getElementById('panneId');
+        const panneCarDisplay = document.getElementById('panneCarDisplay');
+
+        // Vérifier que les éléments DOM existent
+        if (!panneId || !panneCarDisplay) {
+            throw new Error('Les éléments du formulaire (panneCarId ou panneCarDisplay) sont introuvables dans le DOM');
+        }
+
+        panneId.value = data.carId;
+        panneCarDisplay.value = `${data.marque} ${data.modele}`;
+    } else {
+        throw new Error('Données de voiture manquantes');
+    }
+                // Afficher la modale
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.querySelector('.scale-95').classList.remove('scale-95').classList.add('scale-100');
+                }, 10);
+            })
+            .catch(err => {
+                console.error('Erreur lors du chargement des données:', err);
+                Toastify({
+                    text: `Erreur lors du chargement des données: ${err.message}`,
+                    duration: 3000,
+                    backgroundColor: 'linear-gradient(to right, #ef4444, #b91c1c)',
+                    position: 'top-right',
+                    className: 'rounded-md',
+                }).showToast();
+            });
+    });
+
+    // Fermer la modale
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            modal.querySelector('.scale-100').classList.remove('scale-100').classList.add('scale-95');
+            form.reset(); // Réinitialiser le formulaire
+        });
+    }
+
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            modal.querySelector('.scale-100').classList.remove('scale-100').classList.add('scale-95');
+            form.reset(); // Réinitialiser le formulaire
+        });
+    }
+
+    // Soumettre le formulaire
+    if (form) {
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+
+            if (!validateForm()) {
+                Toastify({
+                    text: 'Veuillez remplir tous les champs requis',
+                    duration: 3000,
+                    backgroundColor: 'linear-gradient(to right, #f59e0b, #d97706)',
+                    position: 'top-right',
+                    className: 'rounded-md',
+                }).showToast();
+                return;
+            }
+
+            const formData = {
+                carId: document.getElementById('panneId').value,
+                dateDebut: document.getElementById('panneDateDebut').value,
+                dateFin: document.getElementById('panneDateFin').value || null,
+                description: document.getElementById('panneDescription').value || null,
+            };
+
+            fetch('/Owner/pannes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        return res.json().then(error => {
+                            throw new Error(error.message || 'Erreur lors de l\'enregistrement de la panne');
+                        });
+                    }
+                    return res.json();
+                })
+                .then(() => {
+                    Toastify({
+                        text: 'Panne déclarée avec succès !',
+                        duration: 3000,
+                        backgroundColor: 'linear-gradient(to right, #10b981, #059669)',
+                        position: 'top-right',
+                        className: 'rounded-md',
+                    }).showToast();
+                    modal.classList.add('hidden');
+                    setTimeout(() => location.reload(), 500);
+                })
+                .catch(err => {
+                    Toastify({
+                        text: err.message,
+                        duration: 3000,
+                        backgroundColor: 'linear-gradient(to right, #ef4444, #b91c1c)',
+                        position: 'top-right',
+                        className: 'rounded-md',
+                    }).showToast();
+                });
+        });
+    }
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+	  const showBtn = document.getElementById('showUserProfile');
+	  const saveBtn = document.getElementById('saveProfile');
+	  const togglePassword = document.getElementById('togglePassword');
+	  const userModalEl = document.getElementById('userModal');
+	  const userModal = new bootstrap.Modal(userModalEl);
+
+	  // Ouvrir le modal avec données AJAX
+	  showBtn.addEventListener('click', (e) => {
+	    e.preventDefault();
+	    fetch('/api/user/profille')
+	      .then(res => res.json())
+	      .then(user => {
+	        document.getElementById('firstName').value = user.firstName || '';
+	        document.getElementById('lastName').value = user.lastName || '';
+	        document.getElementById('phone').value = user.telephone || '';
+	        document.getElementById('email').value = user.email || '';
+	        document.getElementById('password').value = '';
+	        userModal.show();
+	      })
+	      .catch(err => alert('Erreur récupération profil: ' + err));
+	  });
+
+	  // Toggle mot de passe
+	  togglePassword.addEventListener('click', () => {
+	    const pwd = document.getElementById('password');
+	    pwd.type = pwd.type === 'password' ? 'text' : 'password';
+	    togglePassword.classList.toggle('fa-eye-slash');
+	  });
+
+	  // Enregistrer profil
+	  saveBtn.addEventListener('click', () => {
+	    const userData = {
+	      firstName: document.getElementById('firstName').value,
+	      lastName: document.getElementById('lastName').value,
+	      telephone: document.getElementById('phone').value,
+	      email: document.getElementById('email').value,
+	      password: document.getElementById('password').value
+	    };
+
+	    fetch('/api/user/proprofile', {
+	    	  method: 'PUT',
+	    	  headers: { 'Content-Type': 'application/json' },
+	    	  body: JSON.stringify(userData)
+	    	})
+	    	.then(res => {
+	    	    if (!res.ok) throw new Error('Erreur mise à jour');
+	    	    return res.text(); // <-- lire comme texte
+	    	})
+	    	.then(text => {
+	    	    // Le serveur renvoie juste un message texte
+	    	    alert(text || 'Profil mis à jour !');
+	    	    userModal.hide();
+	    	})
+	    	.catch(err => alert('Erreur mise à jour: ' + err));
+
+	  });
+
+	  // Nettoyer backdrop si problème
+	  userModalEl.addEventListener('hidden.bs.modal', () => {
+	    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+	    document.body.classList.remove('modal-open');
+	    document.body.style.overflow = 'auto';
+	  });
+	});
+
+</script>
+<script>
+  // On attend que la page soit chargée
+  document.addEventListener('DOMContentLoaded', () => {
+    const userProfile = document.getElementById('userProfileCustom');  // élément déclencheur
+    const userDropdown = document.getElementById('userDropdownCustom'); // menu à afficher/masquer
+
+    if (!userProfile || !userDropdown) return;
+
+    userProfile.addEventListener('click', (event) => {
+      event.stopPropagation(); // empêche la propagation du clic vers window
+
+      // Toggle affichage menu
+      if (userDropdown.style.display === 'block') {
+        userDropdown.style.display = 'none';
+      } else {
+        userDropdown.style.display = 'block';
+      }
+    });
+
+    // Fermer le menu si on clique en dehors
+    window.addEventListener('click', () => {
+      userDropdown.style.display = 'none';
+    });
+  });
+</script>
+<script>
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileToggle = document.getElementById('mobileMenuToggle');
+    const sidebar = document.getElementById('sidebarCustom');
+    const body = document.body;
+
+    if (mobileToggle && sidebar) {
+        mobileToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Toggle la classe pour afficher/masquer la sidebar en mode responsive
+            sidebar.classList.toggle('sidebar-open');
+            body.classList.toggle('sidebar-open'); // Optionnel : bloque le scroll du body quand ouvert
+            
+            // Rotate l'icône (optionnel, pour effet visuel)
+            const icon = mobileToggle.querySelector('i');
+            if (icon) {
+                icon.classList.toggle('rotate-180');
+            }
+        });
+    }
+
+    // Fermer la sidebar si clic hors d'elle en mode responsive
+    document.addEventListener('click', function(e) {
+        const isMobile = window.innerWidth <= 1024;
+        if (isMobile && sidebar && sidebar.classList.contains('sidebar-open') && 
+            !sidebar.contains(e.target) && !mobileToggle.contains(e.target)) {
+            sidebar.classList.remove('sidebar-open');
+            body.classList.remove('sidebar-open');
+            
+            // Reset icône
+            const icon = mobileToggle.querySelector('i');
+            if (icon) {
+                icon.classList.remove('rotate-180');
+            }
+        }
+    });
+
+    // Adapter au redimensionnement de fenêtre (intègre avec le JS précédent si existant)
+    window.addEventListener('resize', function() {
+        const isMobile = window.innerWidth <= 1024;
+        if (isMobile) {
+            // Forcer état mobile
+            if (sidebar) sidebar.classList.remove('sidebar-expanded', 'sidebar-collapsed');
+        } else {
+            // Fermer si ouvert en mobile
+            if (sidebar) {
+                sidebar.classList.remove('sidebar-open');
+                body.classList.remove('sidebar-open');
+            }
+        }
+    });
+});
+
+
+
+
+
+</script>
+</body>
+</html>

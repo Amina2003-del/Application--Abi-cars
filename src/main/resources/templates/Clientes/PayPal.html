@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Paiement RentCar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- PayPal SDK (utilisation dynamique du client-id) -->
+<script src="https://www.paypal.com/sdk/js?client-id=Aaac35KPsFncc0__vbZhtVG0XuGCPclsBS3xhpn7CJB_0mwtjgoY8boSxs_v7AbUVCmx_DZLnvCa92Pd&currency=EUR"></script>
+    <style>
+        body {
+            background: #f9f9f9;
+        }
+        .payment-container {
+            max-width: 500px;
+            margin: 5rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+        }
+        .paypal-title {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        .paypal-description {
+            font-size: 1.1rem;
+            color: #555;
+        }
+        .paypal-amount {
+            font-size: 1.3rem;
+            color: #16a085;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container payment-container text-center">
+    <div class="paypal-title">Réserver votre voiture</div>
+    <p class="paypal-description">Description : <span th:text="${description}"></span></p>
+    <p class="paypal-amount">Montant total : <strong th:text="${montant} + ' EUR'"></strong></p>
+
+    <div id="paypal-button-container"></div>
+</div>
+
+<!-- Script PayPal avec Thymeleaf -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    let montant = [[${montant}]];
+    let description = [[${description}]];
+    let reservationId = [[${reservationId}]];
+    let carId = [[${carId}]];
+
+    // Débogage des valeurs injectées
+    console.log('Valeurs injectées:', { montant, description, reservationId, carId });
+
+    paypal.Buttons({
+        style: {
+            layout: 'vertical',
+            color: 'blue',
+            shape: 'pill',
+            label: 'paypal'
+        },
+        createOrder: function(data, actions) {
+            if (!montant || isNaN(montant) || montant <= 0) {
+                console.error('Montant invalide:', montant);
+                alert('Erreur : Montant invalide.');
+                return;
+            }
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: montant.toFixed(2),
+                        currency_code: 'EUR'
+                    },
+                    description: description
+                }]
+            });
+        },
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                if (!reservationId || !details.id) {
+                    console.error('Données manquantes:', { reservationId, transactionId: details.id });
+                    alert('Erreur : Données de paiement manquantes.');
+                    return;
+                }
+                fetch('/Clientes/paypal/success', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        reservationId: reservationId,
+                        transactionId: details.id
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur réseau : ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = data.redirectUrl;
+                    } else {
+                        alert('Erreur lors de la confirmation du paiement : ' + (data.error || 'Erreur inconnue'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la confirmation du paiement:', error);
+                    alert('Une erreur est survenue. Veuillez contacter le support.');
+                });
+            });
+        },
+        onCancel: function(data) {
+            if (!reservationId || !carId) {
+                console.error('Paramètres manquants pour l\'annulation:', { reservationId, carId });
+                alert('Erreur : Paramètres d\'annulation manquants.');
+                return;
+            }
+            window.location.href = "/Clientes/paypal/cancel?reservationId=" + reservationId + "&carId=" + carId;
+        },
+        onError: function(err) {
+            console.error('Erreur lors du paiement PayPal:', err);
+            alert('Une erreur est survenue lors du paiement. Veuillez réessayer.');
+        }
+    }).render('#paypal-button-container');
+    /*]]>*/
+</script>
+
+</body>
+</html>

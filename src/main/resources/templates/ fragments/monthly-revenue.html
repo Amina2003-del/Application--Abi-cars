@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<div class="chart-container" th:fragment="monthly-revenue">
+  <div class="chart-header">
+    <h2>Revenus mensuels</h2>
+    <div class="chart-controls">
+      <select id="yearSelector" class="form-select form-select-sm">
+        <option th:each="year : ${availableYears}" th:value="${year}" th:text="${year}"></option>
+      </select>
+    </div>
+  </div>
+  <canvas id="revenueChart"></canvas>
+</div>
+</body>
+
+
+</html>

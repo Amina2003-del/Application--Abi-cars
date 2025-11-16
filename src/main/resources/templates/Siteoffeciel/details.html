@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Détails du Propriétaire - Rent Car</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  
+  <!-- FontAwesome -->
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" />
+  
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  
+  <!-- Ton CSS personnalisé -->
+  <link rel="stylesheet" th:href="@{/assets/css/details.css}" />
+</head>
+<body class="container mt-5">
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <!-- Tes scripts JS perso ici -->
+  
+<div class="swiper">
+<div class="svg-background">
+  <svg width="200" height="200" viewBox="0 0 200 200">
+    <circle cx="100" cy="100" r="60" fill="none" stroke="#dddddd" stroke-width="2">
+      <animate attributeName="r" values="50;60;50" dur="5s" repeatCount="indefinite" />
+    </circle>
+    <circle cx="100" cy="100" r="30" fill="none" stroke="#bbbbbb" stroke-width="2">
+      <animate attributeName="r" values="20;30;20" dur="3s" repeatCount="indefinite" />
+    </circle>
+  </svg>
+</div>
+
+  <div class="swiper-wrapper">
+    <!-- itération sur les voitures -->
+    <div class="swiper-slide" th:each="car : ${cars}">
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="position-relative">
+          <img th:src="@{'/images/' + ${car.imagePrincipaleURL}}"
+               class="w-100"
+               style="height: 220px; object-fit: cover;" 
+               alt="Voiture" />
+          <span class="badge bg-primary position-absolute top-0 start-0 m-2 px-3 py-2 rounded-pill">
+            <i class="fa-solid fa-location-dot me-1"></i>
+            <span th:text="${car.ville}">Ville</span>
+          </span>
+        </div>
+
+        <div class="p-3">
+          <h5 class="fw-semibold mb-1" th:text="${car.marque + ' ' + car.modele}">Marque Modèle</h5>
+
+          <!-- Infos principales -->
+          <p class="text-muted small mb-2">
+            <i class="fa-solid fa-calendar-alt me-1"></i> 
+            <span th:text="${car.annee}">Année</span> |
+            <i class="fa-solid fa-id-card me-1"></i> 
+            <span th:text="${car.immatriculation}">Immatriculation</span>
+          </p>
+
+          <!-- Nouvelle ligne : boîte, carburant, km -->
+          <p class="text-muted small mb-2">
+            <i class="fa-solid fa-gas-pump me-1"></i>
+            <span th:text="${car.carburant}">Carburant</span> |
+            <i class="fa-solid fa-gear me-1"></i>
+            <span th:text="${car.boite}">Boîte</span> |
+            <i class="fa-solid fa-road me-1"></i>
+            <span th:text="${car.kilometrage}">Kilométrage</span> km
+          </p>
+
+          <!-- Raison sociale du propriétaire -->
+          <p class="text-light-emphasis small mb-2">
+            <i class="fa-solid fa-building me-1"></i>
+            <span th:text="${car.proprietaire.raisonSociale}">Raison Sociale</span>
+          </p>
+
+          <!-- Prix + bouton -->
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="text-success fw-bold fs-6">
+              <span th:text="${car.prixJournalier}">Prix</span> €/jour
+            </span>
+            <button type="button" class="btn btn-outline-dark btn-sm rounded-pill"
+        data-bs-toggle="modal" 
+        data-bs-target="#carGalleryModal"
+        th:attr="data-carid=${car.id}">
+  <i class="fa fa-eye me-1"></i> Détails
+</button>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<div class="text-center mt-4">
+  <a href="/Voitures/index" class="btn btn-animated">
+    Retour à la liste des voitures
+  </a>
+</div>
+
+  <!-- Navigation -->
+  <div class="swiper-button-next text-dark"></div>
+  <div class="swiper-button-prev text-dark"></div>
+
+  <!-- Pagination -->
+  <div class="swiper-pagination mt-3"></div>
+</div>
+
+<!-- Modal Bootstrap -->
+<div class="modal fade" id="carGalleryModal" tabindex="-1" aria-labelledby="carGalleryLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="carGalleryLabel">Galerie de la voiture</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+
+      <div class="modal-body">
+        <div id="galleryContent">
+          <!-- Ici on injectera la galerie d’images via JS -->
+          <p>Chargement des images...</p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script>
+    const swiper = new Swiper('.swiper', {
+      slidesPerView: 1,
+      spaceBetween: 20,
+      loop: false,
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true
+      },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev'
+      },
+      breakpoints: {
+        768: { slidesPerView: 2 },
+        1024: { slidesPerView: 3 }
+      }
+    });
+  </script>
+ <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const carGalleryModal = document.getElementById('carGalleryModal');
+    const galleryContent = document.getElementById('galleryContent');
+
+    carGalleryModal.addEventListener('show.bs.modal', event => {
+      const button = event.relatedTarget; // bouton qui a déclenché le modal
+      const carId = button.getAttribute('data-carid');
+
+      galleryContent.innerHTML = '<p>Chargement des images...</p>';
+      console.log('carId:', carId);
+
+      fetch(`/Voitures/${carId}/images`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(images => {
+          if (!images || images.length === 0) {
+            galleryContent.innerHTML = '<p>Aucune image disponible.</p>';
+            return;
+          }
+
+          let carouselIndicators = '';
+          let carouselItems = '';
+
+          images.forEach((img, index) => {
+            carouselIndicators += `
+              <button type="button" data-bs-target="#carouselCar" data-bs-slide-to="${index}" ${index === 0 ? 'class="active"' : ''} aria-current="${index === 0 ? 'true' : 'false'}" aria-label="Slide ${index + 1}"></button>
+            `;
+            carouselItems += `
+              <div class="carousel-item ${index === 0 ? 'active' : ''}">
+                <img src="${img}" class="d-block w-100" alt="Image voiture">
+              </div>
+            `;
+          });
+
+          galleryContent.innerHTML = `
+            <div id="carouselCar" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-indicators">${carouselIndicators}</div>
+              <div class="carousel-inner">${carouselItems}</div>
+              <button class="carousel-control-prev" type="button" data-bs-target="#carouselCar" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Précédent</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#carouselCar" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Suivant</span>
+              </button>
+            </div>
+          `;
+
+          // Optionnel : réinitialiser le carousel au premier slide au chargement
+          const carouselElement = document.getElementById('carouselCar');
+          const carousel = bootstrap.Carousel.getInstance(carouselElement) || new bootstrap.Carousel(carouselElement);
+          carousel.to(0);
+        })
+        .catch(err => {
+          galleryContent.innerHTML = '<p>Erreur lors du chargement des images.</p>';
+          console.error('Erreur fetch images:', err);
+        });
+    });
+  });
+</script>
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+    <!--Jquery js-->
+    <script th:src="@{/assets/js/jquery.min.js}"></script>
+    <!-- Popper JS -->
+    <script th:src="@{/assets/js/popper.min.js}"></script>
+    <!--Bootstrap js-->
+    <script th:src="@{/assets/js/bootstrap.min.js}"></script>
+    <!--Owl-Carousel js-->
+    <script th:src="@{/assets/js/owl.carousel.min.js}"></script>
+    <!--Lightgallery js-->
+    <script th:src="@{/assets/js/lightgallery-all.js}"></script>
+    <script th:src="@{/assets/js/custom_lightgallery.js}"></script>
+    <!--Slicknav js-->
+    <script th:src="@{/assets/js/jquery.slicknav.min.js}"></script>
+    <!--Magnific js-->
+    <script th:src="@{/assets/js/jquery.magnific-popup.min.js}"></script>
+    <!--Nice Select js-->
+    <script th:src="@{/assets/js/jquery.nice-select.min.js}"></script>
+    <!-- Datepicker JS -->
+    <script th:src="@{/assets/js/jquery.datepicker.min.js}"></script>
+    <!--ClockPicker JS-->
+    <script th:src="@{/assets/js/jquery-clockpicker.min.js}"></script>
+    <!--Main js-->
+    <script th:src="@{/assets/js/main.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

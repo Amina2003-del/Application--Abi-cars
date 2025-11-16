@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<div class="stats-container" th:fragment="stats-cards">
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fas fa-car"></i></div>
+    <div class="stat-content">
+      <h3>Total des voitures</h3>
+      <p class="stat-number" th:text="${totalCars}">24</p>
+    </div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-icon available"><i class="fas fa-check-circle"></i></div>
+    <div class="stat-content">
+      <h3>Disponibles</h3>
+      <p class="stat-number" th:text="${availableCars}">15</p>
+    </div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-icon rented"><i class="fas fa-key"></i></div>
+    <div class="stat-content">
+      <h3>Louées</h3>
+      <p class="stat-number" th:text="${rentedCars}">9</p>
+    </div>
+  </div>
+  
+  <div class="stat-card">
+    <div class="stat-icon revenue"><i class="fas fa-euro-sign"></i></div>
+    <div class="stat-content">
+      <h3>Revenus (ce mois)</h3>
+      <p class="stat-number" th:text="${#numbers.formatDecimal(currentMonthRevenue, 0, 'COMMA', 2, 'POINT')} + ' €'">14,500.00 €</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

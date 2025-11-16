@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+   
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="description" content="carbnb | Location de voitures - Modèle HTML par Themescare">
+      <meta name="keyword" content="taxi,voiture,location,transport">
+      <meta name="author" content="Themescare">
+      <!-- Titre -->
+      <title>ABIcars - Location de voitures</title>
+      <!-- Favicon -->
+          <link rel="icon" type="image/png" sizes="32x32" th:href="@{/assets/img/logoApps (2).png}">
+      
+      <!--Bootstrap css-->
+      <link rel="stylesheet" th:href="@{/assets/css/bootstrap.css}">
+      <!--Font Awesome css-->
+      <link rel="stylesheet" th:href="@{/assets/css/font-awesome.min.css}">
+      <!--Magnific css-->
+      <link rel="stylesheet" th:href="@{/assets/css/magnific-popup.css}">
+      <!--Owl-Carousel js-->
+      <link rel="stylesheet" th:href="@{/assets/css/owl.carousel.min.css}">
+      <link rel="stylesheet" th:href="@{/assets/css/owl.theme.default.min.css}">
+      <!--Animate css-->
+      <link rel="stylesheet" th:href="@{/assets/css/animate.min.css}">
+      <!--Datepicker css-->
+      <link rel="stylesheet" th:href="@{/assets/css/jquery.datepicker.css}">
+      <!--Nice Select css-->
+      <link rel="stylesheet" th:href="@{/assets/css/nice-select.css}">
+      <!-- Lightgallery css -->
+      <link rel="stylesheet" th:href="@{/assets/css/lightgallery.min.css}">
+      <!--ClockPicker css-->
+      <link rel="stylesheet" th:href="@{/assets/css/jquery-clockpicker.min.css}">
+      <!--Slicknav css-->
+      <link rel="stylesheet" th:href="@{/assets/css/slicknav.min.css}">
+      <!--Style Principal du Site css-->
+      <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+            <link rel="stylesheet" th:href="@{/assets/css/about.css}">
+      <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
+      <link rel="stylesheet" th:href="@{/assets/css/alertes.css}">
+      <!--Responsive css-->
+      <link rel="stylesheet" th:href="@{/assets/css/responsive.css}">
+      
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <style>
+       #images img{
+         width: 70%;
+    height: 100px; /* Ajuste cette hauteur selon le design souhaité */
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+       
+       }
+       
+       
+       
+       
+       </style>
+   </head>
+   <body>
+     
+                      <div th:replace="Siteoffeciel/headers.html :: header"></div>
+
+      <!-- Zone de fil d'Ariane Début -->
+      <section class="gauto-breadcromb-area section_70">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-12">
+                  <div class="breadcromb-box">
+                     <h3>À propos de nous</h3>
+                     <ul>
+                        <li><i class="fa fa-home"></i></li>
+                        <li><a th:href="@{/Voitures/index}">Accueil</a></li>
+                        <li><i class="fa fa-angle-right"></i></li>
+                        <li>À propos de nous</li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </section>
+      <!-- Zone de fil d'Ariane Fin -->
+<section class="about-us-area position-relative" style="overflow: hidden;">
+
+  <!-- SVG décoratif en arrière-plan -->
+
+
+
+  <!-- Loader -->
+  <div id="loader" class="loader-overlay">
+    <div class="loader"></div>
+  </div>
+
+  <div class="container cards-wrapper" style="display:none;">
+    <div class="column left-col">
+      <div class="card floating" style="animation-delay: 0s;">
+        <div class="card-header">
+          <i class="fa-solid fa-car icon"></i>
+          <h3>Qui Sommes-Nous ?</h3>
+        </div>
+        <p>Une équipe passionnée par l’automobile et la technologie, dédiée à révolutionner la location de voitures.</p>
+      </div>
+      <div class="card floating" style="animation-delay: 0.5s;">
+        <div class="card-header">
+          <i class="fa-solid fa-bullseye icon"></i>
+          <h3>Notre Mission</h3>
+        </div>
+        <p>Offrir un service fiable, rapide et accessible à tous, avec une expérience utilisateur optimale.</p>
+      </div>
+    </div>
+
+    <div class="column right-col">
+      <div class="card floating" style="animation-delay: 1s;">
+        <div class="card-header">
+          <i class="fa-solid fa-star icon"></i>
+          <h3>Notre Vision</h3>
+        </div>
+        <p>Devenir la référence nationale et internationale en location de voitures connectées et durables.</p>
+      </div>
+      <div class="card floating" style="animation-delay: 1.5s;">
+        <div class="card-header">
+          <i class="fa-solid fa-gem icon"></i>
+          <h3>Nos Valeurs</h3>
+        </div>
+        <ul>
+          <li>Innovation</li>
+          <li>Confiance</li>
+          <li>Qualité</li>
+          <li>Responsabilité</li>
+          <li>Service Client</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+       
+              <div th:replace="Siteoffeciel/footer.html :: footer"></div>
+
+      <script th:src="@{/assets/js/jquery.min.js}"></script>
+      <!-- Popper JS -->
+      <script th:src="@{/assets/js/popper.min.js}"></script>
+      <!--Bootstrap js-->
+      <script th:src="@{/assets/js/bootstrap.min.js}"></script>
+      <!--Owl-Carousel js-->
+      <script th:src="@{/assets/js/owl.carousel.min.js}"></script>
+      <!--Lightgallery js-->
+      <script th:src="@{/assets/js/lightgallery-all.js}"></script>
+      <script th:src="@{/assets/js/custom_lightgallery.js}"></script>
+      <!--Slicknav js-->
+      <script th:src="@{/assets/js/jquery.slicknav.min.js}"></script>
+      <!--Magnific js-->
+      <script th:src="@{/assets/js/jquery.magnific-popup.min.js}"></script>
+      <!--Nice Select js-->
+      <script th:src="@{/assets/js/jquery.nice-select.min.js}"></script>
+      <!-- Datepicker JS -->
+      <script th:src="@{/assets/js/jquery.datepicker.min.js}"></script>
+      <!--ClockPicker JS-->
+      <script th:src="@{/assets/js/jquery-clockpicker.min.js}"></script>
+      <!--Main js-->
+      <script th:src="@{/assets/js/main.js}"></script>
+      <script th:src="@{/assets/js/script.js}"></script>
+  
+<script>
+  // Gestion du loader simple
+ document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    document.getElementById('loader').style.display = 'none';
+    document.querySelector('.cards-wrapper').style.display = 'flex';
+    
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((card, index) => {
+      card.style.animation = `fadeInUp 0.7s ease-out forwards ${index * 0.2}s, float 3s ease-in-out infinite ${index * 0.2 + 0.7}s`;
+      card.style.opacity = '0';
+    });
+  }, 1500);
+});
+</script>
+    
+   </body>
+
+</html>

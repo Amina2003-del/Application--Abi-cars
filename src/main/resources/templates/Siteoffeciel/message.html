@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr-FR">
+   
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="description" content="gauto | Modèle HTML de Location de Voitures par Themescare">
+      <meta name="keyword" content="taxi,voiture,location,transport">
+      <meta name="author" content="Themescare">
+      <!-- Titre -->
+      <title>Carbnb</title>
+      <!-- Favicon -->
+             <link rel="stylesheet" th:href="@{/assets/css/bootstrap.css}">
+<link rel="stylesheet" th:href="@{/assets/css/font-awesome.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/magnific-popup.css}">
+<link rel="stylesheet" th:href="@{/assets/css/owl.carousel.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/owl.theme.default.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/animate.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/jquery.datepicker.css}">
+<link rel="stylesheet" th:href="@{/assets/css/nice-select.css}">
+<link rel="stylesheet" th:href="@{/assets/css/lightgallery.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/jquery-clockpicker.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/slicknav.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/style.css}">
+<link rel="stylesheet" th:href="@{/assets/css/responsive.css}">
+<link rel="stylesheet" th:href="@{/assets/css/mettrelocation.css}">
+<link rel="stylesheet" th:href="@{/assets/css/flatpickr.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/message.css}">
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+</head>
+<body>
+<div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+       
+        <nav class="sidebar-menu">
+            <a th:href="@{/Voitures/location}" ><i class="fa fa-car"></i> Mettre ma Location</a>
+            <a th:href="@{/Voitures/avis}" ><i class="fa fa-star"></i> Consulter les Avis</a>
+            <a th:href="@{/Voitures/reservation}" ><i class="fa fa-calendar"></i> Réservations</a>
+            <a th:href="@{/Voitures/message}" class="active"><i class="fa fa-gavel"></i> Litiges</a>
+            <a th:href="@{/Voitures/login}"><i class="fa fa-sign-out"></i> Déconnexion</a>
+        </nav>
+    </aside>
+  
+
+
+    <!-- Contenu principal -->
+    <div class="container mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-exclamation-octagon-fill text-danger me-2"></i>Gestion des litiges</h2>
+            <div>
+                <select class="form-select" id="disputeFilter">
+                    <option value="all">Tous les litiges</option>
+                    <option value="pending">En attente</option>
+                    <option value="resolved">Résolus</option>
+                    <option value="escalated">Escaladés</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Liste des litiges -->
+        <div class="row g-4" id="litige">
+            <!-- Litige 1 -->
+            <div class="col-md-6 col-lg-4 dispute-card pending">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="badge badge-pending rounded-pill">En attente</span>
+                            <small class="text-muted">#DIS-7845</small>
+                        </div>
+                        <h5 class="card-title">Problème mécanique</h5>
+                        <p class="card-text text-truncate">Le client signale un problème de freins après la location...</p>
+                        
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                                <i class="bi bi-car-front me-1"></i>
+                                <small>Audi A4</small>
+                            </div>
+                            <div>
+                                <i class="bi bi-person me-1"></i>
+                                <small>Jean Dupont</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <button class="btn btn-sm btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#disputeModal" data-dispute-id="1">
+                            <i class="bi bi-chat-left-text me-1"></i>Répondre
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Litige 2 -->
+            <div class="col-md-6 col-lg-4 dispute-card escalated">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="badge badge-escalated rounded-pill">Escaladé</span>
+                            <small class="text-muted">#DIS-7844</small>
+                        </div>
+                        <h5 class="card-title">Dégâts intérieurs</h5>
+                        <p class="card-text text-truncate">Tache importante sur la banquette arrière non signalée...</p>
+                        
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                                <i class="bi bi-car-front me-1"></i>
+                                <small>BMW Série 3</small>
+                            </div>
+                            <div>
+                                <i class="bi bi-person me-1"></i>
+                                <small>Marie Lambert</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <button class="btn btn-sm btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#disputeModal" data-dispute-id="2">
+                            <i class="bi bi-chat-left-text me-1"></i>Consulter
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Litige 3 -->
+            <div class="col-md-6 col-lg-4 dispute-card resolved">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="badge badge-resolved rounded-pill">Résolu</span>
+                            <small class="text-muted">#DIS-7839</small>
+                        </div>
+                        <h5 class="card-title">Retard de retour</h5>
+                        <p class="card-text text-truncate">Client a retourné le véhicule avec 3h de retard...</p>
+                        
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                                <i class="bi bi-car-front me-1"></i>
+                                <small>Peugeot 308</small>
+                            </div>
+                            <div>
+                                <i class="bi bi-person me-1"></i>
+                                <small>Thomas Martin</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <button class="btn btn-sm btn-outline-secondary w-100" data-bs-toggle="modal" data-bs-target="#disputeModal" data-dispute-id="3">
+                            <i class="bi bi-eye me-1"></i>Voir détails
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de gestion des litiges -->
+    <div class="modal fade" id="disputeModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Litige #DIS-7845 - Problème mécanique</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Client :</strong> Jean Dupont</p>
+                                <p><strong>Véhicule :</strong> Audi A4 (RDV-1254)</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Date :</strong> 15/06/2023 - 20/06/2023</p>
+                                <p><strong>Statut :</strong> <span class="badge badge-pending rounded-pill">En attente</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h6 class="mb-3"><i class="bi bi-chat-left-text me-2"></i>Description du litige</h6>
+                    <div class="card mb-4">
+                        <div class="card-body client-message">
+                            <p>Bonjour, après avoir rendu la voiture, j'ai remarqué que les freins faisaient un bruit anormal. J'ai dû les faire vérifier par un garagiste qui a confirmé un problème sur les disques. Je n'ai pourtant pas eu de comportement anormal avec le véhicule. Je joins les photos et le devis de réparation.</p>
+                            
+                            <div class="d-flex flex-wrap gap-2 mt-3">
+                                <img src="https://via.placeholder.com/150" alt="Preuve 1" class="evidence-img rounded" data-bs-toggle="modal" data-bs-target="#imageModal">
+                                <img src="https://via.placeholder.com/150" alt="Preuve 2" class="evidence-img rounded" data-bs-toggle="modal" data-bs-target="#imageModal">
+                                <div class="border p-2 rounded">
+                                    <i class="bi bi-file-earmark-pdf text-danger me-1"></i>
+                                    <small>devis_garage.pdf</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent py-2">
+                            <small class="text-muted">Envoyé le 21/06/2023 à 14:32</small>
+                        </div>
+                    </div>
+                    
+                    <h6 class="mb-3"><i class="bi bi-clock-history me-2"></i>Historique des échanges</h6>
+                    <div class="timeline mb-4">
+                        <!-- Échange 1 -->
+                        <div class="timeline-item mb-3">
+                            <div class="card">
+                                <div class="card-body owner-message">
+                                    <p>Nous avons vérifié l'état des freins avant la location et tout était en ordre. Le problème pourrait venir d'une utilisation intensive des freins. Pouvez-vous nous préciser le type de routes empruntées ?</p>
+                                </div>
+                                <div class="card-footer bg-transparent py-2 d-flex justify-content-between">
+                                    <small class="text-muted">Réponse du propriétaire</small>
+                                    <small class="text-muted">21/06/2023 à 16:45</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Échange 2 -->
+                        <div class="timeline-item">
+                            <div class="card">
+                                <div class="card-body client-message">
+                                    <p>J'ai principalement roulé en ville et sur autoroute. Rien d'exceptionnel. Le garagiste mentionne que l'usure semble antérieure à ma location.</p>
+                                </div>
+                                <div class="card-footer bg-transparent py-2 d-flex justify-content-between">
+                                    <small class="text-muted">Réponse du client</small>
+                                    <small class="text-muted">21/06/2023 à 18:20</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Formulaire de réponse -->
+                    <h6 class="mb-3"><i class="bi bi-reply me-2"></i>Répondre au litige</h6>
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">Type de réponse</label>
+                            <select class="form-select">
+                                <option value="response">Réponse standard</option>
+                                <option value="proposal">Proposition de compensation</option>
+                                <option value="rejection">Refus de prise en charge</option>
+                                <option value="escalation">Demande d'expertise</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Message</label>
+                            <textarea class="form-control" rows="5" placeholder="Rédigez votre réponse détaillée..."></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Pièces jointes</label>
+                            <input type="file" class="form-control">
+                            <small class="text-muted">Vous pouvez joindre des preuves photos, documents, etc.</small>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <button type="button" class="btn btn-outline-danger me-2">
+                                    <i class="bi bi-x-circle me-1"></i>Refuser le litige
+                                </button>
+                                <button type="button" class="btn btn-outline-warning">
+                                    <i class="bi bi-arrow-up me-1"></i>Escalader
+                                </button>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-send me-1"></i>Envoyer la réponse
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour afficher les images en grand -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="expandedImage" src="" class="img-fluid" alt="Preuve visuelle">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+ <script th:src="@{/assets/js/message.js}"></script>
+
+ <script th:src="@{/assets/js/jquery.min.js}"></script>
+<script th:src="@{/assets/js/flatpickr.min.js}"></script> <!-- Flatpickr JS -->
+<script th:src="@{/assets/js/mettrelocation.js}"></script>
+  
+    </div>
+ 
+</body>
+</html>

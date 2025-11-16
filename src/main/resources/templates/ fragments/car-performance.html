@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<div class="performance-container" th:fragment="car-performance">
+  <div class="section-header">
+    <h2>Top 5 des voitures performantes</h2>
+    <div class="controls">
+      <select id="performancePeriod" class="form-select form-select-sm">
+        <option value="month">Ce mois</option>
+        <option value="quarter">Ce trimestre</option>
+        <option value="year">Cette année</option>
+      </select>
+    </div>
+  </div>
+  
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Voiture</th>
+          <th>Modèle</th>
+          <th>Jours loués</th>
+          <th>Taux d'occupation</th>
+          <th>Revenus générés</th>
+        </tr>
+      </thead>
+      <tbody id="performanceTableBody">
+        <tr th:each="car : ${topPerformingCars}">
+          <td>
+            <div class="car-info">
+              <img th:src="@{'/images/cars/' + ${car.imageFileName}}" alt="Car thumbnail" class="car-thumb">
+              <span th:text="${car.brand}">Audi</span>
+            </div>
+          </td>
+          <td th:text="${car.model}">A4</td>
+          <td th:text="${car.daysRented}">24</td>
+          <td>
+            <div class="progress">
+              <div class="progress-bar" role="progressbar" 
+                   th:style="'width: ' + ${car.occupancyRate} + '%'" 
+                   th:text="${car.occupancyRate} + '%'">78%</div>
+            </div>
+          </td>
+          <td th:text="${#numbers.formatDecimal(car.revenue, 0, 'COMMA', 2, 'POINT')} + ' €'">2,450.00 €</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+<script>
+//Charger les données de performance des voitures
+function loadCarPerformance(period) {
+  $.ajax({
+    url: '/api/cars/performance',
+    type: 'GET',
+    data: { period: period },
+    success: function(data) {
+      updateCarPerformanceTable(data);
+    },
+    error: function(xhr) {
+      console.error('Erreur lors du chargement des performances:', xhr.responseText);
+    }
+  });
+}
+
+// Initialiser le composant de performance
+$(document).ready(function() {
+  // Chargement initial
+  loadCarPerformance('month');
+  
+  // Écouteur pour le changement de période
+  $('#performancePeriod').change(function() {
+    loadCarPerformance($(this).val());
+  });
+});
+</script>
+</html>

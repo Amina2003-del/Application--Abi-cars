@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+
+
+
+</style>
+</head>
+<body>
+<div>
+   <p><strong>ID_Reservation :</strong> <span th:text="${paiement.reservation.id}"></span></p>
+<p><strong>ID_Transaction de paiement :</strong> 
+  <span th:text="${paiement.reservation.transactionId != null ? paiement.reservation.transactionId : 'Non fourni'}"></span>
+</p>    <p><strong>Date :</strong> <span th:text="${paiement.date}"></span></p>
+    <p><strong>Montant :</strong> <span th:text="${paiement.montant} + ' €'"></span></p>
+    <p><strong>Client :</strong> <span th:text="${paiement.reservation.utilisateur.firstName + ' ' + paiement.reservation.utilisateur.lastName}"></span></p>
+    <p><strong>Voiture :</strong> <span th:text="${paiement.reservation.voiture.marque + ' ' + paiement.reservation.voiture.modele}"></span></p>
+    <p><strong>Statut :</strong> <span th:text="${paiement.statut}"></span></p>
+        <p><strong>Date de debut  de reservation  :</strong> <span th:text="${paiement.reservation.dateDebut}"></span></p>
+        <p><strong>Date de fin  de reservation  :</strong> <span th:text="${paiement.reservation.dateFin}"></span></p>
+    
+</div>
+
+</body>
+</html>

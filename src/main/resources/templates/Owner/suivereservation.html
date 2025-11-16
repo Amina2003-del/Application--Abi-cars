@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Propriétaire - Gestion des Réservations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
+        <link rel="stylesheet" th:href="@{/assets/css/reservationowner.css}">
+   
+</head>
+<body class="light-theme">
+    <nav class="navbar-custom-tailwind" th:fragment="navbar">
+    <div class="navbar-left">
+        <span class="brand">ABIcars</span>
+    </div>
+    <div class="navbar-right">
+        <!-- Bouton menu hamburger pour responsive (visible seulement sur mobile) -->
+        <div class="nav-icon-btn mobile-menu-toggle" id="mobileMenuToggle">
+            <i class="fas fa-bars"></i>
+        </div>
+        
+        <div class="nav-icon-btn" id="alertsIconCustom">
+            <!-- Contenu des alertes si besoin -->
+        </div>
+        <div class="nav-icon-btn" id="languageSwitchCustom">
+            <span class="flag-icon flag-icon-fr"></span>
+        </div>
+        <div class="user-profile" id="userProfileCustom"> <!-- Utilisation du style user-profile -->
+            <i class="fas fa-user-circle"></i> <!-- Icône Font Awesome plus stylée -->
+            <span th:text="${currentUser != null ? currentUser.firstName + ' ' + currentUser.lastName : 'Invité'}"></span>
+            <i class="fas fa-chevron-down fa-xs"></i>
+        </div>
+        <div class="dropdown-menu-custom" id="userDropdownCustom">
+            <a href="#" id="showUserProfile">
+                <i class="fas fa-user-edit"></i>Mon profil
+            </a>
+           <a th:href="@{/Siteoffeciel/index}" >
+  <i class="fas fa-sign-out-alt"></i>Se déconnecter
+</a>
+        </div>
+    </div>
+</nav>
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      
+      <div class="modal-header bg-primary text-white rounded-top">
+        <h5 class="modal-title" id="userModalLabel">Profil Utilisateur</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body user-info">
+        <form id="userProfileForm">
+          <div class="row g-3">
+
+            <div class="col-md-6">
+              <label for="firstName" class="form-label">Prénom</label>
+              <input type="text" class="form-control" id="firstName" name="firstName">
+            </div>
+
+            <div class="col-md-6">
+              <label for="lastName" class="form-label">Nom</label>
+              <input type="text" class="form-control" id="lastName" name="lastName">
+            </div>
+
+            <div class="col-md-6">
+              <label for="phone" class="form-label">Téléphone</label>
+              <input type="tel" class="form-control" id="phone" name="phone">
+            </div>
+
+            <div class="col-md-6">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email">
+            </div>
+
+            <div class="col-12 position-relative">
+              <label for="password" class="form-label">Nouveau mot de passe</label>
+              <input type="password" class="form-control pe-5" id="password" name="password">
+                        <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+            </div>
+
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+        <button type="button" class="btn btn-primary" id="saveProfile">Enregistrer</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+    <div class="modal-custom-non-bootstrap" id="alertsModalCustom">
+        <div class="modal-header-custom-non-bootstrap">
+            <h3>Alertes récentes</h3>
+            <span class="close-btn" id="closeAlertsModalCustom">×</span>
+        </div>
+        <div class="modal-body-custom-non-bootstrap">
+            <div class="alert-item">
+                <div class="alert-content">
+                    <div class="alert-title">Maintenance voiture #123</div>
+                    <div class="alert-message">Vérification des freins requise.</div>
+                </div>
+                <div class="alert-meta">
+                    <div class="alert-time">Il y a 15 min</div>
+                    <span class="alert-status status-urgent">Urgent</span>
+                </div>
+            </div>
+            <div class="alert-item">
+                <div class="alert-content">
+                    <div class="alert-title">Réservation en attente</div>
+                    <div class="alert-message">Confirmer la réservation de M. Durand.</div>
+                </div>
+                <div class="alert-meta">
+                    <div class="alert-time">Il y a 2 heures</div>
+                    <span class="alert-status status-waiting">En attente</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <aside id="sidebarCustom" class="sidebar-custom-tailwind sidebar-expanded">
+        <div class="sidebar-header">
+            <div class="brand-logo-wrapper">
+                <i class="fas fa-car-alt brand-icon"></i>
+                <span class="brand-text" id="sidebarBrandText">ABIcars</span>
+            </div>
+            <button id="toggleSidebarCustom" class="toggle-btn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="/Owner/dashbord" class="sidebar-item">
+                <i class="fas fa-tachometer-alt menu-icon text-blue-400"></i>
+                <span class="sidebar-text">Tableau de Bord</span>
+            </a>
+            <a href="/Owner/message" class="sidebar-item">
+                <i class="fas fa-envelope menu-icon text-sky-400"></i>
+                <span class="sidebar-text">Messages</span>
+            </a>
+            <a href="/Owner/clientespace" class="sidebar-item">
+                <i class="fas fa-users menu-icon text-fuchsia-400"></i>
+                <span class="sidebar-text">Clients</span>
+            </a>
+            <a href="/Owner/litige" class="sidebar-item">
+                <i class="fas fa-gavel menu-icon text-rose-500"></i>
+                <span class="sidebar-text">Litiges</span>
+            </a>
+            <a href="/Owner/voitures" class="sidebar-item">
+                <i class="fas fa-car-side menu-icon text-emerald-500"></i>
+                <span class="sidebar-text">Voitures</span>
+            </a>
+            <a href="/Owner/reservation" class="sidebar-item active">
+                <i class="fas fa-calendar-check menu-icon text-amber-500"></i>
+                <span class="sidebar-text">Réservations</span>
+            </a>
+            <a href="/Owner/notifications" class="sidebar-item">
+                <i class="fas fa-bell menu-icon text-violet-500"></i>
+                <span class="sidebar-text">Notifications</span>
+            </a>
+              <a href="/Owner/entretiens" class="sidebar-item">
+    <i class="fas fa-wrench menu-icon text-orange-400"></i>
+    <span class="sidebar-text">Entretiens</span>
+</a>
+            <a href="/Owner/paiement" class="sidebar-item">
+                <i class="fas fa-credit-card menu-icon text-cyan-500"></i>
+                <span class="sidebar-text">Paiement</span>
+            </a>
+        </nav>
+    </aside>
+    <main class="main-content sidebar-expanded">
+        <div class="filter-section">
+            <div class="filter-icon" onclick="filterReservations('all')"><i class="fas fa-filter"></i></div>
+            <div class="filter-icon" onclick="filterReservations('CONFIRMEE')"><i class="fas fa-check-circle"></i></div>
+            <div class="filter-icon" onclick="filterReservations('ANNULEE')"><i class="fas fa-times-circle"></i></div>
+        </div>
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><a class="nav-link active" onclick="filterReservations('all')">Toutes</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="filterReservations('CONFIRMEE')">Confirmées</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="filterReservations('ANNULEE')">Annulées</a></li>
+        </ul>
+        <div id="reservationsList">
+            <div th:each="reservation : ${reservations}" class="reservation-card" th:data-status="${reservation.statut}">
+                <h3 th:text="'Réservation #' + ${reservation.id}"></h3>
+<p><strong>Client:</strong> <span th:text="${reservation.utilisateur != null ? reservation.utilisateur.getDisplayName() : 'Non spécifié'}"></span></p>                <p><strong>Véhicule:</strong> <span th:text="${reservation.voiture != null ? reservation.voiture.getFullName() : 'Non spécifié'}"></span></p>
+                <p><strong>Début:</strong> <span th:text="${#temporals.format(reservation.dateDebut, 'dd/MM/yyyy')}"></span></p>
+                <p><strong>Fin:</strong> <span th:text="${#temporals.format(reservation.dateFin, 'dd/MM/yyyy')}"></span></p>
+                <p><strong>Adresse Prise en Charge:</strong> <span th:text="${reservation.adressePriseEnCharge ?: 'Non spécifié'}"></span></p>
+                <p><strong>Adresse Restitution:</strong> <span th:text="${reservation.adresseRestitution ?: 'Non spécifié'}"></span></p>
+                <p><strong>Prix Total:</strong> <span th:text="${reservation.prixTotal != null ? reservation.prixTotal + ' €' : 'Non spécifié'}"></span></p>
+                <p><strong>Statut:</strong> <span th:classappend="${reservation.statut == 'EN_ATTENTE' ? 'status-pending' : reservation.statut == 'CONFIRMEE' ? 'status-confirmed' : 'status-cancelled'}" th:text="${reservation.statut}"></span></p>
+         <div class="action-buttons" th:if="${reservation.statut == 'EN_ATTENTE'}">
+                    <button class="btn btn-success" th:onclick="'updateStatus(' + ${reservation.id} + ', \'CONFIRMEE\')'"><i class="fas fa-check"></i> Confirmer</button>
+                    <button class="btn btn-danger" th:onclick="'updateStatus(' + ${reservation.id} + ', \'ANNULEE\')'"><i class="fas fa-times"></i> Refuser</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script>
+        function searchReservations() {
+            const input = document.getElementById('navbarSearchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.reservation-card');
+            cards.forEach(card => {
+                const client = card.querySelector('p:nth-child(2) span').textContent.toLowerCase();
+                const vehicle = card.querySelector('p:nth-child(3) span').textContent.toLowerCase();
+                card.style.display = client.includes(input) || vehicle.includes(input) ? '' : 'none';
+            });
+        }
+
+        function filterReservations(status) {
+            const cards = document.querySelectorAll('.reservation-card');
+            cards.forEach(card => {
+                card.style.display = status === 'all' || card.dataset.status === status ? '' : 'none';
+            });
+            document.querySelectorAll('.nav-tabs .nav-link').forEach(link => {
+                link.classList.toggle('active', link.textContent.toLowerCase() === status.toLowerCase() || (status === 'all' && link.textContent === 'Toutes'));
+            });
+        }
+
+        function updateStatus(reservationId, status) {
+            $.ajax({
+                url: '/Owner/reservation/updateStatus',
+                method: 'POST',
+                data: { id: reservationId, status: status },
+                success: function(response) {
+                    const card = document.querySelector(`.reservation-card[data-status="EN_ATTENTE"] h3:contains("Réservation #${reservationId}")`).closest('.reservation-card');
+                    card.querySelector('p:nth-child(9) span').textContent = response.statut;
+                    card.querySelector('p:nth-child(9) span').className = response.statut === 'CONFIRMEE' ? 'status-confirmed' : 'status-cancelled';
+                    card.dataset.status = response.statut;
+                    card.querySelector('.action-buttons').remove();
+                    Toastify({
+                        text: `Réservation ${status === 'CONFIRMEE' ? 'confirmée' : 'annulée'} avec succès`,
+                        duration: 3000,
+                        backgroundColor: status === 'CONFIRMEE' ? '#10b981' : '#ef4444'
+                    }).showToast();
+                },
+                error: function() {
+                    Toastify({
+                        text: 'Erreur lors de la mise à jour',
+                        duration: 3000,
+                        backgroundColor: '#ef4444'
+                    }).showToast();
+                }
+            });
+        }
+
+        document.getElementById('toggleSidebarCustom').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebarCustom');
+            const mainContent = document.querySelector('.main-content');
+            sidebar.classList.toggle('sidebar-collapsed');
+            sidebar.classList.toggle('sidebar-expanded');
+            mainContent.classList.toggle('sidebar-collapsed');
+            mainContent.classList.toggle('sidebar-expanded');
+        });
+
+        document.getElementById('mobileSidebarToggle').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebarCustom');
+            sidebar.classList.toggle('sidebar-show');
+        });
+
+        document.getElementById('userProfileCustom').addEventListener('click', function() {
+            document.getElementById('userDropdownCustom').classList.toggle('active');
+            this.classList.toggle('dropdown-active');
+        });
+
+        document.getElementById('alertsIconCustom').addEventListener('click', function() {
+            document.getElementById('alertsModalCustom').classList.toggle('active');
+        });
+
+        document.getElementById('closeAlertsModalCustom').addEventListener('click', function() {
+            document.getElementById('alertsModalCustom').classList.remove('active');
+        });
+    </script>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+	  const showBtn = document.getElementById('showUserProfile');
+	  const saveBtn = document.getElementById('saveProfile');
+	  const togglePassword = document.getElementById('togglePassword');
+	  const userModalEl = document.getElementById('userModal');
+	  const userModal = new bootstrap.Modal(userModalEl);
+
+	  // Ouvrir le modal avec données AJAX
+	  showBtn.addEventListener('click', (e) => {
+	    e.preventDefault();
+	    fetch('/api/user/profille')
+	      .then(res => res.json())
+	      .then(user => {
+	        document.getElementById('firstName').value = user.firstName || '';
+	        document.getElementById('lastName').value = user.lastName || '';
+	        document.getElementById('phone').value = user.telephone || '';
+	        document.getElementById('email').value = user.email || '';
+	        document.getElementById('password').value = '';
+	        userModal.show();
+	      })
+	      .catch(err => alert('Erreur récupération profil: ' + err));
+	  });
+
+	  // Toggle mot de passe
+	  togglePassword.addEventListener('click', () => {
+	    const pwd = document.getElementById('password');
+	    pwd.type = pwd.type === 'password' ? 'text' : 'password';
+	    togglePassword.classList.toggle('fa-eye-slash');
+	  });
+
+	  // Enregistrer profil
+	  saveBtn.addEventListener('click', () => {
+	    const userData = {
+	      firstName: document.getElementById('firstName').value,
+	      lastName: document.getElementById('lastName').value,
+	      telephone: document.getElementById('phone').value,
+	      email: document.getElementById('email').value,
+	      password: document.getElementById('password').value
+	    };
+
+	    fetch('/api/user/proprofile', {
+	    	  method: 'PUT',
+	    	  headers: { 'Content-Type': 'application/json' },
+	    	  body: JSON.stringify(userData)
+	    	})
+	    	.then(res => {
+	    	    if (!res.ok) throw new Error('Erreur mise à jour');
+	    	    return res.text(); // <-- lire comme texte
+	    	})
+	    	.then(text => {
+	    	    // Le serveur renvoie juste un message texte
+	    	    alert(text || 'Profil mis à jour !');
+	    	    userModal.hide();
+	    	})
+	    	.catch(err => alert('Erreur mise à jour: ' + err));
+
+	  });
+
+	  // Nettoyer backdrop si problème
+	  userModalEl.addEventListener('hidden.bs.modal', () => {
+	    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+	    document.body.classList.remove('modal-open');
+	    document.body.style.overflow = 'auto';
+	  });
+	});
+
+</script>
+
+<script>
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileToggle = document.getElementById('mobileMenuToggle');
+    const sidebar = document.getElementById('sidebarCustom');
+    const body = document.body;
+
+    if (mobileToggle && sidebar) {
+        mobileToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Toggle la classe pour afficher/masquer la sidebar en mode responsive
+            sidebar.classList.toggle('sidebar-open');
+            body.classList.toggle('sidebar-open'); // Optionnel : bloque le scroll du body quand ouvert
+            
+            // Rotate l'icône (optionnel, pour effet visuel)
+            const icon = mobileToggle.querySelector('i');
+            if (icon) {
+                icon.classList.toggle('rotate-180');
+            }
+        });
+    }
+
+    // Fermer la sidebar si clic hors d'elle en mode responsive
+    document.addEventListener('click', function(e) {
+        const isMobile = window.innerWidth <= 1024;
+        if (isMobile && sidebar && sidebar.classList.contains('sidebar-open') && 
+            !sidebar.contains(e.target) && !mobileToggle.contains(e.target)) {
+            sidebar.classList.remove('sidebar-open');
+            body.classList.remove('sidebar-open');
+            
+            // Reset icône
+            const icon = mobileToggle.querySelector('i');
+            if (icon) {
+                icon.classList.remove('rotate-180');
+            }
+        }
+    });
+
+    // Adapter au redimensionnement de fenêtre (intègre avec le JS précédent si existant)
+    window.addEventListener('resize', function() {
+        const isMobile = window.innerWidth <= 1024;
+        if (isMobile) {
+            // Forcer état mobile
+            if (sidebar) sidebar.classList.remove('sidebar-expanded', 'sidebar-collapsed');
+        } else {
+            // Fermer si ouvert en mobile
+            if (sidebar) {
+                sidebar.classList.remove('sidebar-open');
+                body.classList.remove('sidebar-open');
+            }
+        }
+    });
+});
+
+
+
+
+
+</script>
+</body>
+</html>

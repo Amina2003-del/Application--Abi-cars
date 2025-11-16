@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<div class="reviews-container" th:fragment="recent-reviews">
+  <div class="section-header">
+    <h2>Avis récents</h2>
+    <div class="average-rating">
+      <span class="rating-value" th:text="${averageRating}">4.7</span>/5
+      <div class="stars">
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star-half-alt"></i>
+      </div>
+    </div>
+  </div>
+  
+  <div class="reviews-list" id="reviewsList">
+    <div th:each="review : ${recentReviews}" class="review-card">
+      <div class="review-header">
+        <div class="reviewer-info">
+          <span class="reviewer-name" th:text="${review.customerName}">Jean Dupont</span>
+          <span class="review-date" th:text="${#temporals.format(review.date, 'dd MMM yyyy')}">15 Avr 2025</span>
+        </div>
+        <div class="review-rating">
+          <div class="stars" th:attr="data-rating=${review.rating}">
+            <i th:each="i : ${#numbers.sequence(1, 5)}" 
+               th:class="${i <= review.rating ? 'fas fa-star' : (i <= review.rating + 0.5 ? 'fas fa-star-half-alt' : 'far fa-star')}"></i>
+          </div>
+        </div>
+      </div>
+      <div class="car-rented">
+        <small>Voiture louée: <span th:text="${review.carBrand + ' ' + review.carModel}">Renault Clio</span></small>
+      </div>
+      <p class="review-comment" th:text="${review.comment}">Excellent service, voiture en parfait état et propre. Je recommande vivement!</p>
+    </div>
+  </div>
+  
+  <div class="load-more-container">
+    <button id="loadMoreReviews" class="btn btn-outline-primary btn-sm">Voir plus d'avis</button>
+  </div>
+</div>
+</body>
+
+
+</html>

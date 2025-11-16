@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+   
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="description" content="carbnb | Location de voitures - Modèle HTML par Themescare">
+      <meta name="keyword" content="taxi,voiture,location,transport">
+      <meta name="author" content="Themescare">
+      <!-- Titre -->
+      <title>carbnb - Location de voitures</title>
+      <!-- Favicon -->
+      <link rel="icon" type="image/png" sizes="32x32" th:href="@{/assets/img/favicon/favicon-32x32.png}">
+      <!--Bootstrap css-->
+      <link rel="stylesheet" th:href="@{/assets/css/bootstrap.css}">
+      <!--Font Awesome css-->
+      <link rel="stylesheet" th:href="@{/assets/css/font-awesome.min.css}">
+      <!--Magnific css-->
+      <link rel="stylesheet" th:href="@{/assets/css/magnific-popup.css}">
+      <!--Owl-Carousel js-->
+      <link rel="stylesheet" th:href="@{/assets/css/owl.carousel.min.css}">
+      <link rel="stylesheet" th:href="@{/assets/css/owl.theme.default.min.css}">
+      <!--Animate css-->
+      <link rel="stylesheet" th:href="@{/assets/css/animate.min.css}">
+      <!--Datepicker css-->
+      <link rel="stylesheet" th:href="@{/assets/css/jquery.datepicker.css}">
+      <!--Nice Select css-->
+      <link rel="stylesheet" th:href="@{/assets/css/nice-select.css}">
+      <!-- Lightgallery css -->
+      <link rel="stylesheet" th:href="@{/assets/css/lightgallery.min.css}">
+      <!--ClockPicker css-->
+      <link rel="stylesheet" th:href="@{/assets/css/jquery-clockpicker.min.css}">
+      <!--Slicknav css-->
+      <link rel="stylesheet" th:href="@{/assets/css/slicknav.min.css}">
+      <!--Style Principal du Site css-->
+      <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+      <link rel="stylesheet" th:href="@{/assets/css/alertes.css}">
+      <!--Responsive css-->
+      <link rel="stylesheet" th:href="@{/assets/css/responsive.css}">
+            <link rel="stylesheet" th:href="@{/assets/css/reservationcar.css}">
+             <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Flatpickr pour les dates -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css" rel="stylesheet">
+    <!-- Animate.css pour les animations -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+      
+   </head>
+   <body>
+       
+      <!-- Zone d'En-tête Supérieure Début -->
+      <section class="gauto-header-top-area">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-6">
+                  <div class="header-top-left">
+                     <p>Besoin d'aide ? <i class="fa fa-phone"></i> Appel : +321 123 45 978 
+                     </p>
+                  </div>
+               </div>
+               <div class="col-md-6">
+                  <div class="header-top-right">
+                     <a th:href="@{/Voitures/login}">
+                     <i class="fa fa-key"></i>
+                     Connexion
+                     </a>
+                     <a th:href="@{/Voitures/register}">
+                     <i class="fa fa-user"></i>
+                     Inscription
+                     </a>
+                     <div class="dropdown">
+                        <button class="btn-dropdown dropdown-toggle" type="button" id="dropdownlang" data-toggle="dropdown" aria-haspopup="true">
+                        <img th:src="@{/assets/img/france.png}" alt="langue" class="fr" /> Francais
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownlang">
+                           <li><img th:src="@{/assets/img/en.png}" alt="langue" /> Anglais</li>
+                        </ul>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </section>
+
+       
+      <!-- Zone du Menu Principal Début -->
+      <section class="gauto-mainmenu-area">
+         <div class="container">
+            <div class="row">
+               <div class="col-lg-9">
+                  <div class="mainmenu">
+                     <nav>
+                        <ul id="gauto_navigation">
+                           <li class="active"><a th:href="@{/Voitures/index}">accueil</a></li>
+                           <li><a th:href="@{/Voitures/about}">à propos</a></li>
+                           <li>
+                              <a href="#">Services</a>
+                              <ul>
+                                 <li><a th:href="@{/Voitures/service}">Réservation/Location</a></li>
+                                 <li><a th:href="@{/Voitures/service/details}">Devenir Partenaire</a></li>
+                                 <li><a th:href="@{/Voitures/service/details}">Publier une location</a></li>
+                                 
+                              </ul>
+                           </li>
+                           <li>
+                              <a href="#">voitures</a>
+                              <ul>
+                                 <li><a th:href="@{/Voitures/car/listing}">liste des voitures</a></li>
+                                 <li><a th:href="@{/Voitures/car/booking}">réservation de voiture</a></li>
+                              </ul>
+                           </li>
+                           <li><a th:href="@{/Voitures/gallery}">galerie</a></li>
+                          
+                           <li><a th:href="@{/Voitures/contact}">contact</a></li>
+                        </ul>
+                     </nav>
+                  </div>
+               </div>
+              
+                  <div class="header-action">
+                     <a th:href="@{/Voitures/location}"><i class="fa fa-car"></i> Mettre Mon Location</a>
+                  </div>     
+        </div>
+                      
+                     <!-- Boîte de Recherche Début -->
+                     
+                     </div>
+                     <!-- Boîte de Recherche Fin -->
+           
+      </section>
+ <section class="gauto-breadcromb-area section_70">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-12">
+                  <div class="breadcromb-box">
+                     <h3>Résérver Une Voiture</h3>
+                     <ul>
+                        <li><i class="fa fa-home"></i></li>
+                        <li><a th:href="@{/Voitures/index}">Accueil</a></li>
+                        <li><i class="fa fa-angle-right"></i></li>
+                        <li>Résérvation</li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </section>
+      
+       <div class="loader" id="loader">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="hero-section animate__animated animate__fadeIn">
+        <div class="container">
+            <h1 class="display-4 fw-bold">Trouvez la voiture parfaite pour votre voyage</h1>
+            <p class="lead">Les meilleurs véhicules aux meilleurs prix, partout en France</p>
+        </div>
+    </div>
+
+    <!-- Search Panel -->
+    <div class="container">
+        <div class="search-panel animate__animated animate__fadeInUp">
+            <form id="searchForm">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label for="citySelect" class="form-label"><i class="fas fa-map-marker-alt"></i> Ville de location</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-city"></i></span>
+                            <select class="form-select" id="citySelect" required>
+                                <option value="" selected disabled>Choisissez une ville</option>
+                                <option value="paris">Paris</option>
+                                <option value="lyon">Lyon</option>
+                                <option value="marseille">Marseille</option>
+                                <option value="bordeaux">Bordeaux</option>
+                                <option value="toulouse">Toulouse</option>
+                                <option value="nice">Nice</option>
+                                <option value="strasbourg">Strasbourg</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="startDate" class="form-label"><i class="fas fa-calendar-alt"></i> Date de départ</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-play"></i></span>
+                            <input type="text" class="form-control" id="startDate" placeholder="JJ/MM/AAAA" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="endDate" class="form-label"><i class="fas fa-calendar-check"></i> Date de retour</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-stop"></i></span>
+                            <input type="text" class="form-control" id="endDate" placeholder="JJ/MM/AAAA" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="carType" class="form-label"><i class="fas fa-car"></i> Type de véhicule</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-car-side"></i></span>
+                            <select class="form-select" id="carType">
+                                <option value="all" selected>Tous les types</option>
+                                <option value="compact">Compacte</option>
+                                <option value="sedan">Berline</option>
+                                <option value="suv">SUV</option>
+                                <option value="luxury">Luxe</option>
+                                <option value="van">Utilitaire</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-12 text-center mt-4">
+                        <button type="submit" class="btn btn-rent px-5">
+                            <i class="fas fa-search me-2"></i>Rechercher maintenant
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mb-5">
+        <div class="row">
+            <!-- Filters Section -->
+            <div class="col-lg-3">
+                <div class="filter-section animate__animated animate__fadeInLeft">
+                    <h5 class="mb-3">Filtres</h5>
+                    <div class="mb-3">
+                        <label for="priceRange" class="form-label">Prix maximum: <span id="priceValue">100</span>€/jour</label>
+                        <input type="range" class="form-range" id="priceRange" min="10" max="500" step="10" value="100">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><i class="fas fa-tags"></i> Marque</label>
+                        <div class="brand-filters-container">
+                            <div class="form-check">
+                                <input class="form-check-input brand-filter" type="checkbox" value="renault" id="brandRenault">
+                                <label class="form-check-label" for="brandRenault"><i class="fas fa-car"></i> Renault</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input brand-filter" type="checkbox" value="peugeot" id="brandPeugeot">
+                                <label class="form-check-label" for="brandPeugeot"><i class="fas fa-car"></i> Peugeot</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input brand-filter" type="checkbox" value="citroen" id="brandCitroen">
+                                <label class="form-check-label" for="brandCitroen"><i class="fas fa-car"></i> Citroën</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input brand-filter" type="checkbox" value="volkswagen" id="brandVolkswagen">
+                                <label class="form-check-label" for="brandVolkswagen"><i class="fas fa-car"></i> Volkswagen</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input brand-filter" type="checkbox" value="bmw" id="brandBmw">
+                                <label class="form-check-label" for="brandBmw"><i class="fas fa-car-side"></i> BMW</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input brand-filter" type="checkbox" value="mercedes" id="brandMercedes">
+                                <label class="form-check-label" for="brandMercedes"><i class="fas fa-car-side"></i> Mercedes</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><i class="fas fa-cogs"></i> Options</label>
+                        <div class="options-filters-container">
+                            <div class="option-badge">
+                                <input class="form-check-input option-filter visually-hidden" type="checkbox" value="automatic" id="optionAutomatic">
+                                <label class="option-badge-label" for="optionAutomatic">
+                                    <i class="fas fa-cog"></i> Boîte automatique
+                                </label>
+                            </div>
+                            <div class="option-badge">
+                                <input class="form-check-input option-filter visually-hidden" type="checkbox" value="gps" id="optionGps">
+                                <label class="option-badge-label" for="optionGps">
+                                    <i class="fas fa-map-marked-alt"></i> GPS
+                                </label>
+                            </div>
+                            <div class="option-badge">
+                                <input class="form-check-input option-filter visually-hidden" type="checkbox" value="ac" id="optionAc">
+                                <label class="option-badge-label" for="optionAc">
+                                    <i class="fas fa-snowflake"></i> Climatisation
+                                </label>
+                            </div>
+                            <div class="option-badge">
+                                <input class="form-check-input option-filter visually-hidden" type="checkbox" value="electric" id="optionElectric">
+                                <label class="option-badge-label" for="optionElectric">
+                                    <i class="fas fa-bolt"></i> Véhicule électrique
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="sortBy" class="form-label">Trier par</label>
+                        <select class="form-select" id="sortBy">
+                            <option value="price-asc">Prix (croissant)</option>
+                            <option value="price-desc">Prix (décroissant)</option>
+                            <option value="name-asc">Nom (A-Z)</option>
+                            <option value="name-desc">Nom (Z-A)</option>
+                        </select>
+                    </div>
+                    <button id="applyFilters" class="btn btn-rent w-100 mt-3">Appliquer les filtres</button>
+                </div>
+            </div>
+
+            <!-- Cars List Section -->
+            <div class="col-lg-9">
+                <div id="carsContainer">
+                    <div class="text-center p-5">
+                        <h4 class="mb-3">Commencez votre recherche</h4>
+                        <p class="text-muted">Sélectionnez une ville et des dates pour voir les voitures disponibles</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reservation Modal -->
+    <div class="modal fade" id="reservationModal" tabindex="-1" aria-labelledby="reservationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reservationModalLabel">Réserver votre voiture</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Reservation Steps -->
+                    <div class="reservation-steps">
+                        <div class="step step-active" id="step1">
+                            <div class="step-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="step-text">Informations</div>
+                        </div>
+                        <div class="step" id="step2">
+                            <div class="step-icon">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="step-text">Paiement</div>
+                        </div>
+                        <div class="step" id="step3">
+                            <div class="step-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="step-text">Confirmation</div>
+                        </div>
+                    </div>
+
+                    <!-- Reservation Form -->
+                    <form id="reservationForm" th:action="@{/reservation/submit}" method="post">
+                        <!-- Hidden Fields -->
+                        <input type="hidden" id="formCarId" name="carId">
+                        <input type="hidden" id="formStartDate" name="startDate">
+                        <input type="hidden" id="formEndDate" name="endDate">
+                        <input type="hidden" id="formLocation" name="location">
+
+                        <!-- Step 1: Personal Information -->
+                        <div id="step1Content">
+                            <div class="car-summary mb-4">
+                                <div class="row align-items-center">
+                                    <div class="col-md-4">
+                                        <img id="selectedCarImage" src="/api/placeholder/300/200" alt="Voiture sélectionnée" class="img-fluid rounded">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <h5 id="selectedCarName">Nom de la voiture</h5>
+                                        <div class="d-flex gap-3 mb-2">
+                                            <div class="car-feature"><i class="fas fa-car-side"></i> <span id="selectedCarType">Type</span></div>
+                                            <div class="car-feature"><i class="fas fa-gas-pump"></i> <span id="selectedCarFuel">Carburant</span></div>
+                                            <div class="car-feature"><i class="fas fa-cog"></i> <span id="selectedCarTransmission">Transmission</span></div>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="price-tag"><span id="selectedCarPrice">50</span>€/jour</div>
+                                            <div class="dates">
+                                                <i class="far fa-calendar-alt"></i> 
+                                                <span id="reservationDates">du 01/01/2023 au 05/01/2023</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="firstName" class="form-label">Prénom</label>
+                                    <input type="text" class="form-control" id="firstName" name="firstName" required pattern="[A-Za-z]{2,50}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="lastName" class="form-label">Nom</label>
+                                    <input type="text" class="form-control" id="lastName" name="lastName" required pattern="[A-Za-z]{2,50}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="phone" class="form-label">Téléphone</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone" required pattern="[0-9]{10,15}">
+                                </div>
+                                <div class="col-12">
+                                    <label for="address" class="form-label">Adresse</label>
+                                    <input type="text" class="form-control" id="address" name="address" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="zipCode" class="form-label">Code postal</label>
+                                    <input type="text" class="form-control" id="zipCode" name="zipCode" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="city" class="form-label">Ville</label>
+                                    <input type="text" class="form-control" id="city" name="city" required>
+                                </div>
+                                <div class="col-12 mt-4">
+                                    <button type="button" class="btn btn-rent w-100" id="goToStep2">Continuer</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Payment Information -->
+                        <div id="step2Content" class="hidden-section">
+                            <h5 class="mb-3">Choisissez votre mode de paiement</h5>
+                            <div class="payment-options">
+                                <div class="payment-option" data-payment="online">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6>Paiement en ligne</h6>
+                                            <p class="text-muted mb-0">Paiement sécurisé par carte bancaire</p>
+                                        </div>
+                                        <div class="payment-icons">
+                                            <i class="fab fa-cc-visa me-2"></i>
+                                            <i class="fab fa-cc-mastercard me-2"></i>
+                                            <i class="fab fa-cc-amex"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="payment-option" data-payment="pickup">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6>Paiement à la livraison</h6>
+                                            <p class="text-muted mb-0">Payez lors de la prise du véhicule</p>
+                                        </div>
+                                        <div class="payment-icons">
+                                            <i class="fas fa-money-bill-wave"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="onlinePaymentForm" class="mt-4 hidden-section">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label for="cardHolder" class="form-label">Nom sur la carte</label>
+                                        <input type="text" class="form-control" id="cardHolder" name="cardHolder">
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="cardNumber" class="form-label">Numéro de carte</label>
+                                        <input type="text" class="form-control" id="cardNumber" name="cardNumber" placeholder="XXXX XXXX XXXX XXXX">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="expiryDate" class="form-label">Date d'expiration</label>
+                                        <input type="text" class="form-control" id="expiryDate" name="expiryDate" placeholder="MM/AA">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="cvv" class="form-label">CVV</label>
+                                        <input type="text" class="form-control" id="cvv" name="cvv" placeholder="123">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="acceptTerms" name="acceptTerms" required>
+                                    <label class="form-check-label" for="acceptTerms">
+                                        J'accepte les <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" class="text-primary">conditions générales</a> de location
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="row mt-4">
+                                <div class="col-6">
+                                    <button type="button" class="btn btn-outline-secondary w-100" id="backToStep1">Retour</button>
+                                </div>
+                                <div class="col-6">
+                                    <button type="button" class="btn btn-rent w-100" id="goToStep3">Confirmer la réservation</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Confirmation -->
+                        <div id="step3Content" class="hidden-section text-center">
+                            <div class="my-5">
+                                <div class="circle-check mb-4">
+                                    <i class="fas fa-check-circle text-success" style="font-size: 5rem;"></i>
+                                </div>
+                                <h4>Votre réservation est confirmée !</h4>
+                                <p class="lead">Numéro de réservation : <strong id="reservationNumber">RES-12345</strong></p>
+                                <p class="mb-4">Un email de confirmation a été envoyé à <span id="confirmationEmail">email@exemple.com</span></p>
+                                <div class="reservation-summary card p-4 mb-4">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Récapitulatif de votre réservation</h5>
+                                        <div class="row">
+                                            <div class="col-md-6 text-start">
+                                                <p><strong>Voiture :</strong> <span id="summaryCarName">Nom de la voiture</span></p>
+                                                <p><strong>Dates :</strong> <span id="summaryDates">du 01/01/2023 au 05/01/2023</span></p>
+                                                <p><strong>Lieu :</strong> <span id="summaryLocation">Paris</span></p>
+                                            </div>
+                                            <div class="col-md-6 text-start">
+                                                <p><strong>Prix total :</strong> <span id="summaryPrice">250€</span></p>
+                                                <p><strong>Mode de paiement :</strong> <span id="summaryPayment">Paiement en ligne</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-rent px-5" data-bs-dismiss="modal">Fermer</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms Modal -->
+    <div class="modal fade" id="termsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Conditions générales de location</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>1. Réservation et paiement</h6>
+                    <p>La réservation est confirmée après paiement d'un acompte ou de la totalité du montant de la location selon les options choisies.</p>
+                    
+                    <h6>2. Annulation</h6>
+                    <p>Toute annulation effectuée plus de 48h avant la date de début de location donnera lieu à un remboursement intégral. En cas d'annulation moins de 48h avant la date de début, 50% du montant sera facturé.</p>
+                    
+                    <h6>3. Prise en charge et retour du véhicule</h6>
+                    <p>La voiture doit être restituée dans l'état où elle a été livrée, avec le même niveau de carburant. Des frais supplémentaires seront facturés en cas de retard, de dégradation ou de niveau de carburant insuffisant.</p>
+                    
+                    <h6>4. Assurance</h6>
+                    <p>Le véhicule est assuré tous risques. Une franchise de 800€ sera appliquée en cas de sinistre responsable.</p>
+                    
+                    <h6>5. Conducteur</h6>
+                    <p>Le conducteur doit être âgé d'au moins 21 ans et posséder un permis de conduire valide depuis plus de 2 ans.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <script th:src ="@{/assets/js/reservationcar.js}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/fr.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Litiges - Propriétaire</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome pour les icônes -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+<!-- Bootstrap 5 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Flag-icon-css pour les drapeaux -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- PDF.js (si utilisé pour l'affichage direct, sinon peut être optionnel pour le simple téléchargement) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <!-- FullCalendar (conservé car utilisé dans le code JS initial) -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap 5 JS (bundle avec Popper requis pour modale) -->
+
+             <link rel="stylesheet" th:href="@{/assets/css/litigeowner.css}">
+  
+</head>
+<body class="light-theme"> <!-- Thème clair par défaut -->
+
+    <!-- Barre de navigation (Style Tailwind) -->
+    <nav class="navbar-custom-tailwind" th:fragment="navbar">
+    <div class="navbar-left">
+        <span class="brand">ABIcars</span>
+    </div>
+    <div class="navbar-right">
+        <!-- Bouton menu hamburger pour responsive (visible seulement sur mobile) -->
+        <div class="nav-icon-btn mobile-menu-toggle" id="mobileMenuToggle">
+            <i class="fas fa-bars"></i>
+        </div>
+        
+        <div class="nav-icon-btn" id="alertsIconCustom">
+            <!-- Contenu des alertes si besoin -->
+        </div>
+        <div class="nav-icon-btn" id="languageSwitchCustom">
+            <span class="flag-icon flag-icon-fr"></span>
+        </div>
+        <div class="user-profile" id="userProfileCustom"> <!-- Utilisation du style user-profile -->
+            <i class="fas fa-user-circle"></i> <!-- Icône Font Awesome plus stylée -->
+            <span th:text="${currentUser != null ? currentUser.firstName + ' ' + currentUser.lastName : 'Invité'}"></span>
+            <i class="fas fa-chevron-down fa-xs"></i>
+        </div>
+        <div class="dropdown-menu-custom" id="userDropdownCustom">
+            <a href="#" id="showUserProfile">
+                <i class="fas fa-user-edit"></i>Mon profil
+            </a>
+          <a th:href="@{/Siteoffeciel/index}" >
+  <i class="fas fa-sign-out-alt"></i>Se déconnecter
+</a>
+        </div>
+    </div>
+</nav>
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      
+      <div class="modal-header bg-primary text-white rounded-top">
+        <h5 class="modal-title" id="userModalLabel">Profil Utilisateur</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body user-info">
+        <form id="userProfileForm">
+          <div class="row g-3">
+
+            <div class="col-md-6">
+              <label for="firstName" class="form-label">Prénom</label>
+              <input type="text" class="form-control" id="firstName" name="firstName">
+            </div>
+
+            <div class="col-md-6">
+              <label for="lastName" class="form-label">Nom</label>
+              <input type="text" class="form-control" id="lastName" name="lastName">
+            </div>
+
+            <div class="col-md-6">
+              <label for="phone" class="form-label">Téléphone</label>
+              <input type="tel" class="form-control" id="phone" name="phone">
+            </div>
+
+            <div class="col-md-6">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email">
+            </div>
+
+            <div class="col-12 position-relative">
+              <label for="password" class="form-label">Nouveau mot de passe</label>
+              <input type="password" class="form-control pe-5" id="password" name="password">
+                        <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+            </div>
+
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+        <button type="button" class="btn btn-primary" id="saveProfile">Enregistrer</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+    <!-- Modal pour les alertes (Style non-Bootstrap personnalisé) -->
+    <div class="modal-custom-non-bootstrap" id="alertsModalCustom">
+        <div class="modal-header-custom-non-bootstrap">
+            <h3>Alertes récentes</h3>
+            <span class="close-btn" id="closeAlertsModalCustom">×</span>
+        </div>
+        <div class="modal-body-custom-non-bootstrap">
+            <div class="alert-item">
+                <div class="alert-content">
+                    <div class="alert-title">Support Team</div>
+                    <div class="alert-message">Problème de maintenance sur la voiture #123</div>
+                </div>
+                <div class="alert-meta">
+                    <div class="alert-time">5 mins</div>
+                    <span class="alert-status status-urgent">URGENT</span>
+                </div>
+            </div>
+            <div class="alert-item">
+                <div class="alert-content">
+                    <div class="alert-title">Design Team</div>
+                    <div class="alert-message">Inspection nécessaire pour la voiture #456</div>
+                </div>
+                <div class="alert-meta">
+                    <div class="alert-time">2 hours</div>
+                    <span class="alert-status status-waiting">EN ATTENTE</span>
+                </div>
+            </div>
+            <div class="alert-item">
+                <div class="alert-content">
+                    <div class="alert-title">Nouveau Litige</div>
+                    <div class="alert-message">Litige #LT004 ouvert par Marie Martin.</div>
+                </div>
+                <div class="alert-meta">
+                    <div class="alert-time">Aujourd'hui</div>
+                    <span class="alert-status status-new">NOUVEAU</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Barre latérale (Style Tailwind) -->
+    <aside id="sidebarCustom" class="sidebar-custom-tailwind sidebar-expanded">
+        <div class="sidebar-header">
+            <div class="brand-logo-wrapper">
+                <i class="fas fa-car-alt brand-icon"></i>
+                <span class="brand-text" id="sidebarBrandText">ABIcars</span>
+            </div>
+            <button id="toggleSidebarCustom" class="toggle-btn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+        <nav class="sidebar-menu">
+             <a href="/Owner/dashbord" class="sidebar-item">
+                <i class="fas fa-tachometer-alt menu-icon text-blue-400"></i>
+                <span class="sidebar-text">Tableau de Bord</span>
+            </a>
+            <a href="/Owner/message" class="sidebar-item">
+                <i class="fas fa-envelope menu-icon text-sky-400"></i>
+                <span class="sidebar-text">Messages</span>
+            </a>
+            <a href="/Owner/clientespace" class="sidebar-item">
+                <i class="fas fa-users menu-icon text-fuchsia-400"></i>
+                <span class="sidebar-text">Clients</span>
+            </a>
+            <a href="/Owner/litige" class="sidebar-item active"> <!-- Litige est actif -->
+                <i class="fas fa-gavel menu-icon text-rose-500"></i>
+                <span class="sidebar-text">Litiges</span>
+            </a>
+            <a href="/Owner/voitures" class="sidebar-item">
+                <i class="fas fa-car-side menu-icon text-emerald-500"></i>
+                <span class="sidebar-text">Voitures</span>
+            </a>
+            <a href="/Owner/reservation" class="sidebar-item">
+                <i class="fas fa-calendar-check menu-icon text-amber-500"></i>
+                <span class="sidebar-text">Réservations</span>
+            </a>
+                  <a href="/Owner/entretiens" class="sidebar-item">
+    <i class="fas fa-wrench menu-icon text-orange-400"></i>
+    <span class="sidebar-text">Entretiens</span>
+</a>
+            <a href="/Owner/notifications" class="sidebar-item">
+                <i class="fas fa-bell menu-icon text-violet-500"></i>
+                <span class="sidebar-text">Notifications</span>
+            </a>
+           <!--  <a href="/Owner/avis" class="sidebar-item">
+                <i class="fas fa-star menu-icon text-orange-400"></i>
+                <span class="sidebar-text">Avis</span>
+            </a>-->
+            <a href="/Owner/paiement" class="sidebar-item">
+                <i class="fas fa-credit-card menu-icon text-cyan-500"></i>
+                <span class="sidebar-text">Paiement</span>
+            </a>
+        </nav>
+    </aside>
+
+
+    <!-- Contenu principal -->
+    <div id="mainContent" class="main-content sidebar-expanded">
+        <div class="container-litiges animate-fadeInUp">
+            <div class="header-litiges">
+                <h2>Gestion des Litiges</h2>
+                <div class="d-flex gap-2 flex-wrap justify-content-md-end">
+<input type="text" id="searchLitige" class="search-input" placeholder="Rechercher par client, marque..." aria-label="Rechercher des litiges">
+                    <select id="filterStatus" class="filter-select" aria-label="Filtrer par statut">
+                        
+                    </select>
+                    <input type="date" id="dateStart" class="date-input" aria-label="Date de début">
+                    <input type="date" id="dateEnd" class="date-input" aria-label="Date de fin">
+                    <button class="btn-export btn-icon" onclick="exportToCSV()" title="Télécharger CSV" aria-label="Télécharger en CSV"><i class="fas fa-download"></i></button>
+                    <button class="btn-reset btn-icon" onclick="resetFilters()" title="Réinitialiser les filtres" aria-label="Réinitialiser les filtres"><i class="fas fa-undo"></i></button>
+                    <button class="btn-icon" id="themeToggle" onclick="toggleTheme()" title="Basculer le thème" aria-label="Basculer le thème"><i class="fas fa-moon"></i></button>
+                </div>
+            </div>
+
+            <div class="chart-container-wrapper">
+                <canvas id="litigeChart" height="100"></canvas> <!-- Hauteur ajustée -->
+            </div>
+
+            <div class="table-responsive mt-3">
+                <table>
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable('client')">Client <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable('vehicle')">Véhicule <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable('motif')">Motif <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable('date')">Date <i class="fas fa-sort"></i></th>
+                            <th onclick="sortTable('statut')">Statut <i class="fas fa-sort"></i></th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="litigeTable"></tbody>
+                </table>
+            </div>
+
+            <nav class="mt-4 d-flex justify-content-center" aria-label="Pagination des litiges">
+                <ul class="pagination" id="pagination"></ul>
+            </nav>
+        </div>
+
+        <!-- Modal Détails Litige -->
+        <!-- Modal Litige avancé -->
+<div class="modal fade" id="litigeModal" tabindex="-1" aria-labelledby="litigeModalLabel" >
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="litigeModalLabel">Détails du Litige</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="litigeResponseForm">
+
+          <!-- Infos client -->
+          <div class="mb-3">
+            <h6>Informations Client</h6>
+            <p id="clientInfo" class="border rounded p-3 bg-light"></p>
+          </div>
+
+          <!-- Infos litige -->
+          <div class="mb-3">
+            <h6>Informations Litige</h6>
+            <p id="litigeInfo" class="border rounded p-3 bg-light"></p>
+          </div>
+<div id="preuveContainer" class="my-3" style="display: none;">
+  <a id="preuveLien" href="#" target="_blank" class="download-link d-flex align-items-center gap-2" title="Télécharger la pièce jointe">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#0d6efd" class="bi bi-download" viewBox="0 0 16 16">
+      <path d="M.5 9.9a.5.5 0 0 1 .5-.5h4V1.5a.5.5 0 0 1 1 0v7.9h4a.5.5 0 0 1 .354.854l-4.5 4.5a.5.5 0 0 1-.708 0l-4.5-4.5a.5.5 0 0 1-.146-.354z"/>
+      <path d="M14.5 14a.5.5 0 0 1-.5.5h-12a.5.5 0 0 1 0-1h12a.5.5 0 0 1 .5.5z"/>
+    </svg>
+    <small>Télécharger la pièce jointe</small>
+  </a>
+</div>
+
+
+
+          <!-- Ajouter une note/réponse -->
+          <div class="mb-3">
+            <label for="note" class="form-label">Ajouter une note / réponse</label>
+            <textarea id="note" class="form-control" rows="4" placeholder="Votre réponse ici..."></textarea>
+          </div>
+
+          <!-- Choix du statut -->
+          <div class="mb-3">
+            <label for="statut" class="form-label">Changer le statut du litige</label>
+            <select id="statut" class="form-select" required>
+              <option value="EN_COURS">En cours</option>
+              <option value="EN_ATTENTE">En attente</option>
+              
+            </select>
+          </div>
+
+          <input type="hidden" id="litigeId" />
+
+        </form>
+      </div>
+<!-- Juste avant la fin de modal-body -->
+
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+        <button type="button" class="btn btn-primary" id="saveResponseBtn">Envoyer la réponse</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+        <!-- Notification Toast -->
+        <div class="notification-toast" id="notificationToast">
+            <i class="fas fa-check-circle"></i>
+            <span id="notificationMessage"></span>
+        </div>
+    </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script>
+        // Gestion de la nouvelle sidebar/navbar (style Tailwind)
+        const sidebarCustomEl = document.getElementById('sidebarCustom');
+        const mainContentEl = document.getElementById('mainContent');
+        const toggleSidebarCustomBtnEl = document.getElementById('toggleSidebarCustom');
+        const mobileSidebarToggleBtnEl = document.getElementById('mobileSidebarToggle'); // Bouton mobile
+        const sidebarToggleIconEl = toggleSidebarCustomBtnEl.querySelector('i');
+      
+
+
+        function toggleActualSidebar() {
+            const isExpanded = sidebarCustomEl.classList.contains('sidebar-expanded');
+            if (window.innerWidth <= 768) { // Comportement mobile
+                sidebarCustomEl.classList.toggle('sidebar-show');
+            } else { // Comportement bureau
+                if (isExpanded) {
+                    sidebarCustomEl.classList.remove('sidebar-expanded');
+                    sidebarCustomEl.classList.add('sidebar-collapsed');
+                    mainContentEl.classList.remove('sidebar-expanded');
+                    mainContentEl.classList.add('sidebar-collapsed');
+                    sidebarToggleIconEl.classList.remove('fa-chevron-left');
+                    sidebarToggleIconEl.classList.add('fa-chevron-right');
+                } else {
+                    sidebarCustomEl.classList.remove('sidebar-collapsed');
+                    sidebarCustomEl.classList.add('sidebar-expanded');
+                    mainContentEl.classList.remove('sidebar-collapsed');
+                    mainContentEl.classList.add('sidebar-expanded');
+                    sidebarToggleIconEl.classList.remove('fa-chevron-right');
+                    sidebarToggleIconEl.classList.add('fa-chevron-left');
+                }
+            }
+        }
+        toggleSidebarCustomBtnEl.addEventListener('click', toggleActualSidebar);
+        if(mobileSidebarToggleBtnEl) mobileSidebarToggleBtnEl.addEventListener('click', toggleActualSidebar);
+
+
+        const userProfileCustomEl = document.getElementById('userProfileCustom');
+        const userDropdownCustomEl = document.getElementById('userDropdownCustom');
+        if(userProfileCustomEl && userDropdownCustomEl){ // Vérifier l'existence
+            const userProfileChevronEl = userProfileCustomEl.querySelector('.fa-chevron-down');
+            userProfileCustomEl.addEventListener('click', (event) => {
+                event.stopPropagation();
+                const isActive = userDropdownCustomEl.classList.toggle('active');
+                userProfileCustomEl.classList.toggle('dropdown-active', isActive);
+            });
+        }
+
+
+        const alertsIconCustomEl = document.getElementById('alertsIconCustom');
+        const alertsModalCustomEl = document.getElementById('alertsModalCustom');
+        const closeAlertsModalCustomBtnEl = document.getElementById('closeAlertsModalCustom');
+        if(alertsIconCustomEl && alertsModalCustomEl && closeAlertsModalCustomBtnEl){
+            alertsIconCustomEl.addEventListener('click', (event) => {
+                event.stopPropagation();
+                alertsModalCustomEl.classList.toggle('active');
+                if(userDropdownCustomEl) userDropdownCustomEl.classList.remove('active');
+                if(userProfileCustomEl) userProfileCustomEl.classList.remove('dropdown-active');
+            });
+            closeAlertsModalCustomBtnEl.addEventListener('click', () => {
+                alertsModalCustomEl.classList.remove('active');
+            });
+        }
+
+        document.addEventListener('click', (event) => {
+            if (userProfileCustomEl && !userProfileCustomEl.contains(event.target) && userDropdownCustomEl && !userDropdownCustomEl.contains(event.target)) {
+                if(userDropdownCustomEl) userDropdownCustomEl.classList.remove('active');
+                if(userProfileCustomEl) userProfileCustomEl.classList.remove('dropdown-active');
+            }
+            if (alertsIconCustomEl && !alertsIconCustomEl.contains(event.target) && alertsModalCustomEl && !alertsModalCustomEl.contains(event.target)) {
+                if(alertsModalCustomEl) alertsModalCustomEl.classList.remove('active');
+            }
+            // Fermer sidebar mobile
+            if (window.innerWidth <= 768 && sidebarCustomEl && !sidebarCustomEl.contains(event.target) && mobileSidebarToggleBtnEl && !mobileSidebarToggleBtnEl.contains(event.target)) {
+                sidebarCustomEl.classList.remove('sidebar-show');
+            }
+        });
+
+        const languageSwitchCustomEl = document.getElementById('languageSwitchCustom');
+        if (languageSwitchCustomEl) {
+            const flagIconCustomEl = languageSwitchCustomEl.querySelector('.flag-icon');
+            let currentLangCustomVal = 'fr';
+            languageSwitchCustomEl.addEventListener('click', () => {
+                if (currentLangCustomVal === 'fr') {
+                    if(flagIconCustomEl) {flagIconCustomEl.classList.remove('flag-icon-fr'); flagIconCustomEl.classList.add('flag-icon-gb');}
+                    currentLangCustomVal = 'gb';
+                } else {
+                     if(flagIconCustomEl) {flagIconCustomEl.classList.remove('flag-icon-gb'); flagIconCustomEl.classList.add('flag-icon-fr');}
+                    currentLangCustomVal = 'fr';
+                }
+            });
+        }
+
+        // Données simulées et logique des litiges
+       let litiges = [
+           ];
+
+    $(document).ready(function () {
+        loadLitiges();
+    });
+
+    function loadLitiges() {
+        let tbody = $("#litigesTable tbody");
+        tbody.empty();
+        $.each(litiges, function (i, l) {
+            tbody.append(`
+                <tr>
+                    <td>${l.client}</td>
+                    <td>${l.vehicle}</td>
+                    <td>${l.motif}</td>
+                    <td>${l.date}</td>
+                    <td>${l.statut}</td>
+                    <td><button onclick="showDetails(${l.id})">Voir</button></td>
+                </tr>
+            `);
+        });
+    }
+
+    function showDetails(id) {
+        let litige = litiges.find(l => l.id === id);
+        if (!litige) return;
+
+        $("#modalClient").text(litige.client);
+        $("#modalVehicle").text(litige.vehicle);
+        $("#modalPhone").text(litige.phone);
+        $("#modalMotif").text(litige.motif);
+        $("#modalDescription").text(litige.description);
+
+        let historyList = $("#modalHistory");
+        historyList.empty();
+        litige.history.forEach(h => {
+            historyList.append(`<li>${h}</li>`);
+        });
+
+        let docsList = $("#modalDocuments");
+        docsList.empty();
+        if (litige.documents.length > 0) {
+            litige.documents.forEach(d => {
+                docsList.append(`<li><a href="${d.url}" target="_blank">${d.name}</a></li>`);
+            });
+        } else {
+            docsList.append("<li>Aucun document</li>");
+        }
+
+        $("#litigeModal").show();
+    }
+
+    
+        // Renommé pour éviter conflit
+        let litigeChartInstance; // Renommé pour éviter conflit
+        let litigeModalInstance = null; // Renommé pour éviter conflit
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.className = `${savedTheme}-theme`; // Remplacer la classe, ne pas ajouter
+            updateThemeIcon(savedTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const themeIcon = document.querySelector('#themeToggle i');
+            if(themeIcon) {
+                themeIcon.classList.remove('fa-moon', 'fa-sun');
+                themeIcon.classList.add(theme === 'light' ? 'fa-moon' : 'fa-sun');
+            }
+        }
+
+        function displayLitiges() {
+           
+
+           
+            const start = (currentLitigePage - 1) * litigePageSize;
+            const end = start + litigePageSize;
+            const paginatedLitiges = filteredLitiges.slice(start, end);
+            const tbody = document.getElementById('litigeTable');
+            tbody.innerHTML = '';
+
+            if (paginatedLitiges.length === 0) {
+                 const tr = document.createElement('tr');
+                const td = document.createElement('td');
+                td.colSpan = 6;
+                td.textContent = 'Aucun litige trouvé.';
+                td.className = 'text-center text-muted py-4';
+                tr.appendChild(td);
+                tbody.appendChild(tr);
+            } else {
+                paginatedLitiges.forEach(litige => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${litige.client}</td>
+                            <td>${litige.vehicle}</td>
+                            <td>${litige.motif}</td>
+                            <td>${new Date(litige.date).toLocaleDateString('fr-FR')}</td>
+                            <td><span class="status-badge status-${litige.statut.toLowerCase().replace(/\s+/g, '-')}">${litige.statut}</span></td>
+                            <td class="text-center">
+                                <button class="btn-icon" onclick="sendNotification(${litige.id})" title="Notifier Client"><i class="fas fa-bell"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            updateLitigePagination(filteredLitiges.length);
+            updateLitigeChart(filteredLitiges);
+        }
+
+        function updateLitigePagination(totalItems) {
+            const totalPages = Math.ceil(totalItems / litigePageSize);
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            if (totalPages <= 1 || totalItems === 0) return; // Pas de pagination si 1 page ou moins, ou pas d’items
+
+            for (let i = 1; i <= totalPages; i++) {
+                pagination.innerHTML += `
+                    <li class="page-item ${i === currentLitigePage ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="currentLitigePage=${i}; displayLitiges(); return false;">${i}</a>
+                    </li>
+                `;
+            }
+        }
+
+
+        function sortTable(key) {
+            if (currentSortKey === key) currentSortDirection *= -1;
+            else { currentSortKey = key; currentSortDirection = 1; }
+            displayLitiges();
+        }
+
+
+        function updateLitigeChart(filteredLitiges) {
+            const ctx = document.getElementById('litigeChart').getContext('2d');
+
+            // Initialise les compteurs pour les valeurs d'enum attendues
+            const statusCounts = {
+                'OUVERT': 0,
+                'EN_COURS': 0,
+                'RESOLU': 0,
+                'FERME': 0,
+                'EN_ATTENTE': 0,
+                'REJETE': 0
+            };
+
+            // Incrémente en fonction du statut exact retourné par le backend
+            filteredLitiges.forEach(l => {
+                const statut = l.statut?.toUpperCase();
+                if (statusCounts.hasOwnProperty(statut)) {
+                    statusCounts[statut]++;
+                }
+            });
+
+            console.log('Statuts comptés :', statusCounts);
+
+            if (litigeChartInstance) litigeChartInstance.destroy();
+            litigeChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['OUVERT', 'EN_COURS', 'RESOLU', 'FERME', 'EN_ATTENTE', 'REJETE'],
+                    datasets: [{
+                        label: 'Nombre de litiges',
+                        data: [
+                            statusCounts['OUVERT'],
+                            statusCounts['EN_COURS'],
+                            statusCounts['RESOLU'],
+                            statusCounts['FERME'],
+                            statusCounts['EN_ATTENTE'],
+                            statusCounts['REJETE']
+                        ],
+                        backgroundColor: [
+                            'rgba(239, 68, 68, 0.7)',    // Rouge
+                            'rgba(245, 158, 11, 0.7)',   // Ambre
+                            'rgba(16, 185, 129, 0.7)',   // Vert
+                            'rgba(59, 130, 246, 0.7)',   // Bleu
+                            'rgba(234, 179, 8, 0.7)',    // Jaune
+                            'rgba(107, 114, 128, 0.7)'   // Gris
+                        ],
+                        borderColor: [
+                            'rgba(220, 38, 38, 1)',
+                            'rgba(217, 119, 6, 1)',
+                            'rgba(5, 150, 105, 1)',
+                            'rgba(37, 99, 235, 1)',
+                            'rgba(202, 138, 4, 1)',
+                            'rgba(75, 85, 99, 1)'
+                        ],
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Statut des Litiges',
+                            font: { size: 14 },
+                            color: document.body.classList.contains('dark-theme') ? '#e5e7eb' : '#374151'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                color: document.body.classList.contains('dark-theme') ? '#9ca3af' : '#6b7280'
+                            },
+                            grid: {
+                                color: document.body.classList.contains('dark-theme') ? '#374151' : '#e5e7eb'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: document.body.classList.contains('dark-theme') ? '#9ca3af' : '#6b7280'
+                            },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Appel dynamique
+        function fetchAndRenderLitiges() {
+            fetch('/Owner/litiges/api') // ⇨ Remplace par ton URL réelle
+                .then(response => response.json())
+                .then(data => updateLitigeChart(data))
+                .catch(error => console.error('Erreur de chargement des litiges:', error));
+        }
+
+        // Chargement initial
+        document.addEventListener('DOMContentLoaded', fetchAndRenderLitiges);
+
+
+      
+
+        function exportToCSV() {
+        	  const table = document.getElementById('litigeTable');
+        	  if (!table || table.rows.length === 0) {
+        	    alert("Aucune donnée dans le tableau à exporter !");
+        	    return;
+        	  }
+
+        	  // En-têtes fixes (tu peux aussi extraire dynamiquement depuis <thead>)
+        	  const headers = ['ID', 'Client', 'Véhicule', 'Motif', 'Date', 'Statut'];
+
+        	  let csv = headers.join(',') + '\n';
+
+        	  // Parcours des lignes <tr> du tbody
+        	  for (let i = 0; i < table.rows.length; i++) {
+        	    let row = table.rows[i];
+        	    let rowData = [];
+
+        	    // On récupère chaque <td> de la ligne sauf celui des Actions (dernier)
+        	    for (let j = 0; j < row.cells.length - 1; j++) {
+        	      // Nettoyage du texte : suppression des virgules (pour ne pas casser le CSV), espaces inutiles
+        	      let cellText = row.cells[j].innerText.trim().replace(/,/g, ''); 
+        	      rowData.push(`"${cellText}"`); // guillemets pour gérer les textes avec espaces ou caractères spéciaux
+        	    }
+
+        	    csv += rowData.join(',') + '\n';
+        	  }
+
+        	  // Création et téléchargement du fichier CSV
+        	  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        	  const link = document.createElement('a');
+        	  link.href = URL.createObjectURL(blob);
+        	  link.download = 'litiges_proprietaire.csv';
+        	  document.body.appendChild(link);
+        	  link.click();
+        	  document.body.removeChild(link);
+
+              showNotification('Export CSV généré.');
+        	}
+
+
+        function resetFilters() {
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('dateStart').value = '';
+            document.getElementById('dateEnd').value = '';
+            currentLitigePage = 1;
+
+            showNotification('Filtres réinitialisés.');
+        }
+
+        function showNotification(message, type = 'success') {
+            const toast = document.getElementById('notificationToast');
+            toast.className = `notification-toast ${type === 'error' ? 'error' : ''}`; // Reset and add error class if needed
+            toast.querySelector('i').className = `fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`;
+            document.getElementById('notificationMessage').textContent = message;
+            toast.classList.add('active');
+            setTimeout(() => { toast.classList.remove('active'); }, 3000);
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.classList.contains('dark-theme') ? 'dark' : 'light';
+            
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            body.className = `${newTheme}-theme`; // Remplacer la classe
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+            if (litigeChartInstance) displayLitiges(); // Redessiner le chart avec les nouvelles couleurs de thème
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTheme();
+            displayLitiges();
+            if(document.getElementById('toggleSidebar')) document.getElementById('toggleSidebar').addEventListener('click', toggleActualSidebar); // Ancien toggle, si encore présent
+            if(document.getElementById('mobileSidebarToggle')) document.getElementById('mobileSidebarToggle').addEventListener('click', toggleActualSidebar); // Nouveau toggle mobile
+
+            ['searchLitige', 'filterStatus', 'dateStart', 'dateEnd'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.addEventListener(id === 'searchLitige' ? 'input' : 'change', () => { currentLitigePage = 1; displayLitiges(); });
+            });
+            const docUpload = document.getElementById('documentUpload');
+            if(docUpload) docUpload.addEventListener('change', function() {
+                document.getElementById('fileNameDisplay').textContent = this.files.length > 0 ? `Fichier: ${this.files[0].name}` : '';
+            });
+
+             // Initialisation pour que la marge du contenu soit correcte au chargement
+            if (sidebarCustomEl.classList.contains('sidebar-expanded')) {
+                mainContentEl.classList.add('sidebar-expanded');
+                mainContentEl.classList.remove('sidebar-collapsed');
+            } else {
+                mainContentEl.classList.add('sidebar-collapsed');
+                mainContentEl.classList.remove('sidebar-expanded');
+            }
+        });
+    </script>
+    <script>
+    let currentSortKey = 'dateCreation';
+    let currentSortDirection = 1;
+    let currentLitigePage = 1;
+    const litigePageSize = 2;  // nombre d'éléments par page
+
+    function displayLitiges() {
+        $.ajax({
+            url: '/Owner/litiges/api',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                let filteredLitiges = data;
+
+                const searchValue = document.getElementById('searchLitige').value.toLowerCase();
+                const selectedStatut = document.getElementById('filterStatus').value;
+                const dateStart = document.getElementById('dateStart').value;
+                const dateEnd = document.getElementById('dateEnd').value;
+
+                // === Filtrage par texte (inclut client, type, description et vehicle) ===
+                if (searchValue) {
+                    filteredLitiges = filteredLitiges.filter(litige =>
+                        (litige.client?.firstName?.toLowerCase().includes(searchValue) ||
+                         litige.client?.lastName?.toLowerCase().includes(searchValue) ||
+                         litige.vehicle?.toLowerCase().includes(searchValue) || // Filtrer par la chaîne vehicle
+                         litige.type?.toLowerCase().includes(searchValue) ||
+                         litige.description?.toLowerCase().includes(searchValue))
+                    );
+                }
+                // === Filtrage par statut ===
+                if (selectedStatut) {
+                    filteredLitiges = filteredLitiges.filter(litige =>
+                        litige.statut && litige.statut === selectedStatut
+                    );
+                }
+
+                // === Filtrage par date ===
+                if (dateStart || dateEnd) {
+                    filteredLitiges = filteredLitiges.filter(litige => {
+                        if (!litige.dateCreation) return false;
+
+                        const litigeDateStr = litige.dateCreation.split(' ')[0]; // Extrait "2025-05-23"
+                        const litigeDate = new Date(litigeDateStr);
+
+                        if (isNaN(litigeDate)) return false;
+
+                        const start = dateStart ? new Date(dateStart) : null;
+                        const end = dateEnd ? new Date(dateEnd) : null;
+
+                        return (!start || litigeDate >= start) && (!end || litigeDate <= end);
+                    });
+                }
+
+                // === Tri ===
+                filteredLitiges.sort((a, b) => {
+                    let valA = a[currentSortKey];
+                    let valB = b[currentSortKey];
+
+                    if (currentSortKey === 'dateCreation' || currentSortKey === 'date') {
+                        valA = new Date(valA);
+                        valB = new Date(valB);
+                    } else if (typeof valA === 'string' && typeof valB === 'string') {
+                        valA = valA.toLowerCase();
+                        valB = valB.toLowerCase();
+                    }
+
+                    if (valA > valB) return currentSortDirection * 1;
+                    if (valA < valB) return currentSortDirection * -1;
+                    return 0;
+                });
+
+                // === Pagination ===
+                const startIndex = (currentLitigePage - 1) * litigePageSize;
+                const endIndex = startIndex + litigePageSize;
+                const pageItems = filteredLitiges.slice(startIndex, endIndex);
+
+                // === Affichage des litiges ===
+                const tbody = $('#litigeTable');
+                tbody.empty();
+
+                if (pageItems.length === 0) {
+                    tbody.append('<tr><td colspan="6" class="text-center">Aucun litige trouvé</td></tr>');
+                } else {
+                    pageItems.forEach(litige => {
+                    	const getStatusBadge = (statut) => {
+                    	    if (!statut) return '<span class="badge-status badge-rejete">INCONNU</span>';
+
+                    	    const status = statut.toUpperCase();
+
+                    	    if (status.includes('OUVERT')) {
+                    	        return `<span class="badge-status badge-ouvert">${statut}</span>`;
+                    	    } else if (status.includes('EN_COURS')) {
+                    	        return `<span class="badge-status badge-en-cours">${statut}</span>`;
+                    	    } else if (status.includes('RESOLU')) {
+                    	        return `<span class="badge-status badge-resolu">${statut}</span>`;
+                    	    } else if (status.includes('FERME')) {
+                    	        return `<span class="badge-status badge-ferme">${statut}</span>`;
+                    	    } else if (status.includes('EN_ATTENTE') || status.includes('ATTENTE')) {
+                    	        return `<span class="badge-status badge-en-attente">${statut}</span>`;
+                    	    } else if (status.includes('REJETE')) {
+                    	        return `<span class="badge-status badge-rejete">${statut}</span>`;
+                    	    } else {
+                    	        return `<span class="badge-status badge-rejete">${statut}</span>`;
+                    	    }
+                    	};
+
+
+                    	const row = `
+                    	    <tr>
+                    		<td>${litige.client ? litige.client.firstName + ' ' + litige.client.lastName : '-'}</td>
+                    	        <td>${litige.vehicle || '-'}</td>
+                    	        <td>${litige.type ? litige.type + ' : ' + litige.description : '-'}</td>
+                    	        <td>${litige.dateCreation || '-'}</td>
+                    	        <td>${getStatusBadge(litige.statut)}</td>
+                    	        <td class="text-center">
+                    	            <button class="btn btn-sm btn-primary btn-details" data-id="${litige.id}">
+                    	                Détails
+                    	            </button>
+                    	        </td>
+                    	    </tr>
+                    	`;
+
+                        tbody.append(row);
+                    });
+                }
+
+                updateLitigePagination(filteredLitiges.length);
+            },
+            error: function(xhr, status, error) {
+                console.error('Erreur AJAX:', error);
+                $('#litigeTable').html('<tr><td colspan="6" class="text-center text-danger">Erreur lors du chargement des litiges</td></tr>');
+            }
+        });
+    }
+</script>
+
+<script>
+console.log(typeof jQuery);
+
+    // Ouverture modale et chargement des données
+    $('#litigeTable').on('click', '.btn-details', function () {
+    	 const litigeId = $(this).data('id');
+
+    	    // Tu peux éventuellement stocker l’ID dans un champ caché ou une variable si besoin :
+    	    $('#litigeModal').data('litige-id', litigeId); // optionnel
+
+    	   
+        console.log("ID cliqué:", litigeId);
+        const modal = new bootstrap.Modal(document.getElementById('litigeModal'));
+        modal.show();
+        $.ajax({
+            url: `/Owner/litiges/api/${litigeId}`,
+            method: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                $('#litigeId').val(data.id);
+                console.log("Données reçues du litige :", data);
+
+                // Client info
+                const client = data.client;
+                const clientInfo = client
+                    ? `Client : ${client.firstName} ${client.lastName} <br> Téléphone : ${client.tel}`
+                    : 'Client : N/A';
+                $('#clientInfo').html(clientInfo);
+
+                // Litige info
+                const litigeInfo = `
+                    Type : ${data.type}<br>
+                    Description : ${data.description}<br>
+                    Date création : ${data.dateCreation}<br>
+                    Statut actuel : ${data.statut}
+                `;
+                $('#litigeInfo').html(litigeInfo);
+
+                // Remplir le select statut
+                $('#statut').val(data.statut);
+
+                // Vider la note
+                $('#note').val('');
+
+                // Gestion de la pièce jointe
+  if (data.attachmentPath && data.attachmentPath.trim() !== '') {
+    // ⚡ Si attachmentPath est seulement filename (ex. "uuid.pdf"), on a besoin de proprietaireId et reservationId
+    // Assumez que data contient data.proprietaireId et data.reservationId (ajoutez-les depuis backend si pas)
+    const proprietaireId = data.proprietaireId || '1'; // Fallback ou erreur si pas disponible
+    const reservationId = data.reservationId || 'undefined'; // Du log, c'est 13
+    const filename = data.attachmentPath.trim(); // Seulement filename
+
+    console.log("Params pour URL: Owner ID:", proprietaireId, "- Resa ID:", reservationId, "- Filename:", filename);
+
+    // Vérif si IDs valides
+    if (!proprietaireId || proprietaireId === 'undefined' || !reservationId || reservationId === 'undefined') {
+        console.error("IDs manquants pour construire URL attachment:", { proprietaireId, reservationId });
+        $('#preuveContainer').hide(); // Cache si invalide
+        return;
+    }
+
+    // Construire URL endpoint
+    let fullPath = `/attachments/${proprietaireId}/${reservationId}/${filename}`;
+    
+    // Ajoutez context-path si besoin
+    const CONTEXT_PATH = '/Owner'; // Adaptez
+    if (CONTEXT_PATH && !fullPath.startsWith(CONTEXT_PATH)) {
+        fullPath = CONTEXT_PATH + fullPath;
+    }
+
+    console.log("URL pièce jointe construite:", fullPath);
+
+    $('#preuveContainer').show();
+
+    $('#preuveLien')
+        .attr('href', fullPath)
+        .attr('target', '_blank')
+        .text(`Ouvrir pièce jointe: ${filename}`)
+        .show();
+
+    $('#preuveIframe').hide();
+    $('#preuveImage').hide();
+} else {
+    console.log("Aucune pièce jointe à afficher.");
+    $('#preuveContainer').hide();
+    $('#preuveImage, #preuveIframe, #preuveLien').hide();
+}
+                // Afficher la modale
+                
+            },
+            error: function () {
+                alert('Erreur lors du chargement des détails du litige');
+            }
+        });
+    });
+
+    // Envoi de la réponse + mise à jour statut
+    $('#saveResponseBtn').on('click', function () {
+        const litigeId = $('#litigeId').val();
+        const note = $('#note').val().trim();
+        const statut = $('#statut').val();
+
+        if (!note) {
+            alert("Veuillez entrer une réponse avant d'envoyer.");
+            return;
+        }
+
+        const payload = {
+            note: note,
+            statut: statut
+        };
+
+        $.ajax({
+            url: `/Owner/api/litiges/${litigeId}/repondre`,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+            success: function () {
+                alert('Réponse envoyée avec succès');
+                $('#litigeModal').modal('hide');
+                loadLitiges(); // Recharge le tableau
+            },
+            error: function () {
+                alert("Erreur lors de l'envoi de la réponse");
+            }
+        });
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+
+function loadLitiges() {
+	  const search = $('#searchLitige').val();
+	  const statut = $('#filterStatus').val();
+	  const dateStart = $('#dateStart').val();
+	  const dateEnd = $('#dateEnd').val();
+
+	  console.log('Chargement des litiges avec les filtres :', {
+	    search,
+	    statut,
+	    dateStart,
+	    dateEnd
+	  });
+
+	  $.ajax({
+	    url: '/Owner/litiges/apis',
+	    method: 'GET',
+	    data: { search, statut, dateStart, dateEnd },
+	    dataType: 'json',
+	    success: function(litiges) {
+	      console.log('Réponse reçue (litiges) :', litiges);
+
+	      const tbody = $('#litigeTable tbody');
+	      tbody.empty();
+
+	      if (litiges.length === 0) {
+	        console.log('Aucun litige trouvé avec ces filtres.');
+	        tbody.append('<tr><td colspan="6" class="text-center">Aucun litige trouvé</td></tr>');
+	        return;
+	      }
+
+	      litiges.forEach(litige => {
+	        const clientFirstName = litige.client?.firstName || '';
+	        const clientLastName = litige.client?.lastName || '';
+
+	        tbody.append(`
+	          <tr>
+	            <td>${litige.id}</td>
+	            <td>${litige.type}</td>
+	            <td>${litige.statut}</td>
+	            <td>${litige.description}</td>
+	            <td>${litige.dateCreation}</td>
+	            <td>${clientFirstName} ${clientLastName}</td>
+	            <td>
+	              <button class="btn btn-primary btn-details" data-id="${litige.id}">Détails</button>
+	            </td>
+	          </tr>
+	        `);
+	      });
+	    },
+	    error: function(xhr, status, error) {
+	      console.error('Erreur AJAX lors du chargement des litiges:', status, error);
+	      alert('Erreur lors du chargement des litiges');
+	    }
+	  });
+	}
+
+	// Charger la liste au chargement et à chaque modification
+	$('#searchLitige, #filterStatus, #dateStart, #dateEnd').on('input change', loadLitiges);
+
+	// Charger au démarrage
+	$(document).ready(loadLitiges);
+
+
+
+</script>
+<script>
+
+
+$(document).ready(function() {
+    // Charger les statuts dans le select au démarrage
+    $.ajax({
+        url: '/Owner/statuts',
+        method: 'GET',
+        dataType: 'json',
+        success: function(statuts) {
+            const select = $('#filterStatus');
+            select.empty();  // vider les options actuelles
+            select.append('<option value="">Tous les statuts</option>'); // option par défaut
+
+            statuts.forEach(function(statut) {
+                // Option : afficher en "minuscule première lettre en majuscule" ou tel quel
+                let text = statut.charAt(0).toUpperCase() + statut.slice(1).toLowerCase();
+                select.append(`<option value="${statut}">${text}</option>`);
+            });
+        },
+        error: function() {
+            alert('Erreur lors du chargement des statuts');
+        }
+    });
+});
+</script>
+<script>
+$(document).ready(function() {
+    // Charger les données de l'utilisateur
+    $('#showUserProfile').click(function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: '/api/user/profille',
+            type: 'GET',
+            success: function(user) {
+                $('#firstName').val(user.firstName);
+                $('#lastName').val(user.lastName);
+                $('#phone').val(user.telephone);
+                $('#email').val(user.email);
+                $('#password').val(''); // Champ mot de passe vide par défaut
+            },
+            error: function(xhr) {
+                alert('Erreur lors de la récupération des informations: ' + xhr.responseText);
+            }
+        });
+    });
+
+    // Basculer l'affichage du mot de passe
+    $('#togglePassword').click(function() {
+        const passwordField = $('#password');
+        const type = passwordField.attr('type') === 'password' ? 'text' : 'password';
+        passwordField.attr('type', type);
+        $(this).toggleClass('fa-eye fa-eye-slash');
+    });
+
+    // Enregistrer les modifications
+    $('#saveProfile').click(function() {
+        const userData = {
+            firstName: $('#firstName').val(),
+            lastName: $('#lastName').val(),
+            telephone: $('#phone').val(),
+            email: $('#email').val(),
+            password: $('#password').val()
+        };
+
+        $.ajax({
+            url: '/api/user/proprofile',
+            type: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify(userData),
+            success: function(response) {
+                alert('Profil mis à jour avec succès !');
+                $('#userModal').modal('hide');
+            },
+            error: function(xhr) {
+                alert('Erreur lors de la mise à jour du profil: ' + xhr.responseText);
+            }
+        });
+    });
+});
+</script>
+<script>
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileToggle = document.getElementById('mobileMenuToggle');
+    const sidebar = document.getElementById('sidebarCustom');
+    const body = document.body;
+
+    if (mobileToggle && sidebar) {
+        mobileToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Toggle la classe pour afficher/masquer la sidebar en mode responsive
+            sidebar.classList.toggle('sidebar-open');
+            body.classList.toggle('sidebar-open'); // Optionnel : bloque le scroll du body quand ouvert
+            
+            // Rotate l'icône (optionnel, pour effet visuel)
+            const icon = mobileToggle.querySelector('i');
+            if (icon) {
+                icon.classList.toggle('rotate-180');
+            }
+        });
+    }
+
+    // Fermer la sidebar si clic hors d'elle en mode responsive
+    document.addEventListener('click', function(e) {
+        const isMobile = window.innerWidth <= 1024;
+        if (isMobile && sidebar && sidebar.classList.contains('sidebar-open') && 
+            !sidebar.contains(e.target) && !mobileToggle.contains(e.target)) {
+            sidebar.classList.remove('sidebar-open');
+            body.classList.remove('sidebar-open');
+            
+            // Reset icône
+            const icon = mobileToggle.querySelector('i');
+            if (icon) {
+                icon.classList.remove('rotate-180');
+            }
+        }
+    });
+
+    // Adapter au redimensionnement de fenêtre (intègre avec le JS précédent si existant)
+    window.addEventListener('resize', function() {
+        const isMobile = window.innerWidth <= 1024;
+        if (isMobile) {
+            // Forcer état mobile
+            if (sidebar) sidebar.classList.remove('sidebar-expanded', 'sidebar-collapsed');
+        } else {
+            // Fermer si ouvert en mobile
+            if (sidebar) {
+                sidebar.classList.remove('sidebar-open');
+                body.classList.remove('sidebar-open');
+            }
+        }
+    });
+});
+
+
+
+
+
+</script>
+</body>
+</html>

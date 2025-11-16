@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="#{label.form.title}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css"/>
+    <link rel="stylesheet" th:href="@{/assets/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/register.css}">
+    <link rel="stylesheet" href="font/material-design-iconic-font/css/material-design-iconic-font.min.css">
+    <style>
+        .password-verdict {
+            color: #000;
+        }
+    </style>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script th:src="@{/resources/pwstrength.js}"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII"/>
+    <title th:text="#{label.form.title}">form</title>
+</head>
+<body>
+    <div class="wrapper" id="wrapper">
+        <div class="inner" id="ibox-content">
+            <div class="sk-spinner sk-spinner-wave">
+                <div class="sk-rect1"></div>
+                <div class="sk-rect2"></div>
+                <div class="sk-rect3"></div>
+                <div class="sk-rect4"></div>
+                <div class="sk-rect5"></div>
+            </div>
+           <div class="login-page-heading">
+           
+    <i class="fa fa-lock"></i> <!-- Remplace fa-user-plus par fa-lock -->
+    <h3>S'inscrire</h3>
+</div>
+            <br/><br/>
+            <form action="/" method="POST" enctype="multipart/form-data">
+                <!-- Champs Prénom et Nom -->
+                <div class="form-group">
+                    <div class="form-wrapper">
+                        <label th:text="#{label.user.firstName}">first</label>
+                        <input type="text" class="form-control" id="firstName" name="firstName" value="" />
+                        <span id="firstNameError" class="form-wrapper-InputWrapper_explain" style="display:none"></span>
+                    </div>
+                    <div class="form-wrapper">
+                        <label th:text="#{label.user.lastName}">last</label>
+                        <input class="form-control" id="lastName" name="lastName" value="" />
+                        <span id="lastNameError" class="form-wrapper-InputWrapper_explain" style="display:none"></span>
+                    </div>
+                </div>
+
+                <!-- Champs Numéro et Email côte à côte -->
+                <div class="form-group">
+                    <div class="form-wrapper">
+                        <label th:text="#{label.user.phone}">phone</label>
+                        <input type="tel" class="form-control" id="tel" name="tel" value="" />
+                        <span id="telError" class="form-wrapper-InputWrapper_explain" style="display:none"></span>
+                        <span id="telValid" class="form-wrapper-InputWrapper_explain" style="display:none"></span>
+                    </div>
+                    <div class="form-wrapper">
+                        <label th:text="#{label.user.email}">email</label>
+                        <input class="form-control" id="email" name="email" value="" />
+                        <span id="emailError" class="form-wrapper-InputWrapper_explain" style="display:none"></span>
+                        <span id="emailValid" class="form-wrapper-InputWrapper_explain" style="display:none"></span>
+                    </div>
+                </div>
+
+                <!-- Champs Mot de passe et Confirmation côte à côte -->
+                <div class="form-group">
+                    <div class="form-wrapper">
+                        <label th:text="#{label.user.password}">password</label>
+                        <input id="password" class="form-control" name="password" value="" type="password" />
+                        <span id="passwordError" class="form-wrapper-InputWrapper_explain" style="display:none"></span>
+                    </div>
+                    <div class="form-wrapper">
+                        <label th:text="#{label.user.confirmPass}">confirm</label>
+                        <input id="matchPassword" class="form-control" name="matchingPassword" value="" type="password" />
+                        <span id="globalError" class="form-wrapper-InputWrapper_explain" style="display:none"></span>
+                        <span id="matchPasswordError" class="form-wrapper-InputWrapper_explain" style="display:none"></span>
+                    </div>
+                </div>
+
+                <!-- Type d'utilisateur -->
+                <div class="form-wrapper">
+                    <label>Type d'utilisateur :</label><br>
+                    <input type="radio" id="client" name="role" value="ROLE_CLIENT"  checked onchange="toggleUserType()" />
+                    <label for="client">Client</label>
+                    <input  type="radio" id="owner" name="role" value="ROLE_OWNER"  onchange="toggleUserType()" />
+                    <label for="owner">Propriétaire</label>
+                </div>
+              
+    
+    
+
+                <!-- CHAMPS CLIENTS (visibles par défaut) -->
+                <div id="clientFields">
+                    <div class="form-group">
+                        <div class="form-wrapper">
+                            <label>N°Permis :</label>
+                            <input type="text" name="numeroPermis" placeholder="Votre numero de permis" class="form-control" />
+                        </div>
+                        <div class="form-wrapper">
+                            <label>Adresse:</label>
+                            <input type="text" name="Adresse" placeholder="Votre Adresse" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Confirmation avant champs propriétaire -->
+                <div id="ownerConfirmation" style="display: none;">
+                    <label>
+                        <input type="checkbox" id="readConfirm" onchange="toggleOwnerFields()" />
+                        J’ai lu et j’accepte les conditions pour les propriétaires
+                    </label>
+                </div>
+
+                <!-- CHAMPS PROPRIÉTAIRES -->
+                <div id="ownerFields" style="display: none;">
+    <div class="form-group">
+        <div class="form-wrapper">
+            <label>Raison sociale :</label>
+            <input type="text" name="raisonsociale" placeholder="Nom de l'agence" class="form-control" />
+        </div>
+        <div class="form-wrapper mb-3">
+    <label for="descriptionAgence" class="form-label">Description de l'agence :</label>
+    <input type="text" id="descriptionAgence" name="descriptionAgence" placeholder="Entrez une description de l'agence" class="form-control" />
+</div>
+
+        <div class="form-wrapper">
+            <label>ICE :</label>
+            <input type="text" name="ice" placeholder="Identifiant Commun de l'Entreprise" class="form-control" />
+        </div>
+    </div>
+    <div class="form-wrapper">
+        <label>Logo de l'agence :</label>
+        <input type="file" id="logovoitureFile" name="logovoitureFile" />
+    </div>
+</div>
+
+                <!-- Checkbox de validation -->
+                <div class="form-wrapper">
+<input type="checkbox" id="termsCheckbox" name="termsCheckbox"/>
+                    <label for="termsCheckbox">J’ai lu et j’accepte les conditions générales</label>
+                </div>
+
+                <!-- Bouton d'enregistrement -->
+                <button type="submit" class="btn btn-primary" id="idsubmit">S'inscrire maintenant</button>
+                <a class="button1 btn btn-primary" th:href="@{/login}" th:text="#{label.form.loginLink}">login</a>
+            </form>
+        </div>
+    </div>
+
+   <script th:inline="javascript">
+    var serverContext = /*[[${#httpServletRequest.getContextPath()}]]*/ '';
+
+    $(document).ready(function () {
+        $('form').submit(function(event) {
+            register(event);
+        });
+
+        $("#firstName, #lastName, #tel, #email, #password, #matchPassword").on("input", function() {
+            $("#" + this.id + "Error").html("").hide();
+            $("#" + this.id + "Valid").html("").hide();
+        });
+
+        $("#password").keyup(function(){
+            if($("#password").val() != $("#matchPassword").val()){
+                $("#globalError").show().html("Passwords do not match");
+            } else {
+                $("#globalError").html("").hide();
+            }
+        });
+
+        options = {
+            common: {minChar: 8},
+            ui: {
+                showVerdictsInsideProgressBar: true,
+                showErrors: true,
+                errorMessages: {
+                    wordLength: "Password must be at least 8 characters",
+                    wordNotEmail: "Not a valid email",
+                    wordSequences: "Password cannot contain sequences",
+                    wordLowercase: "Password must contain a lowercase letter",
+                    wordUppercase: "Password must contain an uppercase letter",
+                    wordOneNumber: "Password must contain a number",
+                    wordOneSpecialChar: "Password must contain a special character"
+                }
+            }
+        };
+        $('#password').pwstrength(options);
+    });
+
+    function register(event) {
+        event.preventDefault();
+        $(".alert").html("").hide();
+        $(".error-list").html("");
+
+        if (!$("#termsCheckbox").is(":checked")) {
+            alert("Veuillez accepter les conditions générales.");
+            $("#termsCheckbox")[0].focus();
+            return;
+        }
+
+        if($("#password").val() != $("#matchPassword").val()){
+            $("#globalError").show().html("Passwords do not match");
+            return;
+        }
+        if($("#firstName").val() == ""){
+            $("#firstNameError").show().html("First name is required");
+            return;
+        }
+        if($("#lastName").val() == ""){
+            $("#lastNameError").show().html("Last name is required");
+            return;
+        }
+        if($("#tel").val() == ""){
+            $("#telError").show().html("Phone number is required");
+            return;
+        } else {
+            if(!phonenumber($("#tel").val())){
+                $("#telValid").show().html("Invalid phone number");
+                return;
+            }
+        }
+        if($("#email").val() == ""){
+            $("#emailError").show().html("Email is required");
+            return;
+        } else {
+            if(!validateEmail($("#email").val())){
+                $("#emailValid").show().html("Invalid email");
+                return;
+            }
+        }
+        if($("#password").val() == ""){
+            $("#passwordError").show().html("Password is required");
+            return;
+        }
+        if($("#matchPassword").val() == ""){
+            $("#matchPasswordError").show().html("Please confirm your password");
+            return;
+        }
+
+        $('#wrapper').children('.inner').toggleClass('sk-loading');
+
+        // Utiliser FormData pour inclure les fichiers
+        var form = document.querySelector("form");
+        var formData = new FormData(form);
+
+        $.ajax({
+            url: serverContext + "user/registration",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                if(data.message === "success") {
+                    window.location.href = serverContext + "successRegister.html";
+                }
+            },
+            error: function(data) {
+                $('#wrapper').children('.inner').toggleClass('sk-loading');
+                if(data.responseJSON.error.indexOf("MailError") > -1){
+                    window.location.href = serverContext + "emailError.html";
+                } else if(data.responseJSON.error === "UserAlreadyExist"){
+                    $("#emailError").show().html(data.responseJSON.message);
+                } else if(data.responseJSON.error.indexOf("InternalError") > -1){
+                    window.location.href = serverContext + "login?message=" + data.responseJSON.message;
+                } else {
+                    var errors = $.parseJSON(data.responseJSON.message);
+                    $.each(errors, function(index, item){
+                        if (item.field){
+                            $("#" + item.field + "Error").show().append(item.defaultMessage + "<br/>");
+                        } else {
+                            $("#globalError").show().append(item.defaultMessage + "<br/>");
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    function validateEmail(email) {
+        var re = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
+        return re.test(email);
+    }
+
+    function phonenumber(inputtxt) {
+        var phoneno = /^\d{10}$/;
+        return phoneno.test(inputtxt);
+    }
+</script>
+
+    <script>
+        function toggleOwnerFields() {
+            const ownerFields = document.getElementById("ownerFields");
+            const isOwner = document.getElementById("owner").checked;
+            ownerFields.style.display = isOwner ? "block" : "none";
+        }
+
+        function validateIBAN() {
+            const ibanInput = document.getElementById("ribIban");
+            const iban = ibanInput.value.replace(/\s+/g, '').toUpperCase();
+            const ibanError = document.getElementById("ibanError");
+
+            // Conversion lettres vers chiffres
+            const rearranged = iban.slice(4) + iban.slice(0, 4);
+            const converted = rearranged.replace(/[A-Z]/g, ch => (ch.charCodeAt(0) - 55));
+
+            let total = converted;
+            let remainder = '';
+            while (total.length > 0) {
+                let block = remainder + total.substring(0, 9);
+                total = total.substring(9);
+                remainder = parseInt(block, 10) % 97;
+            }
+
+            if (remainder === 1) {
+                ibanError.style.display = "none";
+            } else {
+                ibanError.style.display = "inline";
+            }
+        }
+    </script>
+    <script>
+        function toggleUserType() {
+            const isOwner = document.getElementById("owner").checked;
+
+            // Si propriétaire, afficher la confirmation, sinon tout masquer
+            document.getElementById("ownerConfirmation").style.display = isOwner ? "block" : "none";
+            document.getElementById("ownerFields").style.display = "none";
+            document.getElementById("clientFields").style.display = isOwner ? "none" : "block";
+
+            // Réinitialiser la case à cocher
+            document.getElementById("readConfirm").checked = false;
+        }
+
+        function toggleOwnerFields() {
+            const isChecked = document.getElementById("readConfirm").checked;
+            document.getElementById("ownerFields").style.display = isChecked ? "block" : "none";
+        }
+    </script>
+</body>
+</html>

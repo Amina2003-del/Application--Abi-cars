@@ -1,0 +1,160 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Structure */
+.dashboard {
+    display: flex;
+    min-height: 100vh;
+    background: #f5f7fa;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    background: #1c1c1c;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: fixed;
+    height: 100%;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.sidebar-header {
+    text-align: center;
+    padding: 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    background: #111;
+    border-bottom: 1px solid #333;
+}
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.sidebar-menu a {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    margin-bottom: 15px;
+    color: #bbb;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: 0.3s;
+    font-size: 1rem;
+}
+
+.sidebar-menu a i {
+    margin-right: 15px;
+    font-size: 1.2rem;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu a.active {
+    background: #ff4d4d;
+    color: white;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 260px;
+    padding: 40px;
+    width: calc(100% - 260px);
+}
+
+.main-header h1 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.form-section {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select {
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+.form-actions {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.btn-submit {
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 14px 30px;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+/* Style général des formulaires */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.input-date {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    background-color: #fff;
+    color: #000;
+    transition: all 0.3s ease;
+}
+
+.input-date:focus {
+    border-color: #d9232d; /* Rouge sur focus */
+    outline: none;
+}
+
+/* Style du calendrier */
+.flatpickr-calendar {
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+.flatpickr-day.selected {
+    background-color: #d9232d;
+    color: white;
+}
+
+.btn-submit:hover {
+    background: #e60000;
+}

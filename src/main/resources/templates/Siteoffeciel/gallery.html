@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="carbnb | Location de voitures - Modèle HTML par Themescare">
+    <meta name="keyword" content="taxi,voiture,location,transport">
+    <meta name="author" content="Themescare">
+    <title>ABIcars- Location de voitures</title>
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/assets/img/logoApps (2).png}">
+    <!-- Bootstrap css -->
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.css}">
+    <!-- Font Awesome css -->
+    <link rel="stylesheet" th:href="@{/assets/css/font-awesome.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Magnific css -->
+    <link rel="stylesheet" th:href="@{/assets/css/magnific-popup.css}">
+    <!-- Owl-Carousel css -->
+    <link rel="stylesheet" th:href="@{/assets/css/owl.carousel.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/owl.theme.default.min.css}">
+    <!-- Animate css -->
+    <link rel="stylesheet" th:href="@{/assets/css/animate.min.css}">
+    <!-- Datepicker css -->
+    <link rel="stylesheet" th:href="@{/assets/css/jquery.datepicker.css}">
+    <!-- Nice Select css -->
+    <link rel="stylesheet" th:href="@{/assets/css/nice-select.css}">
+    <!-- Lightgallery css -->
+    <link rel="stylesheet" th:href="@{/assets/css/lightgallery.min.css}">
+    <!-- ClockPicker css -->
+    <link rel="stylesheet" th:href="@{/assets/css/jquery-clockpicker.min.css}">
+    <!-- Slicknav css -->
+    <link rel="stylesheet" th:href="@{/assets/css/slicknav.min.css}">
+    <!-- Style Principal du Site css -->
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/alertes.css}">
+    <!-- Responsive css -->
+    <link rel="stylesheet" th:href="@{/assets/css/responsive.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <!-- LightGallery CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/css/lightgallery-bundle.min.css" rel="stylesheet">
+    <!-- LightGallery JS -->
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/lightgallery.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/plugins/zoom/lg-zoom.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/plugins/thumbnail/lg-thumbnail.umd.min.js"></script>
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <style>
+        /* Color system */
+        :root {
+            --primary-hue: 216;
+            --primary-color: #2a3f7a;
+            --primary-dark: #1a2a47; /* Deep night blue */
+--accent-color: rgb(0, 128, 192); /* Soft blue (corrected from 'Soft gold') */     
+       --secondary-color: #f5f5f5;
+            --light-blue: #4a6cb8; /* Lighter blue for accents */
+            --neutral-gray: #d1d1d1; /* Neutral gray for inactive elements */
+            --blue-nuit-sleent: #1e2f4d; /* Sleek night blue for arrows */
+            --blue-nuit-sleent-hover: #2a4069; /* Lighter shade for hover */
+            --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.15);
+            --shadow-cube: 0 8px 20px rgba(0, 0, 0, 0.25);
+            --timing-standard: 150ms;
+            --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+            --ease-cube: cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        /* Gallery area styling */
+        .gauto-gallery-area {
+            padding: 48px 0;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            perspective: 800px;
+        }
+
+        .gauto-gallery-area .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px;
+        }
+
+        /* Gallery book header */
+        .gallery-book-header {
+            text-align: center;
+            margin-bottom: 32px;
+            position: relative;
+        }
+
+        .gallery-book-header h2 {
+            color: var(--accent-color);
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .gallery-book-header:after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background-color: var(--accent-color);
+            margin: 16px auto;
+        }
+
+        /* Swiper wrapper and slides */
+        .swiper-wrapper {
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+        }
+
+        .swiper-slide {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0.5;
+            transform: scale(0.9);
+            transition: opacity var(--timing-standard) var(--ease-out), transform 600ms var(--ease-cube);
+            width: auto !important;
+        }
+
+        .swiper-slide-active,
+        .swiper-slide-next,
+        .swiper-slide-prev,
+        .swiper-slide-visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Single gallery item - Horizontal layout */
+        .single-gallery {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: var(--shadow-cube);
+            background: var(--secondary-color);
+            border: 2px solid var(--light-blue);
+            transition: transform var(--timing-standard) var(--ease-out), box-shadow var(--timing-standard) var(--ease-out);
+            transform-style: preserve-3d;
+        }
+
+        .swiper-slide-active .single-gallery,
+        .swiper-slide-next .single-gallery,
+        .swiper-slide-prev .single-gallery,
+        .swiper-slide-visible .single-gallery {
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .single-gallery:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(74, 108, 184, 0.4);
+        }
+
+        .single-gallery .image-wrapper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+
+        .single-gallery img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 500ms var(--ease-out), filter 0.4s ease;
+            filter: brightness(0.95);
+            transform: translateZ(0);
+        }
+
+        .single-gallery:hover img {
+            transform: scale(1.03) translateZ(5px);
+            filter: brightness(1);
+        }
+
+        /* Overlay content */
+        .overlay-content {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(26, 42, 71, 0.7), rgba(26, 42, 71, 0.3) 30%, transparent 60%);
+            opacity: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 24px;
+            transition: opacity var(--timing-standard) var(--ease-out);
+            border-radius: 0 0 12px 12px;
+            transform: translateZ(3px);
+        }
+
+        .single-gallery:hover .overlay-content {
+            opacity: 1;
+        }
+
+        .title-box {
+            text-align: center;
+            transform: translateY(15px);
+            opacity: 0;
+            transition: transform var(--timing-standard) var(--ease-out), opacity var(--timing-standard) var(--ease-out);
+            padding: 8px;
+            background: rgba(26, 42, 71, 0.7);
+            border-radius: 6px;
+            transform: translateZ(4px);
+        }
+
+        .single-gallery:hover .title-box {
+            transform: translateY(0) translateZ(4px);
+            opacity: 1;
+        }
+
+        .title-box h3 {
+            color: var(--accent-color);
+            font-size: clamp(1.2rem, 2vw, 1.5rem);
+            font-weight: 600;
+            margin: 0;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .title-box a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .link-zoom-button {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 16px;
+            transform: translateY(15px);
+            opacity: 0;
+            transition: transform var(--timing-standard) var(--ease-out), opacity var(--timing-standard) var(--ease-out);
+        }
+
+        .single-gallery:hover .link-zoom-button {
+            transform: translateY(0) translateZ(5px);
+            opacity: 1;
+        }
+
+        .single-button a {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-dark);
+            color: var(--accent-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: background var(--timing-standard) var(--ease-out), transform var(--timing-standard) var(--ease-out);
+        }
+
+        .single-button a:hover {
+            background: var(--accent-color);
+            color: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        .single-gallery.selected {
+            border: 3px solid var(--accent-color);
+            box-shadow: 0 0 12px rgba(191, 169, 75, 0.5);
+        }
+
+        /* Custom navigation buttons - Rectangular with blue nuit sleent */
+        .custom-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            width: 60px;
+            height: 40px;
+            background: var(--blue-nuit-sleent); /* Sleek night blue */
+            border: 2px solid var(--light-blue);
+            border-radius: 8px; /* Rectangular with slight rounding */
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background var(--timing-standard) var(--ease-out), transform var(--timing-standard) var(--ease-out);
+        }
+
+        .custom-nav-prev {
+            left: 20px;
+        }
+
+        .custom-nav-next {
+            right: 20px;
+        }
+
+        .custom-nav:hover {
+            background: var(--blue-nuit-sleent-hover); /* Lighter shade on hover */
+            transform: scale(1.1);
+            transition: transform 0.3s var(--ease-cube);
+        }
+
+        .custom-nav i {
+            color: var(--accent-color);
+            font-size: 24px;
+        }
+
+        .custom-nav:hover i {
+            color: var(--primary-dark);
+        }
+
+        /* Pagination */
+        .swiper-pagination {
+            bottom: 32px;
+        }
+
+        .swiper-pagination-bullet {
+            width: 10px;
+            height: 10px;
+            background: var(--neutral-gray);
+            opacity: 0.6;
+            margin: 0 6px;
+            transition: all var(--timing-standard) var(--ease-out);
+            border-radius: 50%;
+        }
+
+        .swiper-pagination-bullet-active {
+            background: var(--accent-color);
+            opacity: 1;
+            width: 12px;
+            height: 12px;
+            transform: scale(1.2);
+        }
+
+        /* Modal styles */
+        #galleryModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #galleryModal .modal-content {
+            position: relative;
+            width: 80vw;
+            max-width: 900px;
+            background: var(--primary-dark);
+            padding: 20px;
+            border-radius: 10px;
+            color: #fff;
+        }
+
+        #galleryModal .car-details {
+            text-align: center;
+            padding: 15px;
+            background: rgba(177, 169, 75, 0.1);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        #galleryModal .car-details h3 {
+            color: var(--accent-color);
+            font-size: 1.8rem;
+            margin: 0;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        #galleryModal .swiper-slide img {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            object-fit: contain;
+            border-radius: 8px;
+            border: 2px solid var(--light-blue);
+        }
+
+        #closeModalBtn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: var(--accent-color);
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            line-height: 38px;
+            text-align: center;
+            border-radius: 50%;
+            transition: color 0.3s ease, background 0.3s ease;
+        }
+
+        #closeModalBtn:hover {
+            color: #ff4c4c;
+            background: rgba(255, 255, 257, 0.1);
+        }
+
+        /* Responsive design */
+        @media (max-width: 1200px) {
+            .single-gallery {
+                max-width: 400px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .single-gallery {
+                max-width: 350px;
+            }
+            .gauto-gallery-area .container {
+                padding: 24px 16px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .single-gallery {
+                max-width: 300px;
+                aspect-ratio: 16 / 9;
+            }
+            .title-box h3 {
+                font-size: 1.1rem;
+            }
+            .single-button a {
+                width: 36px;
+                height: 36px;
+                font-size: 14px;
+            }
+            .custom-nav {
+                width: 50px;
+                height: 34px;
+            }
+            .custom-nav i {
+                font-size: 20px;
+            }
+        }
+        /* Conteneur barre de progression */
+/* Conteneur de la barre */
+.progress-container {
+  width: 100%;
+  height: 8px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+/* Barre animée */
+.progress-bar {
+  height: 100%;
+  width: 0;
+  background-color: #4a6cb8;
+  transition: width 0.4s ease-in-out;
+  border-radius: 4px;
+}
+      
+    </style>
+</head>
+<body>
+    <div th:replace="Siteoffeciel/headers.html :: header"></div>
+
+    <!-- Gallery Area -->
+    <section class="gauto-gallery-area section_70">
+        <div class="container">
+            <div class="gallery-book-header">
+            </div>
+            <div class="swiper gauto-gallery" th:attr="data-lightgallery='true'">
+                <div class="swiper-wrapper">
+                  <div class="swiper-slide" th:each="voiture : ${voitures}" 
+                 th:if="${voiture.proprietaire != null && voiture.imagePrincipaleURL != null}">
+                <div class="single-gallery">
+                    <div class="image-wrapper">
+                        <img th:src="@{/Siteoffeciel/images/{ownerId}/{img}(ownerId=${voiture.proprietaire.id}, img=${voiture.imagePrincipaleURL})}"
+                             th:alt="|${voiture.marque} ${voiture.modele}|"
+                             loading="lazy"
+                            />
+                                <div class="overlay-content">
+                                   
+       
+                                    <div class="link-zoom-button">
+                                        <div class="single-button">
+                                           
+                                        </div>
+                                        <div class="single-button">
+                                            <a class="zoom gallery-popup"
+                                               th:href="@{'/Siteoffeciel/images/' + ${voiture.imagePrincipaleURL}}"
+                                               th:if="${voiture.imagePrincipaleURL != null}">
+                                                <i class="fa fa-search"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Custom Navigation -->
+                <div class="custom-nav custom-nav-prev">
+                    <i class="fa fa-angle-left"></i>
+                </div>
+                <div class="custom-nav custom-nav-next">
+                    <i class="fa fa-angle-right"></i>
+                </div>
+                <!-- Pagination -->
+                <div class="swiper-pagination"></div>
+            </div>
+        </div>
+        <!-- Modal -->
+        <div id="galleryModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:1000;">
+            <div class="modal-content">
+                <button id="closeModalBtn">✕</button>
+                <div class="car-details" id="carDetails"></div>
+                <div class="swiper mySwiper" style="height: 400px;">
+                    <div class="swiper-wrapper" id="swiper-wrapper"></div>
+                    <div class="custom-nav custom-nav-prev"><i class="fa fa-angle-left"></i></div>
+                    <div class="custom-nav custom-nav-next"><i class="fa fa-angle-right"></i></div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div th:replace="Siteoffeciel/footer.html :: footer"></div>
+
+    <!-- Scripts -->
+    <script th:src="@{/assets/js/jquery.min.js}"></script>
+    <script th:src="@{/assets/js/popper.min.js}"></script>
+    <script th:src="@{/assets/js/bootstrap.min.js}"></script>
+    <script th:src="@{/assets/js/owl.carousel.min.js}"></script>
+    <script th:src="@{/assets/js/lightgallery-all.js}"></script>
+    <script th:src="@{/assets/js/jquery.slicknav.min.js}"></script>
+    <script th:src="@{/assets/js/jquery.magnific-popup.min.js}"></script>
+    <script th:src="@{/assets/js/jquery.nice-select.min.js}"></script>
+    <script th:src="@{/assets/js/jquery.datepicker.min.js}"></script>
+    <script th:src="@{/assets/js/jquery-clockpicker.min.js}"></script>
+    <script th:src="@{/assets/js/main.js}"></script>
+    <script th:src="@{/assets/js/script.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize LightGallery for zoom functionality
+            const galleryElement = document.querySelector('.gauto-gallery');
+
+            if (galleryElement) {
+                lightGallery(galleryElement, {
+                    selector: '.gallery-popup',
+                    plugins: [lgZoom, lgThumbnail],
+                    speed: 500,
+                    zoom: true,
+                    thumbnail: true,
+                    download: false,
+                    counter: true,
+                    mobileSettings: {
+                        controls: true,
+                        showCloseIcon: true
+                    }
+                });
+            }
+
+            // Main Swiper with coverflow effect for circular rotation
+            const coverflowSwiper = new Swiper('.gauto-gallery', {
+                slidesPerView: 1,
+                spaceBetween: 40,
+                centeredSlides: true,
+                loop: true,
+                speed: 600,
+                grabCursor: true,
+                effect: 'coverflow',
+                coverflowEffect: {
+                    rotate: 30,
+                    stretch: 0,
+                    depth: 100,
+                    modifier: 1,
+                    slideShadows: true
+                },
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: true,
+                    pauseOnMouseEnter: true
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                    dynamicBullets: true,
+                    renderBullet: function (index, className) {
+                        return '<span class="' + className + '" aria-label="Slide ' + (index + 1) + '"></span>';
+                    }
+                },
+                navigation: {
+                    nextEl: '.custom-nav-next',
+                    prevEl: '.custom-nav-prev',
+                },
+                keyboard: {
+                    enabled: true,
+                    onlyInViewport: true
+                },
+                watchSlidesProgress: true,
+                watchSlidesVisibility: true,
+                breakpoints: {
+                    768: {
+                        slidesPerView: 2,
+                        spaceBetween: 30
+                    },
+                    1200: {
+                        slidesPerView: 3,
+                        spaceBetween: 40
+                    }
+                },
+                on: {
+                    init: function () {
+                        this.slides.forEach(slide => {
+                            const gallery = slide.querySelector('.single-gallery');
+                            if (gallery) {
+                                gallery.style.transition = 'transform 0.6s var(--ease-cube), box-shadow 0.5s ease, opacity 0.5s ease';
+                            }
+                        });
+                        this.update();
+                    },
+                    slideChangeTransitionStart: function () {
+                        this.slides.forEach(slide => {
+                            const gallery = slide.querySelector('.single-gallery');
+                            if (gallery && !slide.classList.contains('swiper-slide-active') && !slide.classList.contains('swiper-slide-next') && !slide.classList.contains('swiper-slide-prev') && !slide.classList.contains('swiper-slide-visible')) {
+                                gallery.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)';
+                            } else {
+                                gallery.style.boxShadow = '0 12px 30px rgba(0, 0, 0, 0.4)';
+                            }
+                        });
+                    },
+                    slideChangeTransitionEnd: function () {
+                        this.update();
+                    }
+                }
+            });
+
+            // Prevent Swiper from capturing gallery-popup clicks
+            document.querySelectorAll('.gallery-popup').forEach(link => {
+                link.addEventListener('click', e => {
+                    e.stopPropagation();
+                });
+            });
+
+            // Modal Swiper and Content
+            let modalSwiper = null;
+            function openGallery(carId, defaultImage) {
+                const modal = document.getElementById('galleryModal');
+                const wrapper = document.getElementById('swiper-wrapper');
+                const details = document.getElementById('carDetails');
+                const header = document.querySelector('.gallery-book-header'); // ta div header
+
+                wrapper.innerHTML = '';
+                details.innerHTML = '<h3>Loading...</h3>';
+                // Ajoute la barre de progression
+                header.innerHTML = `
+                  <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                  </div>
+                `;
+
+                const progressBar = document.getElementById('progressBar');
+                fetch(`/Siteoffeciel/gallery/${carId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log("Images reçues:", data); // <--- ici
+
+                        const urls = data.map(img => `/images/${img.urlImage}`).filter(url => url);
+                        const voiture = data[0] || { marque: 'Inconnu', modele: 'Inconnu', annee: 'N/A' };
+                        details.innerHTML = `
+                            <h3>${voiture.marque} ${voiture.modele} (${voiture.annee})</h3>
+                        `;
+
+                        if (urls.length > 0) {
+                        	urls.forEach(url => {
+                        	    const slide = document.createElement('div');
+                        	    slide.classList.add('swiper-slide');
+                        	    slide.innerHTML = `<img src="${url}" style="width:100%; max-width:800px; height:auto; object-fit:contain; border-radius:8px; border:2px solid #4a6cb8;" />`;
+                        	    wrapper.appendChild(slide);
+                        	    // Mets à jour la progression
+                        	    const progressPercent = Math.round(((index + 1) / urls.length) * 100);
+                        	    progressBar.style.width = progressPercent + '%';
+                        	});
+                        } else {
+                            const slide = document.createElement('div');
+                            slide.classList.add('swiper-slide');
+                            slide.innerHTML = `<img src="${defaultImage}" style="width:100%; max-width:800px; height:auto; object-fit:contain; border-radius:8px; border:2px solid #4a6cb8;" />`;
+                            wrapper.appendChild(slide);
+                            details.innerHTML += '<p>Aucune image supplémentaire trouvée.</p>';
+                        }
+
+                        modal.style.display = 'flex';
+                        if (modalSwiper) {
+                            modalSwiper.destroy();
+                            modalSwiper = null;
+                        }
+                        modalSwiper = new Swiper('.mySwiper', {
+                            loop: true,
+                            speed: 600,
+                            effect: 'fade',
+                            fadeEffect: { crossFade: true },
+                            navigation: {
+                                nextEl: '.custom-nav-next',
+                                prevEl: '.custom-nav-prev'
+                            },
+                            pagination: {
+                                el: '.swiper-pagination',
+                                clickable: true
+                            },
+                            mousewheel: true,
+                            keyboard: true
+                        });
+                        setTimeout(() => {
+                            header.innerHTML = '';  // Supprime la barre de progression
+                        }, 1000);
+                    })
+                    .catch(err => {
+                        console.error('Fetch error:', err);
+                        details.innerHTML = `<h3>Erreur: ${err.message}</h3>`;
+                        const slide = document.createElement('div');
+                        slide.classList.add('swiper-slide');
+                        slide.innerHTML = `<img src="${defaultImage}" style="width:100%; max-width:800px; height:auto; object-fit:contain; border-radius:8px; border:2px solid #4a6cb8;" />`;
+                        wrapper.appendChild(slide);
+                        modal.style.display = 'flex';
+                        if (modalSwiper) {
+                            modalSwiper.destroy();
+                            modalSwiper = null;
+                        }
+                        modalSwiper = new Swiper('.mySwiper', {
+                            loop: true,
+                            speed: 600,
+                            effect: 'fade',
+                            fadeEffect: { crossFade: true },
+                            navigation: {
+                                nextEl: '.custom-nav-next',
+                                prevEl: '.custom-nav-prev'
+                            },
+                            pagination: {
+                                el: '.swiper-pagination',
+                                clickable: true
+                            },
+                            mousewheel: true,
+                            keyboard: true
+                        });
+                    });
+            }
+
+            function closeGallery() {
+                const modal = document.getElementById('galleryModal');
+                modal.style.display = 'none';
+                if (modalSwiper) {
+                    modalSwiper.destroy();
+                    modalSwiper = null;
+                }
+            }
+
+            document.getElementById('closeModalBtn').addEventListener('click', closeGallery);
+
+            document.querySelectorAll('.open-gallery').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const carId = btn.getAttribute('data-voiture-id');
+                    const defaultImage = btn.closest('.single-gallery').querySelector('img').src;
+                    openGallery(carId, defaultImage);
+                });
+            });
+
+            // Lazy loading
+            if ('IntersectionObserver' in window) {
+                const imageObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            if (img.dataset.src) {
+                                img.src = img.dataset.src;
+                                img.removeAttribute('data-src');
+                                img.classList.add('loaded');
+                                img.style.opacity = 1;
+                            }
+                            observer.unobserve(img);
+                        }
+                    });
+                }, { rootMargin: '100px', threshold: 0.1 });
+
+                document.querySelectorAll('.single-gallery img[data-src]').forEach(img => {
+                    img.style.opacity = 0;
+                    imageObserver.observe(img);
+                });
+            } else {
+                document.querySelectorAll('.single-gallery img[data-src]').forEach(img => {
+                    if (img.dataset.src) {
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                        img.style.opacity = 1;
+                    }
+                });
+            }
+
+            // Reduced interactive effects
+            const galleryItems = document.querySelectorAll('.single-gallery');
+            if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                galleryItems.forEach(item => {
+                    item.addEventListener('touchstart', function (e) {
+                        coverflowSwiper.autoplay.stop();
+                        galleryItems.forEach(other => {
+                            other.classList.remove('hover', 'selected');
+                            other.style.transform = '';
+                        });
+                        this.classList.add('hover', 'selected');
+                        this.style.transform = 'translateZ(10px) scale(1.02)';
+                        e.preventDefault();
+                    });
+                    item.addEventListener('touchmove', function (e) {
+                        const touch = e.touches[0];
+                        const rect = this.getBoundingClientRect();
+                        const centerX = rect.left + rect.width / 2;
+                        const deltaX = (touch.clientX - centerX) / (rect.width / 2);
+                        const rotateY = deltaX * -2;
+                        this.style.transform = `translateZ(10px) rotateY(${rotateY}deg)`;
+                    });
+                    item.addEventListener('touchend', function () {
+                        this.style.transform = 'translateZ(5px) scale(1.01)';
+                        setTimeout(() => {
+                            this.style.transform = '';
+                        }, 300);
+                    });
+                });
+            } else {
+                galleryItems.forEach(item => {
+                    item.addEventListener('mouseenter', function () {
+                        coverflowSwiper.autoplay.stop();
+                        this.style.transform = 'translateZ(10px) scale(1.02)';
+                    });
+                    item.addEventListener('mousemove', function (e) {
+                        const rect = this.getBoundingClientRect();
+                        const centerX = rect.left + rect.width / 2;
+                        const deltaX = (e.clientX - centerX) / (rect.width / 2);
+                        const rotateY = deltaX * -2;
+                        this.style.transform = `translateZ(10px) rotateY(${rotateY}deg)`;
+                    });
+                    item.addEventListener('mouseleave', function () {
+                        this.style.transform = '';
+                    });
+                    item.addEventListener('click', function (e) {
+                        coverflowSwiper.autoplay.stop();
+                        galleryItems.forEach(other => {
+                            other.classList.remove('selected');
+                            if (other !== this) other.style.transform = '';
+                        });
+                        this.classList.add('selected');
+                        this.style.transform = 'translateZ(15px) scale(1.03)';
+                        e.stopPropagation();
+                    });
+                });
+            }
+
+            // Section animation
+            const gallerySection = document.querySelector('.gauto-gallery-area');
+            if (gallerySection && 'IntersectionObserver' in window) {
+                const coverflowObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            setTimeout(() => {
+                                document.querySelectorAll('.swiper-slide').forEach((slide, index) => {
+                                    setTimeout(() => {
+                                        slide.style.opacity = '1';
+                                        slide.style.transform = 'translateZ(0)';
+                                    }, index * 100);
+                                });
+                            }, 300);
+                            coverflowObserver.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.2 });
+                coverflowObserver.observe(gallerySection);
+            }
+        });
+    </script>
+</body>
+</html>

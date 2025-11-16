@@ -1,0 +1,2184 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    
+    <title>Tableau de Bord Client - ABIcars</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <!-- Flag Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/4.1.5/css/flag-icons.min.css" rel="stylesheet">
+    <!-- SweetAlert2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=Aaac35KPsFncc0__vbZhtVG0XuGCPclsBS3xhpn7CJB_0mwtjgoY8boSxs_v7AbUVCmx_DZLnvCa92Pd&currency=EUR"></script>
+          <link rel="stylesheet" th:href="@{/assets/css/espaceclientes.css}">
+  
+</head>
+<body>
+    <!-- Navbar -->
+    <!-- Navbar (mise à jour : button toggle pour #sidebar sur mobile) -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" id="sidebarToggleMobile">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-brand ms-3"></div>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <!-- Language Dropdown -->
+                <li class="nav-item dropdown language-dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownLanguage" role="button" data-bs-toggle="dropdown">
+                        <i th:class="'flag-icon flag-icon-' + ${currentLanguage ?: 'fr'}"></i>
+                        <span th:text="${currentLanguage?.toUpperCase() ?: 'FR'}"></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item" href="#" data-lang="fr">
+                                <i class="flag-icon flag-icon-fr me-2"></i> Français (FR)
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <!-- Notifications Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownNotifications" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge bg-danger notification-badge" th:if="${notificationsCount > 0}" th:text="${notificationsCount}"></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#" data-section-link="messages" data-tab-target="inbox">Nouveau message reçu</a></li>
+                        <li><a class="dropdown-item" href="#" data-section-link="reservations" data-tab-target="history">Réservation confirmée</a></li>
+                    </ul>
+                </li>
+                <!-- User Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownProfile" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#" data-section-link="profile">Profil</a></li>
+                        <li><a class="dropdown-item" href="/Siteoffeciel/index">Déconnexion</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Sidebar (affichée sur desktop fixe, sur mobile via toggle) -->
+<nav id="sidebar">
+    <div class="p-4 d-flex align-items-center justify-content-between">
+        <h4 class="text-white mb-0">ABIcars</h4>
+        <button id="sidebarToggleDesktop" class="btn btn-link text-white d-none d-lg-block">
+            <i class="fas fa-arrow-left-long"></i>
+        </button>
+        <button id="sidebarCloseMobile" class="btn btn-link text-white d-lg-none">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a class="nav-link active" href="#" data-section="dashboard">
+                <i class="fas fa-tachometer-alt me-2"></i><span>Tableau de Bord</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" data-section="reservations" data-tab-target="history">
+                <i class="fas fa-history me-2"></i><span>Historique Réservations</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" data-section="messages">
+                <i class="fas fa-envelope me-2"></i><span>Messages</span>
+                <span class="badge bg-accent text-white ms-auto" th:if="${notificationsCount > 0}" th:text="${notificationsCount}"></span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" data-section="disputes">
+                <i class="fas fa-exclamation-triangle me-2"></i><span>Litiges</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" data-section="reviews">
+                <i class="fas fa-star me-2"></i><span>Avis</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" data-section="invoices">
+                <i class="fas fa-file-invoice me-2"></i><span>Factures</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" data-section="profile">
+                <i class="fas fa-user me-2"></i><span>Profil</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/Siteoffeciel/index">
+                <i class="fas fa-sign-out-alt me-2"></i><span>Déconnexion</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+<!-- Retire complètement l'<div id="offcanvasSidebar"> du HTML, car on utilise #sidebar -->
+
+    <!-- Offcanvas Sidebar -->
+   
+    <!-- Main Content -->
+    <main id="mainContent">
+        <!-- Dashboard -->
+       <section id="section-dashboard" class="content-section active container mt-4">
+    <h2 class="mb-4">Tableau de Bord</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card stats-card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-car me-2"></i> Réservations Actives</h5>
+                    <p class="display-6" th:text="${activeReservations ?: '0'}"></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stats-card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-euro-sign me-2"></i> Dépenses Totales</h5>
+                    <p class="display-6" th:text="${totalSpent != null ? #numbers.formatCurrency(totalSpent, 'EUR') : '0,00 €'}"></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stats-card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-star me-2"></i> Avis Donnés</h5>
+                    <p class="display-6" th:text="${totalReviews ?: '0'}"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Réservations par Mois</h5>
+                    <div class="chart-container" style="position: relative; height:40vh; width:100%;">
+                        <canvas id="reservationsChart"></canvas>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5 class="card-title">
+                Dernière Réservation
+                <small class="text-muted fw-normal"
+                    th:text="${lastReservation != null ? '(' + lastReservation.id + ', ' + #temporals.format(lastReservation.dateDebut, 'dd/MM/yyyy') + ')' : ''}">
+                </small>
+            </h5>
+            <div class="alert alert-info" th:utext="${dashboardMessage ?: 'Aucune information pour le moment.'}"></div>
+        </div>
+    </div>
+</section>
+
+        <!-- Reservations -->
+        <section id="section-reservations" class="content-section">
+            <h2 class="mb-4">Réservations</h2>
+            <ul class="nav nav-tabs mb-3">
+               <!--   <li class="nav-item">
+                    <button class="nav-link active" id="new-reservation-tab" data-bs-toggle="tab" data-bs-target="#new-reservation">Nouvelle Réservation</button>
+                </li>-->
+                <li class="nav-item">
+                    <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history">Historique</button>
+                </li>
+            </ul>
+         <div class="tab-content">
+   <!--  <div class="tab-content">
+    <div class="tab-pane fade show active" id="new-reservation">
+        <form id="formNewReservation">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="pickupLocation" class="form-label">Adresse de prise en charge</label>
+                    <input type="text" class="form-control" id="pickupLocation" name="adressePriseEnCharge" th:value="${request.adressePriseEnCharge}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="returnLocation" class="form-label">Adresse de retour</label>
+                    <input type="text" class="form-control" id="returnLocation" name="adresseRestitution" th:value="${request.adresseRestitution}">
+                </div>
+                <div class="col-md-6">
+                    <label for="pickupDate" class="form-label">Date de prise en charge</label>
+                    <input type="date" class="form-control" id="pickupDate" name="dateDebut" th:value="${request.dateDebut}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="returnDate" class="form-label">Date de retour</label>
+                    <input type="date" class="form-control" id="returnDate" name="dateFin" th:value="${request.dateFin}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="carType" class="form-label">Type de voiture</label>
+                    <select class="form-select" id="carType" name="typeVoiture">
+                        <option value="compact" th:selected="${request.typeVoiture == 'compact'}">Berline</option>
+                        <option value="suv" th:selected="${request.typeVoiture == 'suv'}">SUV</option>
+                        <option value="luxury" th:selected="${request.typeVoiture == 'luxury'}">Citadine</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <button type="submit" class="btn btn-primary ripple">Rechercher Disponibilités</button>
+                </div>
+            </div>
+        </form>
+        <hr>
+        <div id="errorMessage" class="alert alert-warning" style="display: none;"></div>
+        <div id="carResults" class="row">
+            <div class="col-md-4 mb-4" th:each="car : ${cars}" th:id="'car-' + ${car.id}">
+                <div class="card h-100 shadow-sm border-0 rounded">
+                    <img th:src="@{'/images/' + ${car.imagePrincipaleURL} ?: 'default.jpg'}" class="card-img-top" 
+                         th:alt="${car.marque} + ' ' + ${car.modele}" style="height: 220px; object-fit: cover;" />
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold" th:text="${car.marque} + ' ' + ${car.modele}">Marque Modèle</h5>
+                        <p class="card-text mb-2">
+                            <i class="fa-solid fa-calendar-alt me-2 text-primary"></i>
+                            <strong>Année :</strong> <span th:text="${car.annee}">2020</span>
+                        </p>
+                        <p class="card-text mb-2">
+                            <i class="fa-solid fa-euro-sign me-2 text-success"></i>
+                            <strong>Prix/jour :</strong> <span th:text="${car.prixJournalier}">100</span> €
+                        </p>
+                        <p class="card-text mb-2">
+                            <i class="fa-solid fa-car-side me-2 text-info"></i>
+                            <strong>Type :</strong> <span th:text="${car.type}">Berline</span>
+                        </p>
+                        <p class="card-text mb-3">
+                            <i class="fa-solid fa-users me-2 text-warning"></i>
+                            <strong>Places :</strong> <span th:text="${car.places}">5</span>
+                        </p>
+                        <p class="card-text mb-3">
+                            <i class="fa fa-user"></i>
+                            <strong>Propriétaire :</strong> <span th:text="${car.proprietaire?.fullNameWithId} ?: 'N/A'"></span>
+                        </p>
+                        <div th:each="dispo : ${car.disponibilites}" class="dispo-item">
+                            <i class="fas fa-calendar-alt dispo-icon"></i>
+                            <span th:text="${dispo.dateDebut != null && dispo.dateFin != null} ?
+                                ${dispo.dateDebut.format(T(java.time.format.DateTimeFormatter).ofPattern('dd/MM/yyyy')) + ' au ' + dispo.dateFin.format(T(java.time.format.DateTimeFormatter).ofPattern('dd/MM/yyyy'))} : 'Non disponible'">
+                            </span>
+                        </div>
+                        <button class="btn btn-primary mt-auto w-100 reserve-btn" th:data-car-id="${car.id}" th:data-car-price="${car.prixJournalier}">
+                            <i class="fa-solid fa-car"></i> Réserver
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="noResults" class="alert alert-info" style="display: none;">
+            Aucune voiture disponible pour le moment. Veuillez ajuster vos critères de recherche.
+        </div>
+
+        <div class="modal fade" id="reservationModal" tabindex="-1" aria-labelledby="reservationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reservationModalLabel">Réservation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="progress-steps">
+                            <div class="step-circle" data-step="1">1</div>
+                            <div class="step-circle" data-step="2">2</div>
+                            <div class="step-circle" data-step="3">3</div>
+                        </div>
+                        <div id="step1" class="step active">
+                            <h6><i class="fa-solid fa-user me-2"></i> Informations personnelles</h6>
+                            <form id="personalInfoForm">
+                                <div class="mb-3">
+                                    <label for="fullName" class="form-label">Nom complet</label>
+                                    <input type="text" class="form-control" id="fullName" name="fullName" required>
+                                    <div class="text-danger" id="error-fullName"></div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                    <div class="text-danger" id="error-email"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Téléphone</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone" required>
+                                    <div class="text-danger" id="error-phone"></div>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="button" class="btn-icon next" title="Suivant">
+                                        <i class="fa-solid fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="step2" class="step">
+                            <h6><i class="fa-solid fa-car me-2"></i> Détails de la réservation</h6>
+                            <form id="reservationDetailsForm">
+                                <div class="mb-3">
+                                    <label for="pickupAddress" class="form-label">Adresse de prise en charge</label>
+                                    <input type="text" class="form-control" id="pickupAddress" name="pickupAddress" required>
+                                    <div class="text-danger" id="error-pickupAddress"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="returnAddress" class="form-label">Adresse de retour</label>
+                                    <input type="text" class="form-control" id="returnAddress" name="returnAddress">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="startDate" class="form-label">Date de début</label>
+                                    <input type="date" class="form-control" id="startDate" name="startDate" required>
+                                    <div class="text-danger" id="error-startDate"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="endDate" class="form-label">Date de fin</label>
+                                    <input type="date" class="form-control" id="endDate" name="endDate" required>
+                                    <div class="text-danger" id="error-endDate"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Mode de paiement</label>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="paymentMethod" id="paypal" value="paypal" required>
+                                            <label class="form-check-label" for="paypal"><i class="fa-brands fa-paypal me-1"></i> PayPal</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="paymentMethod" id="cheque" value="cheque">
+                                            <label class="form-check-label" for="cheque"><i class="fa-solid fa-money-check me-1"></i> Virement</label>
+                                        </div>
+                                    </div>
+                                    <div class="text-danger" id="error-paymentMethod"></div>
+                                <div id="cheque-details">
+                                    <div class="mb-3">
+                                        <label for="chequeNumber" class="form-label">Scanner Reçu</label>
+                                        <input type="file" class="form-control" id="chequeNumber" name="chequeNumber">
+                                        <div class="text-danger" id="error-chequeNumber"></div>
+                                    </div>
+                                </div>
+                                <div id="paypal-button-container"></div>
+                                <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn-icon prev" title="Précédent">
+                                        <i class="fa-solid fa-arrow-left"></i>
+                                    </button>
+                                    <button type="button" class="btn-icon next" title="Suivant">
+                                        <i class="fa-solid fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="step3" class="step">
+                            <h6><i class="fa-solid fa-check-circle me-2"></i> Confirmation</h6>
+                            <p>Veuillez vérifier vos informations :</p>
+                            <ul id="confirmationDetails" class="list-group list-group-flush">
+                                <li class="list-group-item"><strong>Nom :</strong> <span id="confirm-fullName"></span></li>
+                                <li class="list-group-item"><strong>Email :</strong> <span id="confirm-email"></span></li>
+                                <li class="list-group-item"><strong>Téléphone :</strong> <span id="confirm-phone"></span></li>
+                                <li class="list-group-item"><strong>Adresse de prise en charge :</strong> <span id="confirm-pickupAddress"></span></li>
+                                <li class="list-group-item"><strong>Adresse de retour :</strong> <span id="confirm-returnAddress"></span></li>
+                                <li class="list-group-item"><strong>Dates :</strong> <span id="confirm-dates"></span></li>
+                                <li class="list-group-item"><strong>Paiement :</strong> <span id="confirm-paymentMethod"></span></li>
+                                <li class="list-group-item"><strong>Détails paiement :</strong> <span id="confirm-paymentDetails"></span></li>
+                            </ul>
+                            <div id="confirmationError" class="text-danger"></div>
+                            <div class="d-flex justify-content-between mt-3">
+                                <button type="button" class="btn-icon prev" title="Précédent">
+                                    <i class="fa-solid fa-arrow-left"></i>
+                                </button>
+                                <button type="button" class="btn-icon confirm" title="Confirmer">
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ -->
+                <div class="tab-pane fade" id="history">
+                <p>Utilisateur connecté : [[${userEmail}]]</p>
+                
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Véhicule</th>
+                                <th>Dates</th>
+                                <th>Prix</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reservation-body">
+                        <tr th:each="reservation : ${reservations}">
+    <td th:text="${reservation.id}"></td>
+    <td th:text="${reservation.voiture != null ? reservation.voiture.modele : 'N/A'}"></td>
+    <td>
+        <span th:text="${#temporals.format(reservation.dateDebut, 'dd/MM/yyyy') + ' - ' + #temporals.format(reservation.dateFin, 'dd/MM/yyyy')}"></span>
+    </td>
+<td th:text="${reservation.prixTotal != null ? #numbers.formatDecimal(reservation.prixTotal, 1, 'POINT', 2, 'COMMA') + ' €' : 'N/A'}"></td>
+    <td>
+     <span class="badge-custom"
+          th:classappend="${reservation.statut == 'CONFIRMEE'} ? ' badge-success' :
+                         (reservation.statut == 'EN_ATTENTE' ? ' badge-warning' :
+                         ' badge-secondary')"
+          th:text="${reservation.statut}">
+    </span>
+</td>
+    <td>
+  <button class="btn btn-sm btn-outline-primary btn-view-reservation"
+        th:data-id="${reservation.id}">
+    <i class="fas fa-eye"></i>
+</button>
+
+
+<button class="btn btn-sm btn-outline-secondary"
+        data-bs-toggle="modal"
+        data-bs-target="#leaveReviewModal"
+        th:attr="data-reservation-id=${reservation.id}">
+            <i class="fas fa-star"></i>
+        </button>
+    </td>
+</tr>
+
+
+
+
+                        </tbody>
+                        
+                    </table>
+                                            <div id="pagination" class="d-flex justify-content-end mt-3"></div>
+                    
+                </div>
+            </div>
+        </section>
+
+        <!-- Messages -->
+        <section id="section-messages" class="content-section">
+            <h2 class="mb-4">Messages</h2>
+            <ul class="nav nav-tabs mb-3">
+                <li class="nav-item">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#inbox">Boîte de réception</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#send-message">Envoyer un message</button>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="inbox">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Expéditeur</th>
+                                <th>Sujet</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                            
+                        </thead>
+                        <tbody>
+                            <tr th:each="message : ${messages}">
+                                <td th:text="${message.expediteur != null ? message.expediteur.displayName : 'N/A'}"></td>
+                                <td th:text="${message.sujet ?: 'Sans sujet'}"></td>
+                                <td th:text="${#temporals.format(message.dateEnvoi, 'dd/MM/yyyy HH:mm')}"></td>
+                                <td>
+                                   <button 
+    class="btn btn-sm btn-outline-primary btn-view-message"
+    data-bs-toggle="modal"
+    data-bs-target="#messageDetailModal"
+    th:attr="
+        data-message-id=${message.id},
+        data-message-sujet=${message.sujet},
+        data-message-expediteur=${message.expediteur != null ? message.expediteur.displayName : 'Inconnu'},
+        data-message-date=${#temporals.format(message.dateEnvoi, 'dd/MM/yyyy HH:mm')},
+        data-message-content=${message.content}">
+    <i class="fas fa-eye"></i>
+</button>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-pane fade" id="send-message">
+                    <form id="formSendMessageClient" action="" method="post">
+                        <div class="mb-3">
+                            <label for="messageSubjectClient" class="form-label">Sujet</label>
+                            <input type="text" class="form-control" id="messageSubjectClient" name="sujet" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="messageReservationClient" class="form-label">Réservation concernée</label>
+                            <select class="form-select" id="messageReservationClient" name="reservationId">
+                                <option value="">Aucune</option>
+                                <option th:each="reservation : ${reservations}" th:value="${reservation.id}" th:text="${reservation.id + ' - ' + reservation.voiture?.modele}"></option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="messageBodyClient" class="form-label">Message</label>
+                            <textarea class="form-control" id="messageBodyClient" name="contenu" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary ripple">Envoyer</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Disputes -->
+        <section id="section-disputes" class="content-section">
+            <h2 class="mb-4">Litiges</h2>
+            <ul class="nav nav-tabs mb-3">
+                <li class="nav-item">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dispute-history">Historique</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#submit-dispute">Nouveau litige</button>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="dispute-history">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Réservation</th>
+                                <th>Description</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="dispute : ${disputes}">
+                                <td th:text="${dispute.id}"></td>
+                                <td th:text="${dispute.reservation != null ? dispute.reservation.id : 'N/A'}"></td>
+                                <td th:text="${dispute.description}"></td>
+                                <td>
+                                    <span class="badge"
+th:classappend="${dispute.statut == 'OUVERT'} ? 'bg-warning text-dark' : (${dispute.statut == 'RESOLU'} ? 'bg-success' : 'bg-secondary')"
+                                          th:text="${dispute.statut}"></span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#disputeDetailModal" th:attr="data-dispute-id=${dispute.id}">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+               <div class="tab-pane fade" id="submit-dispute">
+<form id="formSubmitDisputeClient" method="post" action="/Clientes/submit" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="disputeReservationClient" class="form-label">Réservation concernée</label>
+            <select class="form-select" id="disputeReservationClient" name="reservationId" required>
+                <option th:each="reservation : ${reservations}"
+                        th:value="${reservation.id}"
+                        th:text="${reservation.id + ' - ' + reservation.voiture?.modele}">
+                </option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="disputeTypeClient" class="form-label">Type de litige</label>
+            <select class="form-select" id="disputeTypeClient" name="type" required>
+                <option th:each="type : ${T(location_voiture.persistence.model.TypeLitige).values()}"
+                        th:value="${type}"
+                        th:text="${type}">
+                </option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="disputeDescriptionClient" class="form-label">Description</label>
+            <textarea class="form-control" id="disputeDescriptionClient" name="description" rows="5" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="disputeAttachmentClient" class="form-label">Pièces jointes</label>
+<input type="file" class="form-control" id="disputeAttachmentClient" name="attachments" multiple>
+        </div>
+        <button type="submit" class="btn btn-primary ripple">Soumettre</button>
+    </form>
+
+    <!-- Zone de message -->
+    <div id="disputeMessage" class="mt-3"></div>
+</div>
+
+        </section>
+
+        <!-- Reviews -->
+        <section id="section-reviews" class="content-section">
+            <h2 class="mb-4">Avis</h2>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Réservation</th>
+                        <th>Véhicule</th>
+                        <th>Note</th>
+                        <th>Commentaire</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="review : ${reviews}">
+<td th:text="${review.reservationId != null ? review.reservationId : 'N/A'}"></td>
+                        <td th:text="${review.voiture != null ? review.voiture.modele : 'N/A'}"></td>
+                        <td>
+                            <span th:each="i : ${#numbers.sequence(1, 5)}" class="fa-star" th:classappend="${i <= review.note ? 'fas filled' : 'far empty'}"></span>
+                        </td>
+                        <td th:text="${review.commentaire ?: 'Aucun commentaire'}"></td>
+                        <td th:text="${#temporals.format(review.date, 'dd/MM/yyyy')}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Invoices -->
+        <section id="section-invoices" class="content-section">
+            <h2 class="mb-4">Factures</h2>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Réservation</th>
+                        <th>Montant</th>
+                        <th>Date d’émission</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                 <tr th:if="${invoices == null or invoices.empty}">
+    <td colspan="6" class="text-center">Aucune facture trouvée</td>
+  </tr>
+<tr th:each="invoice : ${invoices}">
+    <td th:text="${invoice.id}"></td>
+    
+    <td th:text="${invoice.reservation != null ? invoice.reservation.id : 'N/A'}"></td>
+    
+ <td th:text="${montantMap != null and montantMap[invoice.id] != null 
+                  ? #numbers.formatDecimal(montantMap[invoice.id], 1, 'POINT', 2, 'COMMA') + ' €' 
+                  : 'N/A'}"></td>    
+    <td th:text="${invoice.dateEmission != null ? #dates.format(invoice.dateEmission, 'dd/MM/yyyy') : 'N/A'}"></td>
+    
+    <td>
+        <span class="badge"
+              th:classappend="${invoice.statut == 'PAYEE' ? 'bg-success' : (invoice.statut == 'EN_ATTENTE' ? 'bg-warning text-dark' : 'bg-danger')}"
+              th:text="${invoice.statut}"></span>
+    </td>
+    
+    <td>
+     <button
+    class="view-invoice-btn btn btn-sm btn-outline-primary"
+    th:data-id="${invoice.id}"
+    data-bs-toggle="modal"
+    data-bs-target="#invoiceDetailModal">
+    <i class="fas fa-eye"></i>
+</button>
+
+<a th:if="${invoice != null and invoice.facturePdf != null}"
+   th:href="@{/Clientes/{id}/download(id=${invoice.id})}"
+   class="btn btn-sm btn-outline-secondary"
+   title="Télécharger la facture PDF">
+    <i class="fas fa-download"></i>
+</a>
+
+
+    </td>
+</tr>
+
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Profile -->
+        <section id="section-profile" class="content-section">
+            <h2 class="mb-4">Profil</h2>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Informations personnelles</h5>
+                    <form id="formEditProfileClient" action="/Clientes/api/client/profile" method="post">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="profileFirstNameClient" class="form-label">Prénom</label>
+                                <input type="text" class="form-control" id="profileFirstNameClient" name="firstName" th:value="${user?.firstName}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="profileLastNameClient" class="form-label">Nom</label>
+                                <input type="text" class="form-control" id="profileLastNameClient" name="lastName" th:value="${user?.lastName}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="profileEmailClient" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="profileEmailClient" name="email" th:value="${user?.email}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="profilePhoneClient" class="form-label">Téléphone</label>
+                                <input type="tel" class="form-control" id="profilePhoneClient" name="tel" th:value="${user?.tel}">
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary ripple">Enregistrer</button>
+                                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Changer le mot de passe</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals -->
+    <div id="modals">
+        <!-- Reservation Detail Modal -->
+        <div class="modal fade" id="reservationDetailModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Détails de la Réservation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>ID :</strong> <span id="resModalId"></span></p>
+                        <p><strong>Véhicule :</strong> <span id="resModalVehicle"></span></p>
+                        <p><strong>Dates :</strong> <span id="resModalDates"></span></p>
+                        <p><strong>Prix :</strong> <span id="resModalPrice"></span></p>
+                        <p><strong>Statut :</strong> <span id="resModalStatus"></span></p>
+                        <p><strong>Prise en charge :</strong> <span id="resModalPickup"></span></p>
+                        <p><strong>Restitution :</strong> <span id="resModalReturn"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice Detail Modal -->
+        <div class="modal fade" id="invoiceDetailModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Détails de la Facture</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>ID :</strong> <span id="invoiceModalId"></span></p>
+                        <p><strong>Réservation :</strong> <span id="invoiceModalReservation"></span></p>
+                        <p><strong>Montant :</strong> <span id="invoiceModalAmount"></span></p>
+                        <p><strong>Date d’émission :</strong> <span id="invoiceModalEmission"></span></p>
+                        <p><strong>Statut :</strong> <span id="invoiceModalStatus"></span></p>
+                        <p><strong>Mode de paiement :</strong> <span id="invoiceModalPaymentMode"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Modal -->
+        <div class="modal fade" id="leaveReviewModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Laisser un Avis</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Réservation :</strong> <span id="reviewModalResId"></span></p>
+                        <form id="formLeaveReviewClient" action="/Clientes/client/reviews/submit" method="post">
+                            <input type="hidden" id="reviewReservationId" name="reservationId">
+                            <div class="mb-3">
+                                <label class="form-label">Note</label>
+                                <div id="modalStarRating">
+                                    <i class="fa-star far empty" data-value="1"></i>
+                                    <i class="fa-star far empty" data-value="2"></i>
+                                    <i class="fa-star far empty" data-value="3"></i>
+                                    <i class="fa-star far empty" data-value="4"></i>
+                                    <i class="fa-star far empty" data-value="5"></i>
+                                </div>
+                                <input type="hidden" id="reviewRatingValue" name="note" value="0">
+                            </div>
+                            <div class="mb-3">
+                                <label for="reviewCommentClient" class="form-label">Commentaire</label>
+<textarea class="form-control" id="reviewCommentClient" name="commentaire" rows="4" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary ripple">Soumettre</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Message Detail Modal -->
+        <div class="modal fade" id="messageDetailModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Détails du Message</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Sujet :</strong> <span id="messageModalSubjectClient"></span></p>
+                        <p><strong>Expéditeur :</strong> <span id="messageModalSenderClient"></span></p>
+                        <p><strong>Date :</strong> <span id="messageModalDateClient"></span></p>
+                        <p><strong>Contenu :</strong></p>
+                        <p id="messageModalContentClient"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dispute Detail Modal -->
+        <div class="modal fade" id="disputeDetailModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Détails du Litige</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>ID :</strong> <span id="disputeModalIdClient"></span></p>
+                        <p><strong>Réservation :</strong> <span id="disputeModalReservationIdClient"></span></p>
+                        <p><strong>Type :</strong> <span id="disputeModalTypeClient"></span></p>
+                        <p><strong>Statut :</strong> <span id="disputeModalStatusClient" class="badge"></span></p>
+                        <p><strong>Description :</strong></p>
+                        <p id="disputeModalDescriptionClient"></p>
+                        <p><strong>Résolution :</strong> <span id="disputeModalResolutionClient"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Change Password Modal -->
+        <div class="modal fade" id="changePasswordModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Changer le mot de passe</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formChangePasswordClient" action="/Clientes/client/profile/password" method="post">
+                            <div class="mb-3">
+                                <label for="currentPasswordClient" class="form-label">Mot de passe actuel</label>
+                                <input type="password" class="form-control" id="currentPasswordClient" name="currentPassword" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="newPasswordClient" class="form-label">Nouveau mot de passe</label>
+                                <input type="password" class="form-control" id="newPasswordClient" name="newPassword" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirmNewPasswordClient" class="form-label">Confirmer le nouveau mot de passe</label>
+                                <input type="password" class="form-control" id="confirmNewPasswordClient" name="confirmPassword" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary ripple">Enregistrer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Cache DOM elements
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const sidebarToggleDesktop = document.getElementById('sidebarToggleDesktop');
+            const sidebarLinks = document.querySelectorAll('#sidebar .nav-link[data-section], #offcanvasSidebar .nav-link[data-section]');
+            const contentSections = document.querySelectorAll('.content-section');
+            const mainNavbarLinks = document.querySelectorAll('.navbar-custom .dropdown-item[data-section-link], a[data-section-link]');
+            const languageLinks = document.querySelectorAll('.language-dropdown .dropdown-item[data-lang]');
+
+            // Toggle sidebar
+            function toggleSidebarDesktop() {
+                if (!sidebar || !mainContent) return;
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('collapsed');
+                const icon = sidebarToggleDesktop?.querySelector('i');
+                if (icon) {
+                    icon.classList.toggle('fa-arrow-left-long', !sidebar.classList.contains('collapsed'));
+                    icon.classList.toggle('fa-arrow-right-long', sidebar.classList.contains('collapsed'));
+                }
+            }
+
+            if (sidebarToggleDesktop) {
+                sidebarToggleDesktop.addEventListener('click', toggleSidebarDesktop);
+            }
+
+            // Set active link
+            function setActiveLink(sectionId) {
+                sidebarLinks.forEach(link => link.classList.toggle('active', link.dataset.section === sectionId));
+            }
+
+            // Show section
+            function showSection(sectionId, tabTarget = null) {
+                contentSections.forEach(section => section.classList.remove('active'));
+                const targetSection = document.getElementById(`section-${sectionId}`);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                    window.scrollTo({ top: mainContent?.offsetTop - 72 || 0, behavior: 'smooth' });
+                }
+                setActiveLink(sectionId);
+                if (tabTarget && targetSection) {
+                    const tabButton = targetSection.querySelector(`.nav-tabs button[data-bs-target="#${tabTarget}"], .nav-tabs button#${tabTarget}-tab`);
+                    if (tabButton) new bootstrap.Tab(tabButton).show();
+                }
+            }
+
+            // Sidebar navigation
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const sectionId = this.dataset.section;
+                    const tabTarget = this.dataset.tabTarget;
+                    if (sectionId === 'logout') {
+                        // Déconnexion gérée par le lien href="/logout"
+                        return;
+                    }
+                    showSection(sectionId, tabTarget);
+                    const offcanvasElement = this.closest('.offcanvas');
+                    if (offcanvasElement) bootstrap.Offcanvas.getInstance(offcanvasElement)?.hide();
+                });
+            });
+
+            // Navbar links
+            mainNavbarLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const sectionId = this.dataset.sectionLink;
+                    const tabTarget = this.dataset.tabTarget;
+                    showSection(sectionId, tabTarget);
+                });
+            });
+
+            // Language switch
+            languageLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const lang = this.dataset.lang;
+                    const languageDropdown = document.getElementById('navbarDropdownLanguage');
+                    if (languageDropdown) {
+                        const flagIcon = languageDropdown.querySelector('.flag-icon');
+                        const langText = languageDropdown.querySelector('span');
+                        if (flagIcon && langText) {
+                            flagIcon.className = `flag-icon flag-icon-${lang}`;
+                            langText.textContent = lang.toUpperCase();
+                        }
+                    }
+                    console.log(`Langue changée : ${lang}`);
+                    fetch(`/set-language?lang=${lang}`).then(() => showSuccess(`Langue changée en ${lang.toUpperCase()} !`));
+                });
+            });
+
+         
+    document.addEventListener('DOMContentLoaded', () => {
+        // === Fonctions utilitaires ===
+        const formatPrice = (amount) =>
+            amount ? new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount) : 'N/A';
+
+        const showError = (message) => alert(message); // Remplace par ta lib de toast si besoin
+        const showSuccess = (message) => alert(message);
+
+        // === Modal Réservation ===
+        document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.btn-view-reservation').forEach(button => {
+        button.addEventListener('click', function () {
+            document.getElementById('resModalId').textContent = this.getAttribute('data-id') || '';
+            document.getElementById('resModalVehicle').textContent = this.getAttribute('data-vehicule') || '';
+            document.getElementById('resModalDates').textContent = this.getAttribute('data-dates') || '';
+            document.getElementById('resModalPrice').textContent = this.getAttribute('data-prix') || '';
+            document.getElementById('resModalStatus').textContent = this.getAttribute('data-statut') || '';
+            document.getElementById('resModalPickup').textContent = this.getAttribute('data-pickup') || '';
+            document.getElementById('resModalReturn').textContent = this.getAttribute('data-return') || '';
+        });
+    });
+});
+        // === Modal Facture === (si tu l'utilises)
+       
+    });
+
+
+        // === Modal Avis Client ===
+        
+    });
+
+            // Message modal
+          
+
+            // Dispute modal
+          
+
+            // New reservation form
+         
+
+            // Send message form
+           
+            // Submit dispute form
+           
+            // Edit profile form
+           
+
+            // Change password form
+            // Notification dropdown
+            document.getElementById('navbarDropdownNotifications')?.addEventListener('click', function (e) {
+                e.preventDefault();
+                const badge = this.querySelector('.notification-badge');
+                if (badge) badge.style.display = 'none';
+            });
+
+            // Dashboard updates
+            function updateDashboard() {
+                const alertsContainer = document.querySelector('#section-dashboard .card-body .alert-info div');
+                if (alertsContainer) {
+                    alertsContainer.innerHTML = `Profitez de <strong class="fw-semibold">-15%</strong> sur votre prochaine location avec le code <strong class="user-select-all bg-primary-subtle px-1 rounded">WINTER2025</strong> !`;
+                }
+            }
+            updateDashboard();
+
+            // Utility functions
+            function showError(element, message) {
+                const errorDiv = element.querySelector('.invalid-feedback') || document.createElement('div');
+                errorDiv.className = 'invalid-feedback';
+                errorDiv.textContent = message;
+                if (!element.querySelector('.invalid-feedback')) element.appendChild(errorDiv);
+                element.querySelectorAll('.form-control, .form-select').forEach(input => input.classList.add('is-invalid'));
+                setTimeout(() => {
+                    errorDiv.remove();
+                    element.querySelectorAll('.form-control, .form-select').forEach(input => input.classList.remove('is-invalid'));
+                }, 3000);
+            }
+
+            function showSuccess(message) {
+                const successDiv = document.createElement('div');
+                successDiv.className = 'alert alert-success alert-dismissible fade show';
+                successDiv.style.position = 'fixed';
+                successDiv.style.top = '20px';
+                successDiv.style.right = '20px';
+                successDiv.style.zIndex = '1050';
+                successDiv.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.body.appendChild(successDiv);
+                setTimeout(() => successDiv.remove(), 3000);
+            }
+
+            function reserveCar(carId) {
+                console.log(`Réservation de la voiture ID: ${carId}`);
+                // TODO: Implémenter la logique de réservation
+            }
+    </script>
+    <script>
+$(document).ready(function() {
+    $('#formNewReservation').on('submit', function(event) {
+        event.preventDefault(); // Empêcher le rechargement de la page
+
+        // Réinitialiser les messages d'erreur
+        $('.error-message').text('');
+        $('#errorMessage').hide();
+        $('#noResults').hide();
+
+        // Récupérer les données du formulaire
+        var formData = {
+            adressePriseEnCharge: $('#pickupLocation').val(),
+            adresseRestitution: $('#returnLocation').val(),
+            dateDebut: $('#pickupDate').val(),
+            dateFin: $('#returnDate').val(),
+            typeVoiture: $('#carType').val(),
+            
+        };
+
+        // Envoyer la requête AJAX
+        $.ajax({
+            url: '/Clientes/search',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function(response) {
+                // Vider la section des résultats
+                $('#carResults').empty();
+
+                if (response.message) {
+                    $('#errorMessage').text(response.message).show();
+                }
+
+                if (response.cars && response.cars.length > 0) {
+                    // Ajouter les cartes des voitures
+                    response.cars.forEach(function(car) {
+                        var cardHtml = `
+                            <div class="col-md-4 mb-4" id="car-${car.id}">
+                                <div class="card h-100 shadow-sm border-0 rounded">
+                                    <img src="/images/${car.imagePrincipaleURL}" class="card-img-top" 
+                                         alt="${car.marque} ${car.modele}" style="height: 220px; object-fit: cover;" />
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title fw-bold">${car.marque} ${car.modele}</h5>
+                                        <p class="card-text mb-2">
+                                            <i class="fa-solid fa-calendar-alt me-2 text-primary"></i>
+                                            <strong>Année :</strong> <span>${car.annee}</span>
+                                        </p>
+                                        <p class="card-text mb-2">
+                                            <i class="fa-solid fa-euro-sign me-2 text-success"></i>
+                                            <strong>Prix/jour :</strong> <span>${car.prixJournalier}</span> €
+                                        </p>
+                                        <p class="card-text mb-2">
+                                            <i class="fa-solid fa-car-side me-2 text-info"></i>
+                                            <strong>Type :</strong> <span>${car.type}</span>
+                                        </p>
+                                        <p class="card-text mb-3">
+                                            <i class="fa-solid fa-users me-2 text-warning"></i>
+                                            <strong>Places :</strong> <span>${car.places}</span>
+                                        </p>
+                                        <p class="card-text mb-3">
+                                            <i class="fa fa-user"></i>
+                                            <strong>Propriétaire :</strong> <span>${car.proprietaire.fullNameWithId}</span>
+                                        </p>
+                                        ${car.disponibilites.map(dispo => `
+                                            <div class="dispo-item">
+                                                <i class="fas fa-calendar-alt dispo-icon"></i>
+                                                <span>${dispo.dateDebut && dispo.dateFin ? 
+                                                    dispo.dateDebut.split('T')[0].split('-').reverse().join('/') + ' au ' + 
+                                                    dispo.dateFin.split('T')[0].split('-').reverse().join('/') : ''}</span>
+                                            </div>
+                                        `).join('')}
+                                        <a href="/reserver?id=${car.id}" class="btn btn-primary mt-auto w-100">
+                                            <i class="fa-solid fa-car"></i> Réserver
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        $('#carResults').append(cardHtml);
+                    });
+                } else {
+                    $('#noResults').show();
+                }
+            },
+            error: function(xhr) {
+                var errorMsg = xhr.responseText || 'Erreur lors de la recherche.';
+                $('#errorMessage').text(errorMsg).show();
+                $('#carResults').empty();
+                $('#noResults').show();
+            }
+        });
+    });
+});
+</script>
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+$(document).ready(function() {
+    console.log('jQuery chargé : ', typeof $ !== 'undefined' ? 'OK' : 'Erreur');
+    let currentStep = 1;
+    let carId = null;
+    let carPrice = null;
+    let reservationData = {};
+
+    function formatDate(dateStr) {
+        if (!dateStr) return 'N/A';
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('fr-FR');
+    }
+
+    $('.reserve-btn').on('click', function() {
+        carId = $(this).data('car-id');
+        carPrice = $(this).data('car-price');
+        console.log('Bouton Réserver cliqué, carId : ', carId, 'prix : ', carPrice);
+        currentStep = 1;
+        updateModalStep();
+        fetch('/Clientes/api/client/current')  // <-- adapte cette URL à ton backend
+        .then(response => {
+            if (!response.ok) throw new Error('Utilisateur non connecté');
+            return response.json();
+        })
+        .then(client => {
+            $('#fullName').val(client.fullName || '');
+            $('#email').val(client.email || '');
+            $('#phone').val(client.tel || '');
+        })
+        .catch(err => {
+            console.error('Erreur récupération infos client:', err);
+            // Optionnel : vider les champs ou laisser vide si erreur
+            $('#fullName').val('');
+            $('#email').val('');
+            $('#phone').val('');
+        });
+        $('#reservationModal').modal('show');
+    });
+
+    function updateModalStep() {
+        $('.step').removeClass('active');
+        $('#step' + currentStep).addClass('active');
+        $('.step-circle').removeClass('active completed');
+        $('.step-circle').each(function() {
+            let step = parseInt($(this).data('step'));
+            if (step === currentStep) {
+                $(this).addClass('active');
+            } else if (step < currentStep) {
+                $(this).addClass('completed');
+            }
+        });
+        console.log('Étape affichée : ', currentStep);
+
+        if (currentStep === 2) {
+            initPaypalButton();
+        }
+    }
+
+    $('input[name="paymentMethod"]').on('change', function() {
+        if ($(this).val() === 'cheque') {
+            $('#cheque-details').show();
+            $('#paypal-button-container').hide();
+        } else {
+            $('#cheque-details').hide();
+            $('#paypal-button-container').show();
+        }
+    });
+
+    function initPaypalButton() {
+        paypal.Buttons({
+            createOrder: function(data, actions) {
+                let startDate = new Date($('#startDate').val());
+                let endDate = new Date($('#endDate').val());
+                let days = (endDate - startDate) / (1000 * 60 * 60 * 24);
+                let totalAmount = (carPrice * days).toFixed(2);
+
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: totalAmount,
+                            currency_code: 'EUR'
+                        }
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    console.log('Paiement PayPal capturé : ', details);
+                    reservationData.fullName = $('#fullName').val();
+                    reservationData.email = $('#email').val();
+                    reservationData.phone = $('#phone').val();
+                    reservationData.pickupAddress = $('#pickupAddress').val();
+                    reservationData.returnAddress = $('#returnAddress').val();
+                    reservationData.startDate = $('#startDate').val();
+                    reservationData.endDate = $('#endDate').val();
+                    reservationData.paymentMethod = 'PayPal';
+                    reservationData.paymentDetails = {
+                        type: 'paypal',
+                        transactionId: details.id,
+                        status: details.status
+                    };
+
+                    $('#confirm-fullName').text(reservationData.fullName);
+                    $('#confirm-email').text(reservationData.email);
+                    $('#confirm-phone').text(reservationData.phone);
+                    $('#confirm-pickupAddress').text(reservationData.pickupAddress || 'Non renseignée');
+                    $('#confirm-returnAddress').text(reservationData.returnAddress || 'Non renseignée');
+                    $('#confirm-dates').text((reservationData.startDate || '') + ' au ' + (reservationData.endDate || ''));
+                    $('#confirm-paymentMethod').text(reservationData.paymentMethod);
+                    $('#confirm-paymentDetails').text('PayPal Transaction ID: ' + details.id);
+                    currentStep = 3;
+                    updateModalStep();
+                });
+            },
+            onError: function(err) {
+                console.error('Erreur PayPal : ', err);
+                $('#error-paymentMethod').text('Erreur lors du paiement PayPal. Veuillez réessayer.');
+            }
+        }).render('#paypal-button-container');
+    }
+
+    $('.btn-icon.next').on('click', function() {
+        if (currentStep === 1) {
+            let form = $('#personalInfoForm');
+            if (validateForm(form)) {
+                reservationData.fullName = $('#fullName').val();
+                reservationData.email = $('#email').val();
+                reservationData.phone = $('#phone').val();
+                currentStep = 2;
+                updateModalStep();
+            }
+        } else if (currentStep === 2) {
+            let form = $('#reservationDetailsForm');
+            if (validateForm(form)) {
+                reservationData.pickupAddress = $('#pickupAddress').val();
+                reservationData.returnAddress = $('#returnAddress').val();
+                reservationData.startDate = $('#startDate').val();
+                reservationData.endDate = $('#endDate').val();
+                reservationData.paymentMethod = $('input[name="paymentMethod"]:checked').val();
+
+                if (reservationData.paymentMethod === 'cheque') {
+                    let chequeNumber = $('#chequeNumber').val();
+                    if (!chequeNumber) {
+                        $('#error-chequeNumber').text('Veuillez entrer un numéro de chèque.');
+                        return;
+                    }
+
+                    reservationData.paymentDetails = {
+                        type: 'cheque',
+                        chequeNumber: chequeNumber
+                    };
+
+                    $('#confirm-fullName').text(reservationData.fullName);
+                    $('#confirm-email').text(reservationData.email);
+                    $('#confirm-phone').text(reservationData.phone);
+                    $('#confirm-pickupAddress').text(reservationData.pickupAddress);
+                    $('#confirm-returnAddress').text(reservationData.returnAddress || 'N/A');
+                    $('#confirm-dates').text(reservationData.startDate + ' au ' + reservationData.endDate);
+                    $('#confirm-paymentMethod').text(reservationData.paymentMethod);
+                    $('#confirm-paymentDetails').text('Numéro de chèque: ' + chequeNumber);
+                    currentStep = 3;
+                    updateModalStep();
+                }
+            }
+        }
+    });
+
+    $('.btn-icon.prev').on('click', function() {
+        currentStep--;
+        updateModalStep();
+    });
+
+    function validateForm(form) {
+        let isValid = true;
+        form.find('input[required], select[required], input[type="radio"][required]').each(function() {
+            let field = $(this);
+            let errorField = $('#error-' + field.attr('id'));
+            if (field.is(':radio')) {
+                let radioGroup = $('input[name="' + field.attr('name') + '"]:checked');
+                if (radioGroup.length === 0) {
+                    $('#error-paymentMethod').text('Veuillez sélectionner un mode de paiement.');
+                    isValid = false;
+                } else {
+                    $('#error-paymentMethod').text('');
+                }
+            } else if (!field.val()) {
+                errorField.text('Ce champ est requis.');
+                isValid = false;
+            } else {
+                errorField.text('');
+            }
+        });
+        return isValid;
+    }
+
+    $('.btn-icon.confirm').on('click', function() {
+        const form = $('#reservationForm');  // Id formulaire
+
+        if (!validateForm(form)) return;
+
+        reservationData.carId = carId;
+
+        fetch('/Clientes/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(reservationData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => Promise.reject(text));
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data.factureUrl) {
+                throw new Error("Lien facture manquant");
+            }
+
+            return fetch(data.factureUrl)
+                .then(response => {
+                    if (!response.ok) throw new Error("Erreur lors du téléchargement du PDF");
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `facture_reservation_${Date.now()}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+
+                    $('#reservationModal').modal('hide');
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Réservation confirmée !',
+                        text: data.message,
+                        confirmButtonText: 'OK',
+                        customClass: { confirmButton: 'btn btn-primary' },
+                        buttonsStyling: false
+                    }).then(() => window.location.reload());
+
+                    reservationData = {};
+                    carId = null;
+                    carPrice = null;
+                });
+        })
+        .catch(errorMessage => {
+            $('#confirmationError').text(errorMessage || 'Erreur lors de la confirmation ou du téléchargement.');
+        });
+    });
+
+
+    $('#reservationModal').on('hidden.bs.modal', function() {
+        currentStep = 1;
+        reservationData = {};
+        carId = null;
+        carPrice = null;
+        $('.step').removeClass('active');
+        $('#step1').addClass('active');
+        $('.step-circle').removeClass('active completed');
+        $('.step-circle[data-step="1"]').addClass('active');
+        $('.text-danger').text('');
+        $('form').trigger('reset');
+        $('#cheque-details').hide();
+        $('#paypal-button-container').show();
+    });
+});
+</script>
+
+<script>
+console.log('Script chargé');
+
+document.getElementById('formSubmitDisputeClient').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const messageDiv = document.getElementById('disputeMessage');
+
+    const form = event.target;
+    const formData = new FormData(form);
+
+    fetch('/Clientes/submit', {
+        method: 'POST',
+        body: formData,
+        // On retire l'en-tête Authorization
+        // headers: { 'Authorization': 'Bearer ' + jwt } 
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Erreur lors de la soumission');
+        }
+    })
+    .then(data => {
+        if (data.success) {
+            messageDiv.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+            form.reset();
+        } else {
+            messageDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+        }
+    })
+    .catch(error => {
+        messageDiv.innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
+    });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const modalEl = document.getElementById('disputeDetailModal');
+    const modal = new bootstrap.Modal(modalEl);
+
+    document.querySelectorAll('[data-dispute-id]').forEach(button => {
+        button.addEventListener('click', function () {
+            const disputeId = this.getAttribute('data-dispute-id');
+
+            // Réinitialiser le contenu avant le chargement
+            document.getElementById('disputeModalIdClient').textContent = 'Chargement...';
+            document.getElementById('disputeModalReservationIdClient').textContent = '';
+            document.getElementById('disputeModalTypeClient').textContent = '';
+            const statusEl = document.getElementById('disputeModalStatusClient');
+            statusEl.textContent = '';
+            statusEl.className = 'badge';
+            document.getElementById('disputeModalDescriptionClient').textContent = '';
+            document.getElementById('disputeModalResolutionClient').textContent = '';
+
+            fetch(`/Clientes/Client/litige/${disputeId}`, {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Erreur lors du chargement du litige');
+                return response.text(); // lire la réponse brute pour éviter les erreurs JSON
+            })
+            .then(text => {
+                console.log("Réponse brute :", text);
+
+                let dispute;
+                try {
+                    dispute = JSON.parse(text);
+                } catch (err) {
+                    console.error("Erreur de parsing JSON :", err);
+                    alert("Erreur lors de la lecture des détails du litige.");
+                    return;
+                }
+
+                // Remplir les champs du modal
+                document.getElementById('disputeModalIdClient').textContent = dispute.id;
+                document.getElementById('disputeModalReservationIdClient').textContent = dispute.reservation?.id ?? 'N/A';
+                document.getElementById('disputeModalTypeClient').textContent = dispute.type ?? 'N/A';
+
+                statusEl.textContent = dispute.statut;
+                statusEl.className = 'badge';
+                if (dispute.statut === 'OUVERT') {
+                    statusEl.classList.add('bg-warning', 'text-dark');
+                } else if (dispute.statut === 'RESOLU') {
+                    statusEl.classList.add('bg-success');
+                } else {
+                    statusEl.classList.add('bg-secondary');
+                }
+
+                document.getElementById('disputeModalDescriptionClient').textContent = dispute.description;
+                document.getElementById('disputeModalResolutionClient').textContent = dispute.resolution ?? 'N/A';
+
+                modal.show(); // afficher le modal
+            })
+            .catch(error => {
+                console.error("Erreur :", error);
+                alert("Impossible de charger les détails du litige.");
+            });
+        });
+    });
+
+    // Nettoyer les champs du modal à la fermeture
+    modalEl.addEventListener('hidden.bs.modal', () => {
+        document.getElementById('disputeModalIdClient').textContent = '';
+        document.getElementById('disputeModalReservationIdClient').textContent = '';
+        document.getElementById('disputeModalTypeClient').textContent = '';
+        const statusEl = document.getElementById('disputeModalStatusClient');
+        statusEl.textContent = '';
+        statusEl.className = 'badge';
+        document.getElementById('disputeModalDescriptionClient').textContent = '';
+        document.getElementById('disputeModalResolutionClient').textContent = '';
+    });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+	  const buttons = document.querySelectorAll('.btn-view-reservation');
+
+	  buttons.forEach(button => {
+	    button.addEventListener('click', function () {
+	      const reservationId = this.getAttribute('data-id');
+	      if (!reservationId) return;
+
+	      fetch('/Clientes/' + reservationId)
+	        .then(response => {
+	          if (!response.ok) throw new Error('Erreur réseau');
+	          return response.json();
+	        })
+	        .then(data => {
+	          document.getElementById('resModalId').textContent = data.id || 'N/A';
+	          document.getElementById('resModalVehicle').textContent = data.voitureModele || 'N/A';
+	          document.getElementById('resModalDates').textContent = (data.dateDebut + ' - ' + data.dateFin) || 'N/A';
+	          document.getElementById('resModalPrice').textContent = (data.prixTotal ? data.prixTotal + ' €' : 'N/A');
+	          document.getElementById('resModalPickup').textContent = data.adressePriseEnCharge || 'N/A';
+	          document.getElementById('resModalReturn').textContent = data.adresseRestitution || 'N/A';
+
+	          const statusElem = document.getElementById('resModalStatus');
+	          statusElem.textContent = data.statut || 'N/A';
+
+	          // Retirer toutes les classes d’état animées
+	          statusElem.classList.remove('status-confirmee', 'status-en_attente', 'status-annulee', 'status-autre', 'status-anim');
+
+	          if (data.statut) {
+	            const statut = data.statut.toLowerCase();
+
+	            if (statut === 'confirmee') {
+	              statusElem.classList.add('status-anim', 'status-confirmee');
+	            } else if (statut === 'en_attente') {
+	              statusElem.classList.add('status-anim', 'status-en_attente');
+	            } else if (statut === 'annulee') {
+	              statusElem.classList.add('status-anim', 'status-annulee');
+	            } else {
+	              statusElem.classList.add('status-anim', 'status-autre');
+	            }
+	          }
+
+	          // Affiche le modal
+	          const modalElement = document.getElementById('reservationDetailModal');
+	          const modal = new bootstrap.Modal(modalElement);
+	          modal.show();
+	        })
+	        .catch(err => {
+	          console.error('Erreur lors du chargement:', err);
+	          alert('Impossible de charger les détails de la réservation.');
+	        });
+	    });
+	  });
+	});
+
+</script>
+<script>
+
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("DOM complètement chargé");
+
+    const reviewModalEl = document.getElementById('leaveReviewModal');
+    if (!reviewModalEl) {
+        console.log("Modal de review non trouvé, arrêt du script");
+        return;
+    }
+    console.log("Modal de review trouvé");
+
+    const form = reviewModalEl.querySelector('#formLeaveReviewClient');
+    const stars = reviewModalEl.querySelectorAll('#modalStarRating .fa-star');
+    const ratingInput = reviewModalEl.querySelector('#reviewRatingValue');
+
+    const resetReviewModal = () => {
+        console.log("Réinitialisation du formulaire de review");
+        form?.reset();
+        ratingInput.value = '0';
+        stars.forEach(star => {
+            star.classList.remove('filled', 'fas');
+            star.classList.add('empty', 'far');
+        });
+    };
+
+    reviewModalEl.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const reservationId = button?.getAttribute('data-reservation-id') || 'N/A';
+        console.log(`Ouverture modal, reservationId: ${reservationId}`);
+        reviewModalEl.querySelector('#reviewModalResId').textContent = reservationId;
+        reviewModalEl.querySelector('#reviewReservationId').value = reservationId;
+        resetReviewModal();
+    });
+
+    stars.forEach(star => {
+        const value = star.dataset.value;
+
+        star.setAttribute('role', 'button');
+        star.setAttribute('tabindex', '0');
+        star.setAttribute('aria-label', `${value} étoile${value > 1 ? 's' : ''}`);
+
+        const setStars = (rating) => {
+            console.log(`Mise à jour affichage étoiles avec la note: ${rating}`);
+            stars.forEach(s => {
+                const val = s.dataset.value;
+                s.classList.toggle('filled', val <= rating);
+                s.classList.toggle('empty', val > rating);
+                s.classList.toggle('fas', val <= rating);
+                s.classList.toggle('far', val > rating);
+            });
+        };
+
+        star.addEventListener('click', () => {
+            console.log(`Étoile cliquée : ${value}`);
+            ratingInput.value = value;
+            setStars(value);
+        });
+
+        star.addEventListener('mouseover', () => setStars(value));
+        star.addEventListener('mouseout', () => setStars(ratingInput.value));
+        star.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                star.click();
+            }
+        });
+    });
+
+    form?.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const reservationId = document.getElementById('reviewReservationId').value;
+        const note = document.getElementById('reviewRatingValue').value;
+        const commentaire = document.getElementById('reviewCommentClient').value;
+        console.log('Soumission du formulaire', { reservationId, note, commentaire });
+
+        const avisDTO = {
+            reservationId: parseInt(reservationId),
+            note: parseInt(note),
+            commentaire: commentaire
+        };
+        console.log("DTO à envoyer:", avisDTO);
+
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Envoi...`;
+
+        fetch('/Clientes/avis/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(avisDTO),
+            credentials: 'include'  // Important pour envoyer les cookies de session
+        })
+        .then(response => {
+            console.log("Réponse fetch reçue, status:", response.status);
+            if (!response.ok) throw new Error("Échec de l’envoi");
+            return response.text();
+        })
+        .then(data => {
+            console.log("Données de réponse:", data);
+            bootstrap.Modal.getInstance(reviewModalEl)?.hide();
+            showSuccess(data || "Avis soumis avec succès !");
+        })
+        .catch(err => {
+            console.error("Erreur lors de l’envoi :", err);
+            showError("Une erreur est survenue lors de l’envoi de l’avis.");
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `Soumettre`;
+            console.log("Bouton de soumission réactivé");
+        });
+
+        function showError(message) {
+            console.log("Affichage erreur :", message);
+            const errorEl = document.getElementById('toastError');
+            if (!errorEl) return;
+            errorEl.querySelector('.toast-body').textContent = message;
+            bootstrap.Toast.getOrCreateInstance(errorEl).show();
+        }
+
+        function showSuccess(message) {
+            console.log("Affichage succès :", message);
+            const successEl = document.getElementById('toastSuccess');
+            if (!successEl) return;
+            successEl.querySelector('.toast-body').textContent = message;
+            bootstrap.Toast.getOrCreateInstance(successEl).show();
+        }
+    });
+});
+
+
+
+</script>
+<script>
+$(document).ready(function() {
+    // 1. Charger les données du profil via GET AJAX
+    $.ajax({
+        url: '/Clientes/api/client/profile',
+        method: 'GET',
+        success: function(user) {
+        	 console.log("User telephone:", user.telephone);
+        	    
+        	    $('#profileFirstNameClient').val(user.firstName);
+        	    $('#profileLastNameClient').val(user.lastName);
+        	    $('#profileEmailClient').val(user.email);
+        	    $('#profilePhoneClient').val(user.tel || user.telephone || '');
+        },
+        error: function() {
+            alert("Impossible de charger les données du profil.");
+        }
+    });
+
+    // 2. Gestion de la soumission du formulaire en AJAX POST JSON
+    $('#formEditProfileClient').submit(function(e) {
+        e.preventDefault(); // Empêche la soumission classique
+
+        const data = {
+            firstName: $('#profileFirstNameClient').val(),
+            lastName: $('#profileLastNameClient').val(),
+            email: $('#profileEmailClient').val(),
+            tel: $('#profilePhoneClient').val()
+        };
+
+        $.ajax({
+            url: '/Clientes/api/client/profile',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function(response) {
+                alert(response.message || "Profil mis à jour avec succès");
+            },
+            error: function(xhr) {
+                let message = "Erreur lors de la mise à jour du profil.";
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                alert(message);
+            }
+        });
+    });
+});
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#formChangePasswordClient').submit(function (event) {
+            event.preventDefault(); // Empêche la soumission classique
+
+            const data = {
+                currentPassword: $('#currentPasswordClient').val(),
+                newPassword: $('#newPasswordClient').val(),
+                confirmPassword: $('#confirmNewPasswordClient').val()
+            };
+
+            $.ajax({
+                url: '/Clientes/api/client/change-password',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    alert('✅ Mot de passe modifié avec succès !');
+                    $('#changePasswordModal').modal('hide');
+                    $('#formChangePasswordClient')[0].reset();
+                },
+                error: function (xhr) {
+                    if (xhr.status === 400) {
+                        alert('⚠️ ' + xhr.responseText);
+                    } else {
+                        alert('❌ Erreur lors de la modification du mot de passe.');
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const modal = new bootstrap.Modal(document.getElementById("invoiceDetailModal"));
+    
+    document.querySelectorAll(".view-invoice-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            const invoiceId = this.getAttribute("data-id"); // ou 'data-invoice-id' selon ton HTML
+
+            fetch(`/Clientes/client/invoices/${invoiceId}`, {
+            	
+                credentials: 'include'
+                // si tu utilises session Spring Security
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("Erreur lors du chargement de la facture.");
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById("invoiceModalId").textContent = data.id ?? 'N/A';
+                document.getElementById("invoiceModalReservation").textContent = data.reservation ?? 'N/A';
+                document.getElementById("invoiceModalAmount").textContent = data.montant != null ? `${data.montant.toFixed(2)} €` : 'N/A';
+                
+                if (data.dateEmission) {
+                    const date = new Date(data.dateEmission);
+                    document.getElementById("invoiceModalEmission").textContent = date.toLocaleDateString('fr-FR');
+                } else {
+                    document.getElementById("invoiceModalEmission").textContent = 'N/A';
+                }
+                
+                document.getElementById("invoiceModalStatus").textContent = data.statut ?? 'N/A';
+                document.getElementById("invoiceModalPaymentMode").textContent = data.modePaiement ?? 'N/A';
+
+                modal.show();
+            })
+            .catch(error => {
+                alert("Impossible de charger les détails de la facture.");
+                console.error(error);
+            });
+        });
+    });
+});
+</script>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+    // Chart.js
+            const reservationsByMonth = /*[[${reservationsByMonth}]]*/ {};
+
+    // Mois en français
+    const moisLabels = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+                        'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+
+    // Préparer les données du graphique, on remplit tous les mois même s'ils sont à 0
+    const dataCounts = [];
+    for (let i = 1; i <= 12; i++) {
+        dataCounts.push(reservationsByMonth[i] || 0);
+    }
+
+    // Config Chart.js
+    const ctx = document.getElementById('reservationsChart').getContext('2d');
+    const reservationsChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: moisLabels,
+            datasets: [{
+                label: 'Réservations',
+                data: dataCounts,
+                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            },
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+/*]]>*/
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const rowsPerPage = 4;
+        const tbody = document.getElementById("reservation-body");
+        const rows = Array.from(tbody.getElementsByTagName("tr"));
+        const totalPages = Math.ceil(rows.length / rowsPerPage);
+        const pagination = document.getElementById("pagination");
+
+        function displayPage(page) {
+            rows.forEach((row, index) => {
+                row.style.display = (index >= (page - 1) * rowsPerPage && index < page * rowsPerPage) ? "" : "none";
+            });
+
+            pagination.innerHTML = '';
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement("button");
+                btn.innerText = i;
+                btn.className = "btn btn-sm btn-outline-dark mx-1";
+                if (i === page) btn.classList.add("active");
+
+                btn.addEventListener("click", () => displayPage(i));
+                pagination.appendChild(btn);
+            }
+        }
+
+        if (rows.length > 0) displayPage(1);
+    });
+</script>
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("Cookies actuels :", document.cookie);
+
+    const form = document.getElementById("formSendMessageClient");
+    if (!form) {
+        console.error("Formulaire introuvable.");
+        Swal.fire({
+            icon: "error",
+            title: "Erreur",
+            text: "Le formulaire est introuvable.",
+            confirmButtonText: "OK"
+        });
+        return;
+    }
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        console.log("Envoi de la requête à /Clientes/send avec JSESSIONID :", document.cookie);
+
+        fetch("http://localhost:8082/Clientes/send", {
+            method: "POST",
+            credentials: "include",
+            body: formData
+        })
+        .then(res => {
+            console.log("Statut de /Clientes/send :", res.status);
+            console.log("Réponse complète :", res);
+            if (!res.ok) {
+                return res.text().then(text => {
+                    throw new Error(`Erreur HTTP ${res.status}: ${text}`);
+                });
+            }
+            return res.text();
+        })
+        .then(msg => {
+            console.log("Réponse du serveur :", msg);
+            Swal.fire({
+                icon: "success",
+                title: "Succès",
+                text: msg,
+                timer: 3000,
+                showConfirmButton: false,
+                timerProgressBar: true
+            });
+            form.reset();
+        })
+        .catch(err => {
+            console.error("Erreur lors de l'envoi :", err);
+            Swal.fire({
+                icon: "error",
+                title: "Erreur",
+                text: err.message,
+                confirmButtonText: "OK"
+            });
+        });
+    });
+
+    console.log("Test de la session avec /Clientes/test-session");
+    fetch("http://localhost:8082/Clientes/test-session", { credentials: "include" })
+        .then(res => {
+            console.log("Statut de /Clientes/test-session :", res.status);
+            return res.text();
+        })
+        .then(text => console.log("Réponse de /Clientes/test-session :", text))
+        .catch(err => console.error("Erreur lors du test de session :", err));
+});
+
+
+
+
+
+</script>
+  
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Événement déclenché lorsque la modale est ouverte (ex. via un bouton)
+    $('#messageDetailModal').on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget); // Bouton qui a déclenché l'ouverture
+        var messageId = button.data('message-id'); // Récupère l'ID du message depuis un attribut data
+
+        // Appel AJAX pour récupérer les détails du message
+        $.ajax({
+            url: '/Clientes/api/messages/' + messageId, // URL de l'API (à ajuster selon votre backend)
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+            	console.log('subject:', data.subject);
+            	console.log('date:', data.date);
+
+                // Remplissage des champs de la modale avec les données reçues
+                $('#messageModalSubjectClient').text(data.sujet);           // au lieu de data.subject
+$('#messageModalSenderClient').text(data.sender);           // reste sender, ok
+$('#messageModalDateClient').text(data.dateEnvoi);
+
+                $('#messageModalContentClient').text(data.content);
+            },
+            error: function(xhr, status, error) {
+                console.error('Erreur lors du chargement du message : ', error);
+                $('#messageModalContentClient').text('Erreur lors du chargement des détails.');
+            }
+        });
+    });
+});
+</script>
+<script>
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    const toggleMobile = document.getElementById('sidebarToggleMobile');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    const toggleDesktop = document.getElementById('sidebarToggleDesktop');
+    const closeMobile = document.getElementById('sidebarCloseMobile');
+
+    // Toggle desktop (collapsed)
+    if (toggleDesktop) {
+        toggleDesktop.addEventListener('click', function() {
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('collapsed');
+            const icon = this.querySelector('i');
+            if (icon) {
+                icon.classList.toggle('fa-arrow-left-long');
+                icon.classList.toggle('fa-arrow-right-long');
+            }
+        });
+    }
+
+    // Toggle mobile : affiche #sidebar
+    if (toggleMobile) {
+        toggleMobile.addEventListener('click', function(e) {
+            e.stopPropagation(); // Empêche Bootstrap si data-bs-toggle reste
+            sidebar.classList.add('active');
+            // Ajoute backdrop pour fermer au clic dehors
+            let backdrop = document.querySelector('.sidebar-backdrop');
+            if (!backdrop) {
+                backdrop = document.createElement('div');
+                backdrop.className = 'sidebar-backdrop';
+                document.body.appendChild(backdrop);
+            }
+            backdrop.classList.add('active');
+            backdrop.addEventListener('click', closeSidebarMobile);
+        });
+    }
+
+    // Fermer sidebar mobile
+    function closeSidebarMobile() {
+        sidebar.classList.remove('active');
+        const backdrop = document.querySelector('.sidebar-backdrop');
+        if (backdrop) {
+            backdrop.classList.remove('active');
+            setTimeout(() => backdrop.remove(), 300); // Retire après animation
+        }
+    }
+
+    if (closeMobile) {
+        closeMobile.addEventListener('click', closeSidebarMobile);
+    }
+
+    // Fermer au clic sur un lien
+    document.querySelectorAll('#sidebar .nav-link[data-section]').forEach(link => {
+        link.addEventListener('click', function() {
+            if (window.innerWidth < 992) {
+                closeSidebarMobile();
+            }
+        });
+    });
+
+    // Ajuste sur resize (ferme overlay si desktop)
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 992 && sidebar.classList.contains('active')) {
+            closeSidebarMobile();
+        }
+    });
+});
+
+
+
+
+
+
+</script>
+<script>
+
+//JS pour toggle collapsed au clic (affiche seulement icônes) - ajoute à ton script existant
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    const toggleDesktop = document.getElementById('sidebarToggleDesktop');
+
+    if (toggleDesktop && window.innerWidth >= 992) { // Seulement desktop
+        toggleDesktop.addEventListener('click', function() {
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            
+            if (isCollapsed) {
+                // Étendre : montre texte
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('collapsed');
+                this.querySelector('i').classList.remove('fa-arrow-right-long');
+                this.querySelector('i').classList.add('fa-arrow-left-long');
+            } else {
+                // Réduire : seulement icônes
+                sidebar.classList.add('collapsed');
+                mainContent.classList.add('collapsed');
+                this.querySelector('i').classList.remove('fa-arrow-left-long');
+                this.querySelector('i').classList.add('fa-arrow-right-long');
+            }
+        });
+    }
+
+    // Évite toggle sur mobile
+    window.addEventListener('resize', function() {
+        if (window.innerWidth < 992) {
+            sidebar.classList.remove('collapsed');
+            mainContent.classList.remove('collapsed');
+        }
+    });
+});
+
+
+</script>
+</body>
+</html>

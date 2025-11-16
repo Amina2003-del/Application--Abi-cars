@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="fr-FR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+   
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="description" content="gauto | Modèle HTML de Location de Voitures par Themescare">
+      <meta name="keyword" content="taxi,voiture,location,embauche,transport">
+      <meta name="author" content="Themescare">
+      <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII"/>
+      <!-- Titre -->
+      <title>Carbnb</title>
+      <!-- Favicon -->
+ <link rel="stylesheet" th:href="@{/assets/css/bootstrap.css}">
+<link rel="stylesheet" th:href="@{/assets/css/font-awesome.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/magnific-popup.css}">
+<link rel="stylesheet" th:href="@{/assets/css/owl.carousel.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/owl.theme.default.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/animate.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/jquery.datepicker.css}">
+<link rel="stylesheet" th:href="@{/assets/css/nice-select.css}">
+<link rel="stylesheet" th:href="@{/assets/css/lightgallery.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/jquery-clockpicker.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/slicknav.min.css}">
+<link rel="stylesheet" th:href="@{/assets/css/style.css}">
+<link rel="stylesheet" th:href="@{/assets/css/responsive.css}">
+<link rel="stylesheet" th:href="@{/assets/css/alertes.css}">
+<link rel="stylesheet" href="css/style_registration.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="font/material-design-iconic-font/css/material-design-iconic-font.min.css">
+<style>
+.password-verdict{
+color:#000;
+}
+</style>
+   </head>
+   <body>
+   <div class="wrapper" id="wrapper">
+        <div class="inner" id="ibox-content">
+         <div class="sk-spinner sk-spinner-wave">
+                                <div class="sk-rect1"></div>
+                                <div class="sk-rect2"></div>
+                                <div class="sk-rect3"></div>
+                                <div class="sk-rect4"></div>
+                                <div class="sk-rect5"></div>
+          </div>
+       </div>
+       </div>
+      <!-- Zone d'En-tête Supérieure Début -->
+      <section class="gauto-header-top-area">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-6">
+                  <div class="header-top-left">
+                     <p>Besoin d'aide ? : <i class="fa fa-phone"></i> Appelez : +321 123 45 978</p>
+                  </div>
+               </div>
+               <div class="col-md-6">
+                  <div class="header-top-right">
+                     <a th:href="@{/Voitures/login}">
+                     <i class="fa fa-key"></i>
+                     connexion
+                     </a>
+                     <a th:href="@{/Voitures/register}">
+                     <i class="fa fa-user"></i>
+                     inscription
+                     </a>
+                     <div class="dropdown">
+                        <button class="btn-dropdown dropdown-toggle" type="button" id="dropdownlang" data-toggle="dropdown" aria-haspopup="true">
+                        <img th:src="@{/assets/img/france.png}" alt="langue" class="fr"/> Francais
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownlang">
+                           <li><img th:src="@{/assets/img/en.png}" alt="langue" /> Anglais</li>
+                        </ul>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </section>
+            <div th:replace="Voitures/header.html :: header"></div>
+
+      <!-- Zone du Menu Principal Début -->
+      <section class="gauto-mainmenu-area">
+         <div class="container">
+            <div class="row">
+               <div class="col-lg-9">
+                  <div class="mainmenu">
+                       <nav>
+                        <ul id="gauto_navigation">
+                           <li><a th:href="@{/Voitures/index}">accueil</a></li>
+                           <li><a th:href="@{/Voitures/about}">à propos</a></li>
+                           <li>
+                              <a href="#">Services</a>
+                              <ul>
+                                 <li><a th:href="@{/Voitures/service}">Réservation/Location</a></li>
+                                 <li><a th:href="@{/Voitures/service/details}">Devenir Partenaire</a></li>
+                              </ul>
+                           </li>
+                           <li>
+                              <a href="#">voitures</a>
+                              <ul>
+                                 <li><a th:href="@{/Voitures/car/listing}">liste des voitures</a></li>
+                                 <li><a th:href="@{/Voitures/car/booking}">réservation de voiture</a></li>
+                              </ul>
+                           </li>
+                           <li><a th:href="@{/Voitures/gallery}">galerie</a></li>
+                          
+                           <li class="active">
+                              <a href="#">pages</a>
+                              <ul>
+                                 <li><a th:href="@{/Voitures/error}">500 erreur inattendue</a></li>
+                                 <li><a th:href="@{/Voitures/error}">403 pas l'autorisation</a></li>
+                                 <li><a th:href="@{/Voitures/error}">404 non trouvé</a></li>
+                                 <li><a th:href="@{/Voitures/login}">connexion</a></li>
+                                 <li><a th:href="@{/Voitures/register}">inscription</a></li>
+                              </ul>
+                           </li>
+                           <li><a th:href="@{/Voitures/contact}">contact</a></li>
+                        </ul>
+                     </nav>
+                  </div>
+               </div>
+               <div class="col-lg-3 col-sm-12">
+                  <div class="main-search-right">
+                     <!-- Menu Responsive Début -->
+                     <div class="gauto-responsive-menu"></div>
+                     <!-- Menu Responsive Fin -->
+                      
+                               <div class="notif">
+                      <div class="header-notification-box">
+    <div class="login dropdown">
+       <div class="notification-icon" id="notificationIcon">
+    <i class="fa fa-bell"></i> <!-- Icône de notification -->
+    <span class="badge" style="display:none;">2</span> <!-- Badge pour les notifications non lues -->
+</div>
+        <div class="dropdown-menu notification-dropdown" aria-labelledby="dropdownAlerts">
+           
+        </div>
+    </div>
+</div>
+                      
+        </div>
+                      
+                     <!-- Boîte de Recherche Début -->
+                     <div class="search-box">
+                        <form>
+                           <input type="search" placeholder="Rechercher">
+                           <button type="submit"><i class="fa fa-search"></i></button>
+                        </form>
+                     </div>
+                     <!-- Boîte de Recherche Fin -->
+                  </div>
+               </div>
+            </div>
+         </div>
+      </section>
+      <!-- Zone du Menu Principal Fin -->
+       
+      <!-- Zone du Fil d'Ariane Début -->
+      <section class="gauto-breadcromb-area section_70">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-12">
+                  <div class="breadcromb-box">
+                     <h3>Page d'Inscription</h3>
+                     <ul>
+                        <li><i class="fa fa-home"></i></li>
+                        <li><a th:href="@{/Voitures/index}">Accueil</a></li>
+                        <li><i class="fa fa-angle-right"></i></li>
+                        <li>Inscription</li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </section>
+      <!-- Zone du Fil d'Ariane Fin -->
+       
+      <!-- Zone de Connexion Début -->
+      <section class="gauto-login-area section_70">
+         <div class="container">
+            <div class="row">
+               <div class="col-md-12">
+                  <div class="login-box">
+                     <div class="login-page-heading">
+                        <i class="fa fa-key"></i>
+                        <h3>S'inscrire</h3>
+                     </div>
+                     <form action="/" method="POST" enctype="utf8">
+                        <div class="account-form-group">
+                           <input type="text" placeholder="Nom d'utilisateur" name="lastname" id="lastName">
+                           <span id="lastNameError" class="form-wrapper-InputWrapper_explain" style="display:none"></span>
+                           <i class="fa fa-user"></i>
+                        </div>
+                        
+                        <div class="account-form-group">
+                           <input type="text" placeholder="Prénom d'utilisateur" name="firstname" id="firstName">
+                            <span id="firstNameError" class="form-wrapper-InputWrapper_explain" style="display:none"></span>
+                           
+                           <i class="fa fa-user"></i>
+                        </div>
+                         <div class="account-form-group">
+                           <input type="tele" placeholder="Numéro de télèphone" name="tele" id="tel">
+                           <span id="telError" class="form-wrapper-InputWrapper_explain" style="display:none"></span>
+                           <span id="telValid" class="form-wrapper-InputWrapper_explain" style="display:none"></span>
+                           <i class="fa fa-phone"></i>
+                        </div>
+                        <div class="account-form-group">
+                           <input type="text" placeholder="Email" name="email" id="email">
+                            <span id="emailError" class="form-wrapper-InputWrapper_explain" style="display:none"></span>
+                            <span id="emailValid" class="form-wrapper-InputWrapper_explain" style="display:none"></span>
+                           <i class="fa fa-envelope-o"></i>
+                        </div>
+                        <div class="account-form-group">
+                           <input type="password" placeholder="Mot de passe" name="password" id="password">
+                           <span id="passwordError" class="form-wrapper-InputWrapper_explain" style="display:none"></span>
+                           <i class="fa fa-lock"></i>
+                        </div>
+                        
+                        
+                        <div class="account-form-group">
+                           <input type="password" placeholder="Confirmer le mot de passe" name="matchingPassword" id="matchPassword">
+                             <span id="globalError" class="form-wrapper-InputWrapper_explain " style="display:none"></span>
+                             <span id="matchPasswordError" class="form-wrapper-InputWrapper_explain " style="display:none"></span>
+                           <i class="fa fa-lock"></i>
+                        </div>
+                        <div class="remember-row">
+                           <p class="checkbox remember signup">
+                              <input class="checkbox-spin" type="checkbox" id="Freelance">
+                              <label for="Freelance"><span></span>accepter les termes & conditions</label>
+                           </p>
+                        </div>
+                        <p>
+                           <button type="submit" class="gauto-theme-btn" id= "idsubmit">S'inscrire maintenant</button>
+                        </p>
+                     </form>
+                     <div class="login-sign-up">
+                        <a th:href="@{/Voitures/login}">Vous avez déjà un compte ?</a>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+         
+
+      </section>
+      <!-- Zone de Connexion Fin -->
+       
+              <div th:replace="Voitures/footer.html :: footer"></div>
+
+      <!--Jquery js-->
+      <script th:src="@{/assets/js/jquery.min.js}"></script>
+      <!-- Popper JS -->
+      <script th:src="@{/assets/js/popper.min.js}"></script>
+      <!--Bootstrap js-->
+      <script th:src="@{/assets/js/bootstrap.min.js}"></script>
+      <!--Owl-Carousel js-->
+      <script th:src="@{/assets/js/owl.carousel.min.js}"></script>
+      <!--Lightgallery js-->
+      <script th:src="@{/assets/js/lightgallery-all.js}"></script>
+      <script th:src="@{/assets/js/custom_lightgallery.js}"></script>
+      <!--Slicknav js-->
+      <script th:src="@{/assets/js/jquery.slicknav.min.js}"></script>
+      <!--Magnific js-->
+      <script th:src="@{/assets/js/jquery.magnific-popup.min.js}"></script>
+      <!--Nice Select js-->
+      <script th:src="@{/assets/js/jquery.nice-select.min.js}"></script>
+      <!-- Datepicker JS -->
+      <script th:src="@{/assets/js/jquery.datepicker.min.js}"></script>
+      <!--ClockPicker JS-->
+      <script th:src="@{/assets/js/jquery-clockpicker.min.js}"></script>
+      <!--Main js-->
+      <script th:src="@{/assets/js/main.js}"></script>
+      <script th:src="@{/assets/js/script.js}"></script>
+      <script src="js1/popper.min.js"></script>
+<!-- <script src="js1/bootstrap1.js"></script> -->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script th:src="@{/resources/pwstrength.js}"></script>
+
+<script th:inline="javascript">
+var serverContext = [[@{/}]];
+$(document).ready(function () {
+	$('form').submit(function(event) {
+		register(event);
+	});
+	
+	$(":password").keyup(function(){
+		if($("#password").val() != $("#matchPassword").val()){
+	        $("#globalError").show().html(/*[[#{PasswordMatches.user}]]*/);
+	    }else{
+	    	$("#globalError").html("").hide();
+	    }
+	});
+	
+	$("#firstName")
+    .mouseup(function() {
+    	$("#firstNameError").html("").hide(); 
+      })
+    .mousedown(function() {
+        	$("#firstNameError").html("").hide();
+        	
+    });
+	$("#lastName")
+    .mouseup(function() {
+    	$("#lastNameError").html("").hide(); 
+      })
+    .mousedown(function() {
+        	$("#lastNameError").html("").hide();
+        	
+    });
+	$("#tel")
+    .mouseup(function() {
+    	$("#telError").html("").hide(); 
+    	("#telValid").html("").hide(); 
+      })
+    .mousedown(function() {
+        	$("#telError").html("").hide();
+        	("#telValid").html("").hide(); 
+        	
+    });
+	$("#email")
+    .mouseup(function() {
+    	$("#emailError").html("").hide(); 
+    	$("#emailValid").html("").hide(); 
+      })
+    .mousedown(function() {
+        	$("#emailError").html("").hide();
+        	$("#emailValid").html("").hide();  	
+    });
+	$("#password")
+    .mouseup(function() {
+    	$("#passwordError").html("").hide(); 
+      })
+    .mousedown(function() {
+        	$("#passwordError").html("").hide();
+        	
+    });
+
+       /*  $('#idsubmit').on('click', function(){
+        $('#wrapper').children('.inner').toggleClass('sk-loading'); 
+        	// $(this).loadButton('on');
+        }); */
+
+   
+	
+	options = {
+		    common: { minChar: 8 },
+		    ui: {
+		        showVerdictsInsideProgressBar: true,
+		        showErrors: true,
+		        errorMessages: {
+		            wordLength: /*[[#{error.wordLength}]]*/,
+		            wordNotEmail: /*[[#{error.wordNotEmail}]]*/,
+		            wordSequences: /*[[#{error.wordSequences}]]*/,
+		            wordLowercase: /*[[#{error.wordLowercase}]]*/,
+		            wordUppercase: /*[[#{error.wordUppercase}]]*/,
+		            wordOneNumber: /*[[#{error.wordOneNumber}]]*/,
+		            wordOneSpecialChar: /*[[#{error.wordOneSpecialChar}]]*/,
+		        }
+		    }
+		};
+
+		
+	 $('#password').pwstrength(options);
+});
+
+function register(event){
+	event.preventDefault();
+    $(".alert").html("").hide();
+    $(".error-list").html("");
+    if($("#password").val() != $("#matchPassword").val()){
+    	$("#globalError").show().html(/*[[#{PasswordMatches.user}]]*/);
+    	return;
+    }
+    if($("#firstName").val() == ""){
+    	$("#firstNameError").show().html(/*[[#{champs.user}]]*/);
+    	return;
+    }
+    if($("#lastName").val() == ""){
+    	$("#lastNameError").show().html(/*[[#{champs.user}]]*/);
+    	return;
+    }
+    if($("#tel").val() == ""){
+    	$("#telError").show().html(/*[[#{champs.user}]]*/);
+    	return;
+    }
+    else{
+    	if(!phonenumber($("#tel").val())){
+    		$("#telValid").show().html(/*[[#{ValidTel.user.tel}]]*/);
+        	return;
+    	}
+    }
+    if($("#email").val() == ""){
+    	$("#emailError").show().html(/*[[#{champs.user}]]*/);
+    	return;
+    }
+    else{
+    	if(!validateEmail($("#email").val())){
+    		$("#emailValid").show().html(/*[[#{ValidEmail.user.email}]]*/);
+        	return;
+    	}
+    	
+    }
+    if($("#password").val() == ""){
+    	$("#passwordError").show().html(/*[[#{champs.user}]]*/);
+    	return;
+    }
+    if($("#matchPassword").val() == ""){
+    	$("#matchPasswordError").show().html(/*[[#{champs.user}]]*/);
+    	return;
+    }
+   
+    $('#wrapper').children('.inner').toggleClass('sk-loading');
+    //champs.user:Champ requis  Ce champs est requis
+    var formData= $('form').serialize();
+    $.post(serverContext + "user/registration",formData ,function(data){
+        if(data.message == "success"){ 
+            window.location.href = serverContext + "successRegister.html";
+        }
+        
+    })
+    .fail(function(data) {
+    	$('#wrapper').children('.inner').toggleClass('sk-loading');
+        if(data.responseJSON.error.indexOf("MailError") > -1)
+        {
+            window.location.href = serverContext + "emailError.html";
+        }
+        else if(data.responseJSON.error == "UserAlreadyExist"){
+            $("#emailError").show().html(data.responseJSON.message);
+        }
+        else if(data.responseJSON.error.indexOf("InternalError") > -1){
+            window.location.href = serverContext + "login?message=" + data.responseJSON.message;
+        }
+        else{
+        	var errors = $.parseJSON(data.responseJSON.message);
+            $.each( errors, function( index,item ){
+            	if (item.field){
+            		$("#"+item.field+"Error").show().append(item.defaultMessage+"<br/>");
+            	}
+            	else {
+            		$("#globalError").show().append(item.defaultMessage+"<br/>");
+            	}
+               
+            });
+        }
+    });
+    function validateEmail(email) 
+    {
+      var re = /^(?:[a-z0-9!#$%&amp;'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&amp;'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/;
+
+      return re.test(email);
+    }
+    
+    function phonenumber(inputtxt)
+    {
+      var phoneno = /^\d{10}$/;
+      return phoneno.test(inputtxt);
+     /*  if(inputtxt.value.match(phoneno))
+      {
+          return true;
+      }
+      else
+      {
+         return false;
+      } */
+      }
+
+}
+$(function(){
+
+    $('#toggleSpinners').on('click', function(){
+
+        $('#ibox2').children('.ibox-content').toggleClass('sk-loading');
+
+    })
+
+})
+
+</script>
+   </body>
+</html>
