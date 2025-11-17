@@ -10,4 +10,10 @@ FROM eclipse-temurin:11-jre
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8082
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+# Lire les variables d'environnement Render pour Spring Boot
+ENTRYPOINT ["sh", "-c", "java -jar app.jar \
+  --spring.datasource.url=${SPRING_DATASOURCE_URL} \
+  --spring.datasource.username=${SPRING_DATASOURCE_USERNAME} \
+  --spring.datasource.password=${SPRING_DATASOURCE_PASSWORD} \
+  --server.port=8082"]
