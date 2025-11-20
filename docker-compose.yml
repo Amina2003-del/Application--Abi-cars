@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  spring-app:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
+    container_name: spring-app
+    env_file:
+      - ./deploy/.env
+    ports:
+      - "8003:8082"
+    restart: always

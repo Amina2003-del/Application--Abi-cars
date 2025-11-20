@@ -37,7 +37,7 @@ import location_voiture.persistence.model.Facture;
 import location_voiture.persistence.model.Locataire;
 import location_voiture.persistence.model.Paiement;
 import location_voiture.persistence.model.Propritaire;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import location_voiture.persistence.model.StatutPaiement;
 import location_voiture.persistence.model.StatutReservation;
 import location_voiture.persistence.model.TypeAlert;
@@ -80,7 +80,7 @@ public class ReservationService {
         this.avisRepository = avisRepository;
     }
 
-    public Réservation saveReservation(Réservation reservation) {
+    public Reservation saveReservation(Reservation reservation) {
         return reservationRepository.save(reservation);
     }
     public Map<Integer, Long> getReservationsGroupedByMonth() {
@@ -99,7 +99,7 @@ public class ReservationService {
         return avisRepository.save(avis);
     }
 
-    public Optional<Réservation> findById(Long id) {
+    public Optional<Reservation> findById(Long id) {
         return reservationRepository.findById(id);
     }
     public long getActiveReservations() {
@@ -114,7 +114,7 @@ public class ReservationService {
     /**
      * Enregistre une nouvelle réservation avec prix total et statut initial
      */
-    public Réservation enregistrerReservation(Réservation reservation, Long voitureId, Long locataireId) {
+    public Reservation enregistrerReservation(Reservation reservation, Long voitureId, Long locataireId) {
         Car voiture = carService.getCarById(voitureId);
         Locataire locataire = new Locataire();
         reservation.setLocataire((Locataire) locataire);
@@ -141,7 +141,7 @@ public class ReservationService {
             return "Voiture déjà réservée sur cette période";
         }
 
-        Réservation reservation = new Réservation();
+        Reservation reservation = new Reservation();
         reservation.setVoiture(voiture);
         reservation.setDateDebut(debut);
         reservation.setDateFin(fin);
@@ -153,16 +153,16 @@ public class ReservationService {
         reservation.setPrixTotal(voiture.getPrixJournalier() * Math.max(jours, 1));
 
         reservationRepository.save(reservation);
-        return "Réservation effectuée avec succès";
+        return "Reservation effectuée avec succès";
     }
 
     /**
      * Vérifie si une voiture est disponible pour une période donnée
      */
     private boolean isDisponiblePourPeriode(Car voiture, LocalDate debut, LocalDate fin) {
-        List<Réservation> reservationsExistantes = reservationRepository.findByVoiture(voiture.getId());
+        List<Reservation> reservationsExistantes = reservationRepository.findByVoiture(voiture.getId());
 
-        for (Réservation r : reservationsExistantes) {
+        for (Reservation r : reservationsExistantes) {
             if (r.getDateDebut().isBefore(fin) && r.getDateFin().isAfter(debut)) {
                 return false; // Chevauchement de dates
             }
@@ -170,12 +170,12 @@ public class ReservationService {
         return true;
     }
 
-    public Réservation reserver(Réservation reservation) {
+    public Reservation reserver(Reservation reservation) {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public Réservation save(Réservation reservation) {
+    public Reservation save(Reservation reservation) {
         return reservationRepository.save(reservation);
     }
 
@@ -186,7 +186,7 @@ public class ReservationService {
     }
 
     public List<ReservationDTO> getAllReservationDTOs() {
-        List<Réservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationRepository.findAll();
 
         return reservations.stream().map(r -> {
             User u = r.getUtilisateur();
@@ -198,7 +198,7 @@ public class ReservationService {
 
     public List<ReservationDTO> getAllReservations() {
         return reservationRepository.findAll().stream()
-                                   .map(ReservationDTO::fromEntity) // transforme chaque Réservation en DTO complet
+                                   .map(ReservationDTO::fromEntity) // transforme chaque Reservation en DTO complet
                                    .collect(Collectors.toList());
     }
    
@@ -206,9 +206,9 @@ public class ReservationService {
     public List<Map<String, Object>> getDynamicReservations() {
         List<Map<String, Object>> reservations = new ArrayList<>();
 
-        List<Réservation> reservationList = reservationRepository.findAll();
+        List<Reservation> reservationList = reservationRepository.findAll();
 
-        for (Réservation reservation : reservationList) {
+        for (Reservation reservation : reservationList) {
             Map<String, Object> reservationData = new HashMap<>();
 
             reservationData.put("id", reservation.getId());
@@ -262,7 +262,7 @@ public class ReservationService {
         return reservations;
     }
 
-	public boolean modifyReservation(Long id, Réservation reservation) {
+	public boolean modifyReservation(Long id, Reservation reservation) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -277,12 +277,12 @@ public class ReservationService {
 		return false;
 	}
 
-	public Réservation getReservationById(Long id) {
+	public Reservation getReservationById(Long id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public List<Réservation> getReservationsWithFilter(String status, String clientName) {
+	public List<Reservation> getReservationsWithFilter(String status, String clientName) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -364,7 +364,7 @@ public class ReservationService {
 	
 	
     @Transactional
-    public Réservation createReservation(ReservationCreateDTO request) {
+    public Reservation createReservation(ReservationCreateDTO request) {
         logger.info("Début de la création de la réservation pour l'email : {}", request.getEmail());
 
         // 1. Validation des dates
@@ -374,7 +374,7 @@ public class ReservationService {
         }
 
         // 2. Vérification des conflits de réservation
-        List<Réservation> conflits = reservationRepository.findConflictingReservations(
+        List<Reservation> conflits = reservationRepository.findConflictingReservations(
                 request.getCarId(), request.getStartDate(), request.getEndDate());
         if (!conflits.isEmpty()) {
             logger.error("Conflit de réservation détecté pour la voiture ID {} aux dates {}-{}", 
@@ -406,7 +406,7 @@ public class ReservationService {
         }
 
         // 5. Création de la réservation
-        Réservation reservation = new Réservation();
+        Reservation reservation = new Reservation();
         reservation.setVoiture(car);
         reservation.setUtilisateur(user);
         reservation.setDateDebut(request.getStartDate());
@@ -447,7 +447,7 @@ public class ReservationService {
 
         // 8. Enregistrement de la réservation
         reservation = reservationRepository.save(reservation);
-        logger.info("Réservation enregistrée avec ID : {}", reservation.getId());
+        logger.info("Reservation enregistrée avec ID : {}", reservation.getId());
 
         // 9. Création du paiement lié
         Paiement paiement = new Paiement();
@@ -460,7 +460,7 @@ public class ReservationService {
 
         // 10. Création de l'alerte pour le client
         try {
-            String sujet = "Réservation enregistrée";
+            String sujet = "Reservation enregistrée";
             String message = String.format("Votre réservation pour la voiture %s du %s au %s a bien été enregistrée.",
                     car.getModel(), request.getStartDate(), request.getEndDate());
             alertService.createNotification(sujet, message, TypeAlert.RESERVATION, user, false);
@@ -508,9 +508,9 @@ public class ReservationService {
 		
 	}
 	@Transactional
-	public Réservation reserverEtPayer(ReservationRequest request) {
+	public Reservation reserverEtPayer(ReservationRequest request) {
 	    // Création réservation (simplifié)
-	    Réservation reservation = new Réservation();
+	    Reservation reservation = new Reservation();
 	    // Remplir les infos de réservation...
 	    reservationRepository.save(reservation);
 
@@ -533,16 +533,16 @@ public class ReservationService {
 		return null;
 	}
 
-	public Optional<Réservation> getLastReservation() {
+	public Optional<Reservation> getLastReservation() {
 	    return reservationRepository.findTopByOrderByDateDebutDesc();
 	}
 
 
-    public List<Réservation> findByUtilisateur(User utilisateur) {
+    public List<Reservation> findByUtilisateur(User utilisateur) {
         return reservationRepository.findByUtilisateur(utilisateur);
     }
 
-	public List<Réservation> getByUserId(Long id) {
+	public List<Reservation> getByUserId(Long id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -564,12 +564,12 @@ public class ReservationService {
 	    }
 
 	    // 3. Récupérer les réservations associées à cet utilisateur
-	    List<Réservation> reservations = reservationRepository.findByUtilisateur(user);
+	    List<Reservation> reservations = reservationRepository.findByUtilisateur(user);
 ;
 
 	    // 4. Convertir les réservations en DTO
 	    List<ReservationDTO> result = new ArrayList<>();
-	    for (Réservation res : reservations) {
+	    for (Reservation res : reservations) {
 	        String nomClient = user.getFullName(); // ou méthode adaptée
 	        String marqueModele = res.getVoiture().getMarque() + " " + res.getVoiture().getModele();
 	        LocalDate dateDebut = res.getDateDebut();
@@ -621,11 +621,11 @@ public class ReservationService {
 	        return Collections.emptyList();
 	    }
 
-	    List<Réservation> reservations = reservationRepository.findByVoitureProprietaireEmail(email);
+	    List<Reservation> reservations = reservationRepository.findByVoitureProprietaireEmail(email);
 	    System.out.println("📦 Nombre de réservations récupérées: " + (reservations != null ? reservations.size() : "null"));
 
 	    List<ReservationDTO> result = new ArrayList<>();
-	    for (Réservation res : reservations) {
+	    for (Reservation res : reservations) {
 	        if (res.getUtilisateur() == null || res.getVoiture() == null) {
 	            continue;
 	        }
@@ -647,15 +647,15 @@ public class ReservationService {
 
 	    return result;
 	}
-	public Réservation findActiveReservationByClient(Long utilisateurId) {
-	    List<Réservation> results = reservationRepository.findByUtilisateurIdAndStatutOrderByDateDebutDesc(utilisateurId, StatutReservation.CONFIRMEE);
+	public Reservation findActiveReservationByClient(Long utilisateurId) {
+	    List<Reservation> results = reservationRepository.findByUtilisateurIdAndStatutOrderByDateDebutDesc(utilisateurId, StatutReservation.CONFIRMEE);
 	    if (!results.isEmpty()) {
 	        return results.get(0);
 	    }
 	    return null;
 	}
 
-	private ReservationDTO convertToDto(Réservation reservation) {
+	private ReservationDTO convertToDto(Reservation reservation) {
 	    ReservationDTO dto = new ReservationDTO();
 	    dto.setId(reservation.getId());
 	    dto.setDateDebut(reservation.getDateDebut() != null ? reservation.getDateDebut().toString() : "??");
@@ -692,23 +692,23 @@ public class ReservationService {
 	    return dto;
 	}
 
-	public List<Réservation> findByProprietaireEmail(String username) {
+	public List<Reservation> findByProprietaireEmail(String username) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	
-	 public List<Réservation> getReservationsByProprietaire(Long proprietaireId) {
+	 public List<Reservation> getReservationsByProprietaire(Long proprietaireId) {
 	        return reservationRepository.findByVoitureProprietaireId(proprietaireId);
 	    }
 
-	    public Réservation updateReservationStatus(Long id, StatutReservation status) {
-	        Réservation reservation = reservationRepository.findById(id).orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
+	    public Reservation updateReservationStatus(Long id, StatutReservation status) {
+	        Reservation reservation = reservationRepository.findById(id).orElseThrow(() -> new RuntimeException("Reservation non trouvée"));
 	        reservation.setStatut(status);
 	        return reservationRepository.save(reservation);
 	    }
 
-		public Réservation saveReservation(Réservation reservation, MultipartFile virementFile) {
+		public Reservation saveReservation(Reservation reservation, MultipartFile virementFile) {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -719,13 +719,13 @@ public class ReservationService {
 
 		    // Création d'une réservation avec paiement et facture
 		    @Transactional
-		    public Facture saveReservationWithPayment(Réservation reservation, Paiement paiement, User client) throws Exception {
+		    public Facture saveReservationWithPayment(Reservation reservation, Paiement paiement, User client) throws Exception {
 		        // Lier l'utilisateur à la réservation
 		        reservation.setUtilisateur(client);
 		        reservation.setLocataire(client);
 
 		        // Enregistrer réservation
-		        Réservation savedReservation = reservationRepository.save(reservation);
+		        Reservation savedReservation = reservationRepository.save(reservation);
 
 		        // Lier le paiement à la réservation
 		        paiement.setReservation(savedReservation);
@@ -750,29 +750,29 @@ public class ReservationService {
 		    }
 
 		    // Méthode pour générer un PDF de facture (exemple simple)
-		    private byte[] generateInvoicePDF(Réservation reservation, Paiement paiement) throws Exception {
+		    private byte[] generateInvoicePDF(Reservation reservation, Paiement paiement) throws Exception {
 		        // Ici tu peux utiliser iText, PDFBox ou autre bibliothèque pour créer le PDF
 		        // Exemple fictif : renvoyer un tableau de bytes vide
 		        return ("Facture pour réservation n° " + reservation.getId() + "\nMontant: " + paiement.getMontant()).getBytes();
 		    }
 
 			
-			public List<Réservation> findReservationsByOwner(Long ownerId) {
+			public List<Reservation> findReservationsByOwner(Long ownerId) {
 			    return reservationRepository.findReservationsByOwner(ownerId);
 			}
 
-			public Réservation findLastReservationByClientAndOwner(Long clientId, Long ownerId) {
-			    List<Réservation> reservations = reservationRepository.findReservationsByClientAndOwner(clientId, ownerId);
+			public Reservation findLastReservationByClientAndOwner(Long clientId, Long ownerId) {
+			    List<Reservation> reservations = reservationRepository.findReservationsByClientAndOwner(clientId, ownerId);
 			    return reservations.isEmpty() ? null : reservations.get(0); // renvoie la dernière réservation
 			}
 
 		    
-			public Réservation findLastReservationByClientAndOwner(User client, Propritaire proprietaire) {
-		        List<Réservation> reservations = reservationRepository.findLastReservationByClientAndOwner(client, proprietaire);
+			public Reservation findLastReservationByClientAndOwner(User client, Propritaire proprietaire) {
+		        List<Reservation> reservations = reservationRepository.findLastReservationByClientAndOwner(client, proprietaire);
 		        return reservations.isEmpty() ? null : reservations.get(0);
 		    }
 
-		    public List<Réservation> findReservationsByOwner(Propritaire proprietaire) {
+		    public List<Reservation> findReservationsByOwner(Propritaire proprietaire) {
 		        // Méthode pour récupérer toutes les réservations d'un propriétaire
 		        return reservationRepository.findByVoitureProprietaire(proprietaire);
 		    }

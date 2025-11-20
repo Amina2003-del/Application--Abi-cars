@@ -94,7 +94,7 @@ import location_voiture.persistence.model.Litige;
 import location_voiture.persistence.model.Paiement;
 import location_voiture.persistence.model.Propritaire;
 import location_voiture.persistence.model.RoleUtilisateur;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import location_voiture.persistence.model.StatutApprobationVoiture;
 import location_voiture.persistence.model.StatutLitige;
 import location_voiture.persistence.model.StatutPaiement;
@@ -252,11 +252,11 @@ public class AdminController {
     public ResponseEntity<?> getReservationDetails(@PathVariable String bookingId) {
         // Enlever le préfixe 'R' pour l'ID si besoin
         Long id = Long.parseLong(bookingId.substring(1));
-        Optional<Réservation> res = reservationService.findById(id);
+        Optional<Reservation> res = reservationService.findById(id);
         if (!res.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Réservation non trouvée");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reservation non trouvée");
         }
-        Réservation reservation = res.get();
+        Reservation reservation = res.get();
 
         // Préparer la réponse JSON (DTO ou Map)
         Map<String, Object> response = new HashMap<>();
@@ -377,7 +377,7 @@ public class AdminController {
         model.addAttribute("statutsReservation", dashboardService.getStatutsReservation());
         model.addAttribute("tachesEnAttente", dashboardService.getTachesEnAttente());
         model.addAttribute("activitesRecentes", dashboardService.getActivitesRecentes());
-        List<Réservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationRepository.findAll();
         model.addAttribute("reservations", reservations);
         List<String> marques = carRepository.findDistinctMarques();
         List<String> modeles = carRepository.findDistinctModeles();
@@ -639,13 +639,13 @@ public class AdminController {
     @GetMapping("/historique/{id}")
     @ResponseBody
     public String showHistorique(@PathVariable Long id) {
-        List<Réservation> reservations = userService.findReservationsByUserId(id);
+        List<Reservation> reservations = userService.findReservationsByUserId(id);
         StringBuilder html = new StringBuilder();
         html.append("<table class='table'><thead><tr>")
             .append("<th>Voiture</th><th>Début</th><th>Fin</th><th>Statut</th>")
             .append("</tr></thead><tbody>");
 
-        for (Réservation r : reservations) {
+        for (Reservation r : reservations) {
             html.append("<tr>")
                 .append("<td>").append(r.getCar().getMarque()).append(" ").append(r.getCar().getModele()).append("</td>")
                 .append("<td>").append(r.getDateDebut()).append("</td>")
@@ -849,10 +849,10 @@ public class AdminController {
                                  .body(Map.of("message", "Paiement introuvable"));
         }
 
-        Réservation reservation = paiement.getReservation();
+        Reservation reservation = paiement.getReservation();
         if (reservation == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                 .body(Map.of("message", "Réservation introuvable"));
+                                 .body(Map.of("message", "Reservation introuvable"));
         }
 
         Car voiture = reservation.getVoiture();
@@ -1194,9 +1194,9 @@ public class AdminController {
             }
 
             // Récupération de reservationId et proprietaireId pour reconstruire le chemin complet
-            Réservation reservation = litige.getReservation();
+            Reservation reservation = litige.getReservation();
             if (reservation == null) {
-                logger.warn("Réservation non trouvée pour litige ID : " + litigeId);
+                logger.warn("Reservation non trouvée pour litige ID : " + litigeId);
                 return ResponseEntity.notFound().build();
             }
 
@@ -1376,7 +1376,7 @@ public class AdminController {
 
                 System.out.println("Paiements récupérés : " + paiements.size());
 
-                response.put("headers", List.of("Date Paiement", "Montant (€)", "Mode Paiement", "Réservation ID"));
+                response.put("headers", List.of("Date Paiement", "Montant (€)", "Mode Paiement", "Reservation ID"));
                 response.put("rows", mapToPaiementRows(paiements));
                 break;
 
@@ -1542,21 +1542,21 @@ public ResponseEntity<ReservationDetailsDTO> getReservationDetails(@PathVariable
         System.out.println("🔍 Requête reçue pour les détails de réservation ID: " + id);
         
         
-   Optional<Réservation> reservationOpt = reservationService.findById(id);
+   Optional<Reservation> reservationOpt = reservationService.findById(id);
         
         // Vérifiez avec isPresent() au lieu de == null
         if (!reservationOpt.isPresent()) {
-            System.out.println("❌ Réservation non trouvée pour ID: " + id);
+            System.out.println("❌ Reservation non trouvée pour ID: " + id);
             return ResponseEntity.notFound().build();
         }
 
         // Récupérez l'objet avec get()
-        Réservation reservation = reservationOpt.get();
-        System.out.println("✅ Réservation trouvée: " + reservation.getId());
+        Reservation reservation = reservationOpt.get();
+        System.out.println("✅ Reservation trouvée: " + reservation.getId());
         
 
 
-        System.out.println("✅ Réservation trouvée: " + reservation.getId());
+        System.out.println("✅ Reservation trouvée: " + reservation.getId());
         
         ReservationDetailsDTO dto = convertToReservationDetailsDTO(reservation);
         
@@ -1568,11 +1568,11 @@ public ResponseEntity<ReservationDetailsDTO> getReservationDetails(@PathVariable
         return ResponseEntity.internalServerError().build();
     }
 }
-private ReservationDetailsDTO convertToReservationDetailsDTO(Réservation reservation) {
+private ReservationDetailsDTO convertToReservationDetailsDTO(Reservation reservation) {
     ReservationDetailsDTO dto = new ReservationDetailsDTO();
     
     // Debug des données
-    System.out.println("🔍 Réservation ID: " + reservation.getId());
+    System.out.println("🔍 Reservation ID: " + reservation.getId());
     System.out.println("🔍 Date début: " + reservation.getDateDebut());
     System.out.println("🔍 Date fin: " + reservation.getDateFin());
     
@@ -1629,13 +1629,13 @@ private ReservationDetailsDTO convertToReservationDetailsDTO(Réservation reserv
     return dto;
 }
 
-private String getNotesFromAvis(Réservation reservation) {
+private String getNotesFromAvis(Reservation reservation) {
     try {
         System.out.println("🔍 Recherche des notes pour réservation ID: " + reservation.getId());
         
         // Vérification de base
         if (reservation == null) {
-            System.out.println("❌ Réservation est null");
+            System.out.println("❌ Reservation est null");
             return "Aucune note disponible";
         }
         
@@ -1667,8 +1667,8 @@ private String getNotesFromAvis(Réservation reservation) {
                 continue;
             }
             
-            System.out.println("   📋 Réservation avis ID: " + avis.getReservation().getId());
-            System.out.println("   📋 Réservation actuelle ID: " + reservation.getId());
+            System.out.println("   📋 Reservation avis ID: " + avis.getReservation().getId());
+            System.out.println("   📋 Reservation actuelle ID: " + reservation.getId());
             
             // Comparaison des IDs de réservation
             if (avis.getReservation().getId().equals(reservation.getId())) {

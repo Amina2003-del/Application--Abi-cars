@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import location_voiture.persistence.model.Car;
 import location_voiture.persistence.model.Facture;
 import location_voiture.persistence.model.Paiement;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import location_voiture.persistence.model.StatutReservation;
 import location_voiture.repository.FactureRepository;
 import location_voiture.service.CarService;
@@ -77,20 +77,20 @@ public class PayPalController {
         
 
         try {
-            Optional<Réservation> reservationOpt = reservationService.findById(reservationId);
+            Optional<Reservation> reservationOpt = reservationService.findById(reservationId);
             if (reservationOpt.isEmpty()) {
-                logger.error("Réservation non trouvée: {}", reservationId);
-                return "redirect:/error?message=Réservation non trouvée";
+                logger.error("Reservation non trouvée: {}", reservationId);
+                return "redirect:/error?message=Reservation non trouvée";
             }
 
-            Réservation reservation = reservationOpt.get();
+            Reservation reservation = reservationOpt.get();
             if (!reservation.getPrixTotal().equals(prixTotal)) {
                 logger.warn("Montant incorrect: attendu {}, reçu {}", reservation.getPrixTotal(), prixTotal);
                 return "redirect:/error?message=Erreur de validation du montant";
             }
 
             model.addAttribute("montant", prixTotal);
-            model.addAttribute("description", "Réservation de voiture ID: " + reservationId);
+            model.addAttribute("description", "Reservation de voiture ID: " + reservationId);
             model.addAttribute("reservationId", reservationId);
             model.addAttribute("carId", carId);
             model.addAttribute("paypalClientId", paypalClientId);
@@ -114,12 +114,12 @@ public class PayPalController {
                 throw new RuntimeException("Transaction PayPal non valide");
             }
 
-            Optional<Réservation> reservationOpt = reservationService.findById(reservationId);
+            Optional<Reservation> reservationOpt = reservationService.findById(reservationId);
             if (reservationOpt.isEmpty()) {
-                throw new RuntimeException("Réservation non trouvée");
+                throw new RuntimeException("Reservation non trouvée");
             }
 
-            Réservation reservation = reservationOpt.get();
+            Reservation reservation = reservationOpt.get();
 
             Paiement paiement = paiementService.creerPaiement(reservation.getPrixTotal(), "PayPal", reservation);
             paiement.confirmerPaiement();

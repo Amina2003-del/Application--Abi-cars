@@ -13,16 +13,16 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import location_voiture.persistence.model.Message;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import location_voiture.persistence.model.TypeMessage;
 import ma.abisoft.persistence.model.User;
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
 	// Trouver les messages internes d'un locataire
-    List<Message> findByReservationAndTypeOrderByDateEnvoiDesc(Réservation reservation, TypeMessage type);
+    List<Message> findByReservationAndTypeOrderByDateEnvoiDesc(Reservation reservation, TypeMessage type);
 
     // Trouver les messages non lus d'un locataire
-    List<Message> findByLuFalseAndReservationAndTypeOrderByDateEnvoiDesc(Réservation reservation, TypeMessage type);
+    List<Message> findByLuFalseAndReservationAndTypeOrderByDateEnvoiDesc(Reservation reservation, TypeMessage type);
 
     // Trouver tous les messages d'un type donné (notification ou interne)
     List<Message> findByTypeOrderByDateEnvoiDesc(TypeMessage type);

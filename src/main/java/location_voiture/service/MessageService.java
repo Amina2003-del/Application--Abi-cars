@@ -14,7 +14,7 @@ import location_voiture.persistence.model.Car;
 import location_voiture.persistence.model.Locataire;
 import location_voiture.persistence.model.Message;
 import location_voiture.persistence.model.Propritaire;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import location_voiture.persistence.model.TypeMessage;
 import location_voiture.repository.LocataireRepository;
 import location_voiture.repository.MessageRepository;
@@ -40,7 +40,7 @@ public class MessageService {
     private webSocketService webSocketServices;
 
     // Envoyer un message interne à un locataire
-    public void envoyerMessageInterne(Long destinataireId, String contenu, Réservation reservation) {
+    public void envoyerMessageInterne(Long destinataireId, String contenu, Reservation reservation) {
         Locataire destinataire = locataireRepository.findById(destinataireId)
             .orElseThrow(() -> new RuntimeException("Locataire non trouvé"));
 
@@ -113,8 +113,8 @@ public class MessageService {
 
 	    // Récupération de la réservation
 	    if (dto.getReservationId() != null) {
-	        Réservation reservation = reservationRepository.findById(dto.getReservationId())
-	                .orElseThrow(() -> new IllegalArgumentException("Réservation inconnue"));
+	        Reservation reservation = reservationRepository.findById(dto.getReservationId())
+	                .orElseThrow(() -> new IllegalArgumentException("Reservation inconnue"));
 	        message.setReservation(reservation);
 
 	        // Récupération de la voiture associée
@@ -129,7 +129,7 @@ public class MessageService {
 	            User destinataire = proprietaire.getUser(); // ✅ récupère le User réel
 	            message.setDestinataire(destinataire);
 	        } else {
-	            throw new IllegalArgumentException("Réservation obligatoire pour identifier le destinataire automatiquement.");
+	            throw new IllegalArgumentException("Reservation obligatoire pour identifier le destinataire automatiquement.");
 	        }
 	    }
 

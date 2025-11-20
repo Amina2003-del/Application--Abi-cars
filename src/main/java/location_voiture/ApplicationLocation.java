@@ -8,7 +8,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.web.context.request.RequestContextListener;
+//import org.springframework.web.context.request.RequestContextListener;
 
 @EnableWebSecurity
 @SpringBootApplication(scanBasePackages = {"location_voiture", "ma.abisoft"})
@@ -26,16 +26,15 @@ public class ApplicationLocation extends SpringBootServletInitializer {
         SpringApplication.run(ApplicationLocation.class, args);
     }
 
-    @Bean
-    public RequestContextListener requestContextListener() {
-        return new RequestContextListener();
-    }
+  //  @Bean
+    //public RequestContextListener requestContextListener() {
+     //   return new RequestContextListener();
+    //}
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
         return builder.sources(ApplicationLocation.class);
     }
     
-
 
 }
 

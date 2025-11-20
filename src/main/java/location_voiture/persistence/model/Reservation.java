@@ -32,7 +32,7 @@ import ma.abisoft.persistence.model.User;
 @Table(name = "reservations")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 
-public class Réservation {
+public class Reservation {
 	  @Enumerated(EnumType.STRING)
 	    private StatutReservation statut;
 	
@@ -70,13 +70,13 @@ public class Réservation {
 	    private Locataire locataire;
 
 	    // Constructeurs
-	    public Réservation() {
+	    public Reservation() {
 	        this.statut = StatutReservation.EN_ATTENTE;
 	    }
 	    
 	   
 	    
-	    public Réservation(LocalDate dateDebut, LocalDate dateFin, Double prixTotal, User utilisateur) {
+	    public Reservation(LocalDate dateDebut, LocalDate dateFin, Double prixTotal, User utilisateur) {
 	        this.dateDebut = dateDebut;
 	        this.dateFin = dateFin;
 	        this.prixTotal = prixTotal;
@@ -88,7 +88,7 @@ public class Réservation {
 	    @JsonIgnore // Ignore ce champ lors de la sérialisation
 	    private User utilisateur;
 	    
-	    public Réservation(Car car1, Object object, LocalDate minusDays, double d, String string) {
+	    public Reservation(Car car1, Object object, LocalDate minusDays, double d, String string) {
 			// TODO Auto-generated constructor stub
 		}@JsonIgnore
 
@@ -340,7 +340,7 @@ this.prixTotal=	prixTotal2;
 			return null;
 		}
 
-		public Réservation getUser() {
+		public Reservation getUser() {
 			// TODO Auto-generated method stub
 			return null;
 		}

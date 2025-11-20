@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 
 import location_voiture.repository.ReservationRepository;
 import location_voiture.service.MessageService;
@@ -33,8 +33,8 @@ public class ProprietaireMessageController {
 	    // Envoyer un message interne
 	    @PostMapping("/interne")
 	    public ResponseEntity<String> envoyerMessageInterne(@RequestParam Long destinataireId, @RequestParam String contenu, @RequestParam Long reservationId) throws RuntimeException {
-	        Réservation reservation =reservationRepository.findById(reservationId)
-	            .orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
+	        Reservation reservation =reservationRepository.findById(reservationId)
+	            .orElseThrow(() -> new RuntimeException("Reservation non trouvée"));
 
 	        messageService.envoyerMessageInterne(destinataireId, contenu, reservation);
 	        return ResponseEntity.ok("Message envoyé avec succès");

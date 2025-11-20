@@ -38,7 +38,7 @@ import location_voiture.persistence.model.Litige;
 import location_voiture.persistence.model.Locataire;
 import location_voiture.persistence.model.Message;
 import location_voiture.persistence.model.RoleUtilisateur;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 
 import org.jboss.aerogear.security.otp.api.Base32;
 import org.springframework.security.core.GrantedAuthority;
@@ -374,7 +374,7 @@ public class User{
 			
 		}
 
-		public void setReservationList(List<Réservation> reservations) {
+		public void setReservationList(List<Reservation> reservations) {
 			// TODO Auto-generated method stub
 			
 		}
@@ -509,7 +509,7 @@ public class User{
 
 		@OneToMany(mappedBy = "utilisateur")
 		@JsonManagedReference
-		private List<Réservation> reservations;
+		private List<Reservation> reservations;
 
 
 
@@ -517,7 +517,7 @@ public class User{
 		    return voitures;  // actuellement tu retournes null, corrige ici !
 		}
 
-		public List<Réservation> getReservations() {
+		public List<Reservation> getReservations() {
 		    return reservations;  // c'est ok
 		}
 
@@ -599,7 +599,7 @@ public LocalDate getDerniereActivite() {
         return null;
     }
     return reservations.stream()
-        .map(Réservation::getDateDebut)  // doît retourner LocalDateTime
+        .map(Reservation::getDateDebut)  // doît retourner LocalDateTime
         .filter(Objects::nonNull)
         .max(Comparator.naturalOrder())
         .orElse(null);

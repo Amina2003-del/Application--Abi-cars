@@ -47,7 +47,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByEmailAndLastNameAndFirstNameAndTel(String email, String lastName, String firstName, String tel);
 
-    @Query("SELECT COUNT(DISTINCT r.utilisateur) FROM Réservation r")
+    @Query("SELECT COUNT(DISTINCT r.utilisateur) FROM Reservation r")
     long countClientsAyantLoue();
 
     Optional<User> findById(User userId);
@@ -63,16 +63,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByFirstNameAndLastName(String firstName, String lastName);
 
-    @Query("SELECT DISTINCT r.utilisateur FROM Réservation r WHERE r.voiture.proprietaire.id = :ownerId")
+    @Query("SELECT DISTINCT r.utilisateur FROM Reservation r WHERE r.voiture.proprietaire.id = :ownerId")
     List<User> findDistinctClientsWithReservations(@Param("ownerId") Long ownerId);
 
-    @Query("SELECT DISTINCT r.utilisateur FROM Réservation r")
+    @Query("SELECT DISTINCT r.utilisateur FROM Reservation r")
     List<User> findAllDistinctClientsWithReservations();
 
     @Query("SELECT u.firstName, u.email FROM user_account u WHERE u.role = :role")
     List<Object[]> findUsersByRole(@Param("role") RoleUtilisateur role);
 
-    @Query("SELECT DISTINCT r.utilisateur.firstName, r.utilisateur.email, r.dateDebut FROM Réservation r " +
+    @Query("SELECT DISTINCT r.utilisateur.firstName, r.utilisateur.email, r.dateDebut FROM Reservation r " +
            "WHERE r.dateDebut BETWEEN :start AND :end")
     List<Object[]> findUsersActivityBetween(LocalDate start, LocalDate end);
 

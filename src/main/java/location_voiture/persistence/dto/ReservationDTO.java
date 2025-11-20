@@ -2,7 +2,7 @@ package location_voiture.persistence.dto;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 
 public class ReservationDTO {
 
@@ -81,8 +81,8 @@ public class ReservationDTO {
         this.methodePaiement = methodePaiement;
     }
 
-    // Méthode de conversion depuis l'entité Réservation
-    public static ReservationDTO fromEntity(Réservation reservation) {
+    // Méthode de conversion depuis l'entité Reservation
+    public static ReservationDTO fromEntity(Reservation reservation) {
         if (reservation == null) return null;
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");

@@ -3,13 +3,13 @@ package location_voiture.persistence.dto;
 import java.time.LocalDate;
 
 import location_voiture.persistence.model.Paiement;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import lombok.Data;
 import ma.abisoft.persistence.model.User;
 @Data
 public class ReservationRequest {
 	
-	 private Réservation reservation;
+	 private Reservation reservation;
 	    private Paiement paiement;
 	    private Long voitureId;     // ID de la voiture sélectionnée
 	    private User utilisateur;
@@ -17,7 +17,7 @@ public class ReservationRequest {
 	    private String methode;
 	    
 	    // ID du locataire (connecté ou saisi)
-		public Réservation getReservation() {
+		public Reservation getReservation() {
 			// TODO Auto-generated method stub
 			return null;
 		}

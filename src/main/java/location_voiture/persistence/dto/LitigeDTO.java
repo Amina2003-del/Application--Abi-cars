@@ -6,7 +6,7 @@ import java.util.List;
 
 import location_voiture.persistence.model.Car;
 import location_voiture.persistence.model.Litige;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import location_voiture.persistence.model.StatutLitige;
 import ma.abisoft.persistence.model.User;
 

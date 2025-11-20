@@ -15,7 +15,7 @@ import location_voiture.persistence.dto.PaiementDTO;
 import location_voiture.persistence.dto.RevenuParVoitureDTO;
 import location_voiture.persistence.model.Facture;
 import location_voiture.persistence.model.Paiement;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import location_voiture.persistence.model.StatutPaiement;
 import location_voiture.persistence.model.StatutReservation;
 import location_voiture.repository.FactureRepository;
@@ -44,7 +44,7 @@ public class PaiementService {
      * @param reservation La réservation associée
      * @return Le paiement créé
      */
-    public Paiement creerPaiement(Double montant, String methode, Réservation reservation) {
+    public Paiement creerPaiement(Double montant, String methode, Reservation reservation) {
         if (montant == null || montant <= 0) {
             throw new IllegalArgumentException("Le montant doit être positif.");
         }
@@ -101,7 +101,7 @@ public class PaiementService {
         paiement.confirmerPaiement();
         
         // Mettre à jour la réservation
-        Réservation reservation = paiement.getReservation();
+        Reservation reservation = paiement.getReservation();
         if (reservation == null) {
             throw new IllegalStateException("La réservation associée au paiement est introuvable.");
         }
@@ -109,7 +109,7 @@ public class PaiementService {
         
         // Sauvegarder la réservation mise à jour
         reservation = reservationRepository.save(reservation);
-        System.out.println("Réservation ID " + reservation.getId() + " mise à jour avec statut CONFIRMEE.");
+        System.out.println("Reservation ID " + reservation.getId() + " mise à jour avec statut CONFIRMEE.");
         
         // Mettre à jour la facture liée
         Optional<Facture> factureOpt = factureRepository.findByReservationId(reservation.getId());

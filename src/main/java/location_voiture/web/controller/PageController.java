@@ -73,7 +73,7 @@ import location_voiture.persistence.model.Locataire;
 import location_voiture.persistence.model.Message;
 import location_voiture.persistence.model.Propritaire;
 import location_voiture.persistence.model.RoleUtilisateur;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import location_voiture.persistence.model.StatutDisponibilite;
 import location_voiture.persistence.model.StatutReservation;
 import location_voiture.persistence.model.TypeMessage;
@@ -567,9 +567,9 @@ public class PageController {
                 // TODO: sauvegarder le fichier sur disque ou cloud si besoin
             }
             reservationCreateDTO.setTypeReservation(TypeReservation.DISTANCE);
-            Réservation reservation = reservationService.createReservation(reservationCreateDTO);
+            Reservation reservation = reservationService.createReservation(reservationCreateDTO);
             
-            System.out.println("Réservation créée avec ID : " + reservation.getId());
+            System.out.println("Reservation créée avec ID : " + reservation.getId());
 
             Facture facture = factureService.creerFactureDepuisReservation(reservation);
             System.out.println("Facture créée avec ID : " + facture.getId());
@@ -586,7 +586,7 @@ public class PageController {
 
             return ResponseEntity.ok(new ReservationResponse(
                     reservation.getId(),
-                    "Réservation créée avec succès.",
+                    "Reservation créée avec succès.",
                     "/Siteoffeciel/factures/" + facture.getId() + "/pdf"
             ));
 
@@ -642,7 +642,7 @@ public class PageController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Utilisateur non authentifié");
         }
         // Logique de réservation ici...
-        return ResponseEntity.ok("Réservation créée");
+        return ResponseEntity.ok("Reservation créée");
     }
 
     // Page réservation avec filtre par ville et date
@@ -1281,7 +1281,7 @@ public class PageController {
                 }
                
 
-                Réservation reservation = new Réservation();
+                Reservation reservation = new Reservation();
                 reservation.setDateDebut(pickupDate);
                 reservation.setDateFin(returnDate);
                 reservation.setPrixTotal(prixTotal);
@@ -1302,7 +1302,7 @@ public class PageController {
                 avis.setReservationId(reservation.getId());
                 reservationService.saveAvis(avis);
 
-                logger.info("Réservation créée avec succès - reservationId={}, carId={}, prixTotal={}", 
+                logger.info("Reservation créée avec succès - reservationId={}, carId={}, prixTotal={}", 
                             reservation.getId(), carId, prixTotal);
 
                 response.put("success", true);
@@ -1330,7 +1330,7 @@ public class PageController {
     public String showConfirmation(@RequestParam("reservationId") Long reservationId,
                                    @RequestParam(required = false) Long factureId,
                                    Model model) {
-        Optional<Réservation> reservationOpt = reservationService.findById(reservationId);
+        Optional<Reservation> reservationOpt = reservationService.findById(reservationId);
         if (reservationOpt.isEmpty()) {
             return "Voitures/404";
         }
@@ -1359,12 +1359,12 @@ public class PageController {
             Long reservationId = Long.parseLong(requestData.get("reservationId").toString());
             String status = requestData.get("status").toString();
 
-            Optional<Réservation> reservationOpt = reservationService.findById(reservationId);
+            Optional<Reservation> reservationOpt = reservationService.findById(reservationId);
             if (reservationOpt.isEmpty()) {
-                throw new RuntimeException("Réservation non trouvée");
+                throw new RuntimeException("Reservation non trouvée");
             }
 
-            Réservation reservation = reservationOpt.get();
+            Reservation reservation = reservationOpt.get();
             reservation.setStatut(StatutReservation.valueOf(status));
             reservationService.saveReservation(reservation);
 

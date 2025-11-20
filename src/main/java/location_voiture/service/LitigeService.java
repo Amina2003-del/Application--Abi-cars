@@ -31,7 +31,7 @@ import location_voiture.persistence.dto.LitigeDTO;
 import location_voiture.persistence.model.Car;
 import location_voiture.persistence.model.Litige;
 import location_voiture.persistence.model.Propritaire;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import location_voiture.persistence.model.StatutLitige;
 import location_voiture.persistence.model.TypeLitige;
 import location_voiture.repository.LitigeRepository;
@@ -62,8 +62,8 @@ public class LitigeService {
 	            MultipartFile[] attachments, Long userId) throws Exception {
 
 	        // Récupération de la réservation
-	        Réservation reservation = reservationRepository.findById(reservationId)
-	            .orElseThrow(() -> new Exception("Réservation non trouvée"));
+	        Reservation reservation = reservationRepository.findById(reservationId)
+	            .orElseThrow(() -> new Exception("Reservation non trouvée"));
 
 	        // Récupération de l'utilisateur qui crée le litige
 	        User utilisateur = userRepository.findById(userId)

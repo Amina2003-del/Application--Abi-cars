@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import location_voiture.persistence.dto.RevenuParVoitureDTO;
 import location_voiture.persistence.model.Car;
 import location_voiture.persistence.model.Paiement;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import location_voiture.persistence.model.StatutPaiement;
 @Repository
 public interface PaiementRepository extends JpaRepository<Paiement, Long> {
@@ -61,7 +61,7 @@ public interface PaiementRepository extends JpaRepository<Paiement, Long> {
 	List<Paiement> findByReservationVoitureProprietaireId(Long proprietaireId);
 
 
-	Optional<Paiement> findByReservation(Réservation reservation);
+	Optional<Paiement> findByReservation(Reservation reservation);
 
 
 	@Query("SELECT p FROM Paiement p WHERE p.date BETWEEN :start AND :end")

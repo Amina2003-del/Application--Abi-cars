@@ -78,7 +78,7 @@ import location_voiture.persistence.model.Message;
 import location_voiture.persistence.model.Paiement;
 import location_voiture.persistence.model.Propritaire;
 import location_voiture.persistence.model.RoleUtilisateur;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import location_voiture.persistence.model.StatutLitige;
 import location_voiture.persistence.model.StatutReservation;
 import location_voiture.persistence.model.TypeLitige;
@@ -180,7 +180,7 @@ public class ClientsController {
             return "error";
         }
 
-        List<Réservation> reservations = reservationRepository.findByUtilisateur_Id(user.getId());
+        List<Reservation> reservations = reservationRepository.findByUtilisateur_Id(user.getId());
 
         List<Litige> disputes = litigeRepository.findByReservationIn(reservations);
         List<Facture> invoices = factureRepository.findByClient(user);
@@ -192,7 +192,7 @@ public class ClientsController {
                 .filter(r -> r.getStatut() == StatutReservation.CONFIRMEE)
                 .count();
         double totalSpent = reservations.stream()
-                .mapToDouble(Réservation::getPrixTotal)
+                .mapToDouble(Reservation::getPrixTotal)
                 .sum();
         long totalReviews = reviews.size();
         long unreadMessages = messages.stream().filter(m -> !m.isLu()).count();
@@ -293,14 +293,14 @@ public class ClientsController {
         model.addAttribute("dashboardMessage", "Bienvenue sur votre tableau de bord !");
         model.addAttribute("section", "rechercher");
 
-        Optional<Réservation> lastReservation = reservationService.getLastReservation();
+        Optional<Reservation> lastReservation = reservationService.getLastReservation();
         model.addAttribute("lastReservation", lastReservation.orElse(null));
 
         // Si l'utilisateur est bien authentifié
         if (user != null) {
             List<Facture> invoicees = factureRepository.findByClient(user);
-            List<Réservation> userReservations = reservationService.findByUtilisateur(user);
-            System.out.println("Réservations trouvées : " + userReservations.size());
+            List<Reservation> userReservations = reservationService.findByUtilisateur(user);
+            System.out.println("Reservations trouvées : " + userReservations.size());
             model.addAttribute("reservations", userReservations);
             model.addAttribute("userEmail", user.getEmail());
 
@@ -498,12 +498,12 @@ public class ClientsController {
             return ResponseEntity.badRequest().body("Veuillez sélectionner une réservation valide");
         }
 
-        Optional<Réservation> optReservation = reservationService.findById(reservationId);
+        Optional<Reservation> optReservation = reservationService.findById(reservationId);
         if (optReservation.isEmpty()) {
-            return ResponseEntity.badRequest().body("Réservation non trouvée");
+            return ResponseEntity.badRequest().body("Reservation non trouvée");
         }
 
-        Réservation reservation = optReservation.get();
+        Reservation reservation = optReservation.get();
         Car car = reservation.getVoiture();
         if (car == null) {
             return ResponseEntity.badRequest().body("Voiture non trouvée dans la réservation");
@@ -619,7 +619,7 @@ public class ClientsController {
         public List<Car> getCars() { return cars; }
         public void setCars(List<Car> cars) { this.cars = cars; }
     }
-    // Réservations
+    // Reservations
     @GetMapping("/reservations")
     public String afficherReservations(Principal principal, Model model) {
         if (principal == null) {
@@ -632,7 +632,7 @@ public class ClientsController {
             return "error";
         }
 
-        List<Réservation> reservations = reservationRepository.findByUtilisateur_Id(user.getId());
+        List<Reservation> reservations = reservationRepository.findByUtilisateur_Id(user.getId());
         model.addAttribute("reservations", reservations);
         model.addAttribute("section", "reservations");
         return "client_dashboard";
@@ -675,10 +675,10 @@ public class ClientsController {
 
         List<Map<String, String>> activities = new ArrayList<>();
 
-        List<Réservation> reservations = reservationRepository.findByUtilisateur_Id(user.getId());
-        for (Réservation r : reservations) {
+        List<Reservation> reservations = reservationRepository.findByUtilisateur_Id(user.getId());
+        for (Reservation r : reservations) {
             Map<String, String> activity = new HashMap<>();
-            activity.put("type", "Réservation");
+            activity.put("type", "Reservation");
             String detail = r.getVoiture() != null
                     ? r.getVoiture().getModele() + " - #" + r.getId()
                     : "Voiture non spécifiée";
@@ -706,15 +706,15 @@ public class ClientsController {
     // Historique des réservations
     @GetMapping("/{id}/reservations")
     @ResponseBody
-    public ResponseEntity<List<Réservation>> getHistoriqueReservations(@PathVariable Long id) {
-        List<Réservation> reservations = reservationRepository.findByUtilisateur_Id(id);
+    public ResponseEntity<List<Reservation>> getHistoriqueReservations(@PathVariable Long id) {
+        List<Reservation> reservations = reservationRepository.findByUtilisateur_Id(id);
         if (reservations.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(reservations);
     }
 
-    // Réservations du client (API)
+    // Reservations du client (API)
     @GetMapping("/client/reservations")
     @ResponseBody
     public ResponseEntity<?> getClientReservations(Principal principal) {
@@ -727,7 +727,7 @@ public class ClientsController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Utilisateur non trouvé");
         }
 
-        List<Réservation> reservations = reservationRepository.findByUtilisateur_Id(user.getId());
+        List<Reservation> reservations = reservationRepository.findByUtilisateur_Id(user.getId());
         List<Map<String, Object>> result = reservations.stream().map(res -> {
             Map<String, Object> map = new HashMap<>();
             map.put("id", res.getId());
@@ -755,9 +755,9 @@ public class ClientsController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Utilisateur non authentifié");
         }
 
-        Réservation reservation = reservationRepository.findById(id).orElse(null);
+        Reservation reservation = reservationRepository.findById(id).orElse(null);
         if (reservation == null || !reservation.getUtilisateur().getId().equals(user.getId())) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Réservation non trouvée");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reservation non trouvée");
         }
 
         Map<String, Object> result = new HashMap<>();
@@ -925,9 +925,9 @@ public class ClientsController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Utilisateur non trouvé");
         }
 
-        Réservation reservation = reservationRepository.findById(reservationId).orElse(null);
+        Reservation reservation = reservationRepository.findById(reservationId).orElse(null);
         if (reservation == null || !reservation.getUtilisateur().getId().equals(user.getId())) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Réservation non trouvée ou non associée à l'utilisateur");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reservation non trouvée ou non associée à l'utilisateur");
         }
 
         // Vérification basique de la note (1 à 5)
@@ -961,7 +961,7 @@ public class ClientsController {
             return "error";
         }
 
-        List<Réservation> reservations = reservationRepository.findByUtilisateur_Id(user.getId());
+        List<Reservation> reservations = reservationRepository.findByUtilisateur_Id(user.getId());
         List<Litige> disputes = litigeRepository.findByReservationIn(reservations);
         model.addAttribute("disputes", disputes);
         model.addAttribute("section", "disputes");
@@ -1326,13 +1326,13 @@ public class ClientsController {
     public ResponseEntity<?> getReservationDetails(@PathVariable Long id) {
         System.out.println("🔍 [GET] /Clientes/" + id);
 
-        Optional<Réservation> opt = reservationService.findById(id);
+        Optional<Reservation> opt = reservationService.findById(id);
         if (opt.isEmpty()) {
-            System.out.println("❌ Réservation introuvable pour l'id : " + id);
+            System.out.println("❌ Reservation introuvable pour l'id : " + id);
             return ResponseEntity.notFound().build();
         }
 
-        Réservation res = opt.get();
+        Reservation res = opt.get();
 
         try {
             Map<String, Object> dto = new HashMap<>();
@@ -1345,7 +1345,7 @@ public class ClientsController {
             dto.put("adressePriseEnCharge", res.getAdressePriseEnCharge());
             dto.put("adresseRestitution", res.getAdresseRestitution());
 
-            System.out.println("✅ Réservation chargée : " + dto);
+            System.out.println("✅ Reservation chargée : " + dto);
             return ResponseEntity.ok(dto);
         } catch (Exception e) {
             System.out.println("🚨 Erreur lors de la création du DTO : " + e.getMessage());
@@ -1466,12 +1466,12 @@ public class ClientsController {
         }
 
         // Reste de ton code...
-        Optional<Réservation> optionalRes = reservationRepository.findById(avisDTO.getReservationId());
+        Optional<Reservation> optionalRes = reservationRepository.findById(avisDTO.getReservationId());
         if (optionalRes.isEmpty()) {
-            return ResponseEntity.badRequest().body("Réservation non trouvée");
+            return ResponseEntity.badRequest().body("Reservation non trouvée");
         }
 
-        Réservation reservation = optionalRes.get();
+        Reservation reservation = optionalRes.get();
         Car voiture = reservation.getVoiture();
 
         Avis avis = new Avis();

@@ -1,7 +1,7 @@
 package location_voiture.event;
 
 import location_voiture.persistence.model.Alert;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import location_voiture.persistence.model.TypeAlert;
 import location_voiture.repository.AlertRepository;
 import ma.abisoft.persistence.model.User;
@@ -17,7 +17,7 @@ public class NotificationEventListener {
 
     @EventListener
     public void handleReservationEvent(ReservationEvent event) {
-        Réservation reservation = event.getReservation();
+        Reservation reservation = event.getReservation();
         User owner = reservation.getVoiture().getOwner();
         Alert alert = new Alert(
                 "Nouvelle réservation",

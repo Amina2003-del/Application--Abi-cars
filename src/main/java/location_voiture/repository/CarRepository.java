@@ -78,7 +78,7 @@ public interface CarRepository extends JpaRepository<Car, Long> , JpaSpecificati
 
     @Query("SELECT c FROM Car c WHERE (:pickupLocation IS NULL OR c.ville = :pickupLocation) " +
     	       "AND (:carType IS NULL OR c.type = :carType) " +
-    	       "AND NOT EXISTS (SELECT r FROM Réservation r WHERE r.voiture = c AND (r.dateDebut <= :endDate AND r.dateFin >= :startDate))")
+    	       "AND NOT EXISTS (SELECT r FROM Reservation r WHERE r.voiture = c AND (r.dateDebut <= :endDate AND r.dateFin >= :startDate))")
     	List<Car> findAvailableCars(@Param("pickupLocation") String pickupLocation,
     	                            @Param("startDate") LocalDate startDate,
     	                            @Param("endDate") LocalDate endDate,
@@ -91,7 +91,7 @@ public interface CarRepository extends JpaRepository<Car, Long> , JpaSpecificati
 
     @Query("SELECT c FROM Car c WHERE c.type = :typeVoiture " +
     	       "AND c.id NOT IN (" +
-    	       "SELECT r.voiture.id FROM Réservation r " +
+    	       "SELECT r.voiture.id FROM Reservation r " +
     	       "WHERE r.statut = 'CONFIRMEE' " +
     	       "AND (r.dateDebut <= :dateFin AND r.dateFin >= :dateDebut))")
     	List<Car> findAvailableCars(@Param("typeVoiture") String typeVoiture,

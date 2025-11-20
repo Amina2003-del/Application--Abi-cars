@@ -36,7 +36,7 @@ import location_voiture.persistence.model.Car;
 import location_voiture.persistence.model.Disponibilite;
 import location_voiture.persistence.model.Gallery;
 import location_voiture.persistence.model.Panne;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import location_voiture.persistence.model.StatutApprobationVoiture; // Assurez-vous que cet Enum est correct
 import location_voiture.persistence.model.StatutTechnique;
 import location_voiture.persistence.model.TypeReservation;
@@ -390,7 +390,7 @@ public class CarService {
     }
 
     public boolean isDisponiblePourPeriode(Car voiture, LocalDate debut, LocalDate fin) {
-        for (Réservation res : voiture.getReservations()) {
+        for (Reservation res : voiture.getReservations()) {
             if (!(res.getDateFin().isBefore(debut) || res.getDateDebut().isAfter(fin))) {
                 return false; // Chevauchement trouvé
             }
@@ -454,9 +454,9 @@ public class CarService {
 		
 
     public Map<String, Integer> getCarPopularity() {
-        List<Réservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationRepository.findAll();
         Map<String, Integer> popularity = new HashMap<>();
-        for (Réservation reservation : reservations) {
+        for (Reservation reservation : reservations) {
             Car car = reservation.getVoiture();
             if (car != null) {
                 String key = car.getMarque() + " " + car.getModele();
@@ -467,10 +467,10 @@ public class CarService {
     }
 
     public List<Map<String, String>> getRecentActivities() {
-        List<Réservation> reservations = reservationRepository.findAll();
+        List<Reservation> reservations = reservationRepository.findAll();
         return reservations.stream().map(r -> {
             Map<String, String> activity = new HashMap<>();
-            activity.put("type", "Réservation");
+            activity.put("type", "Reservation");
             String detail = r.getVoiture() != null
                     ? r.getVoiture().getModele() + " - #" + r.getId()
                     : "Voiture non spécifiée";
@@ -481,18 +481,24 @@ public class CarService {
             return activity;
         }).collect(Collectors.toList());
     }
+public List<CarDTO> rechercherDisponibles(String pickup, LocalDate dateDebut, LocalDate dateFin, String type) {
+    List<Car> cars = carRepository.findAvailableCars(pickup, dateDebut, dateFin, type);
 
+    return cars.stream()
+        .<CarDTO>map(c ->  // <CarDTO> force l'inférence : T = CarDTO, pas Object
+            CarDTO.builder()
+                .id(c.getId())
+                .marque(c.getMarque())
+                .modele(c.getModele())
+                .type(type)
+                .imagePrincipaleURL(c.getImagePrincipaleURL())
+                .prixJournalier(c.getPrixJournalier())  // Autobox si double primitif
+                .description(c.getDescription())
+                .build()
+        )
+        .collect(Collectors.toList());
+}
 
-
-    
-    
-	public List<CarDTO> rechercherDisponibles(String pickup,LocalDate dateDebut, LocalDate dateFin, String type) {
-	    List<Car> cars = carRepository.findAvailableCars(pickup, dateDebut, dateFin, type);
-
-	    return cars.stream().map(c ->
-	        new CarDTO(c.getId(), c.getMarque(), c.getModele(), null, c.getImagePrincipaleURL(), null, c.getDescription(), null, type, type, type, type, c.getPrixJournalier(), type, type, null, type, null, null)
-	    ).collect(Collectors.toList());
-	}
 
 
 	public List<CarDTO> rechercherDisponibles(String adressePriseEnCharge, String adresseRestitution,
@@ -524,7 +530,7 @@ public class CarService {
 	    public Car save(Car car) {
 	        return carRepository.save(car);
 	    }
-	    public String getEtatActuel(Car voiture, LocalDate date, List<Réservation> reservations) {
+	    public String getEtatActuel(Car voiture, LocalDate date, List<Reservation> reservations) {
 	        if (voiture == null) return "Indisponible";
 
 	        // 1️⃣ Vérifier pannes actives aujourd'hui
@@ -536,7 +542,7 @@ public class CarService {
 	        }
 
 	        // 2️⃣ Vérifier réservation en cours aujourd'hui
-	        Optional<Réservation> resEnCours = reservations.stream()
+	        Optional<Reservation> resEnCours = reservations.stream()
 	            .filter(r -> r.getDateDebut() != null && r.getDateFin() != null)
 	            .filter(r -> !date.isBefore(r.getDateDebut()) && !date.isAfter(r.getDateFin()))
 	            .findFirst();
@@ -551,10 +557,10 @@ public class CarService {
 	        }
 
 	        // 3️⃣ Vérifier prochaine réservation future
-	        Optional<Réservation> resFuture = reservations.stream()
+	        Optional<Reservation> resFuture = reservations.stream()
 	            .filter(r -> r.getDateDebut() != null)
 	            .filter(r -> date.isBefore(r.getDateDebut()))
-	            .sorted(Comparator.comparing(Réservation::getDateDebut))
+	            .sorted(Comparator.comparing(Reservation::getDateDebut))
 	            .findFirst();
 
 	        if (resFuture.isPresent()) {

@@ -37,7 +37,7 @@ import location_voiture.persistence.model.DemandePartenariat;
 import location_voiture.persistence.model.Locataire;
 import location_voiture.persistence.model.Propritaire;
 import location_voiture.persistence.model.RoleUtilisateur;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import location_voiture.persistence.model.StatutDemande;
 import location_voiture.repository.AvisRepository;
 import location_voiture.repository.CarRepository;
@@ -617,7 +617,7 @@ public class UserService implements IUserService {
 	    public List<User> findClientsWithReservations(Long id) {
 	        return userRepository.findDistinctClientsWithReservations(id);
 	    }
-		public List<Réservation> findReservationsByUserId(Long id) {
+		public List<Reservation> findReservationsByUserId(Long id) {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -654,13 +654,13 @@ public class UserService implements IUserService {
 
 		    List<Map<String, String>> historyList = new ArrayList<>();
 
-		    for (Réservation reservation : user.getReservations()) {
+		    for (Reservation reservation : user.getReservations()) {
 		        Map<String, String> entry = new HashMap<>();
 		        
 		        // Utilise dateDebut car tu n'as pas dateReservation
 		        entry.put("date", reservation.getDateDebut() != null ? reservation.getDateDebut().toString() : "N/A");
 		        
-		        entry.put("action", "Réservation");
+		        entry.put("action", "Reservation");
 		        
 		        // Précaution : vérifier si voiture n'est pas null
 		        String modeleVoiture = (reservation.getVoiture() != null && reservation.getVoiture().getModele() != null)

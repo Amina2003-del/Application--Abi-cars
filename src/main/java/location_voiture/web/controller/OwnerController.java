@@ -112,7 +112,7 @@ import location_voiture.persistence.model.Paiement;
 import location_voiture.persistence.model.Panne;
 import location_voiture.persistence.model.Propritaire;
 import location_voiture.persistence.model.RoleUtilisateur;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import location_voiture.persistence.model.StatutDisponibilite;
 import location_voiture.persistence.model.StatutEntretien;
 import location_voiture.persistence.model.StatutLitige;
@@ -425,19 +425,19 @@ private PasswordEncoder passwordEncoder;
 	                List<Car> voitures = carRepository.findByProprietaireId(proprietaire.getId());
 
 	                // ✅ 2. Récupérer les réservations associées à ces voitures
-	                List<Réservation> reservations = reservationRepository.findByVoitureIn(voitures);
+	                List<Reservation> reservations = reservationRepository.findByVoitureIn(voitures);
 
 	                // ✅ 3. Extraire les utilisateurs clients
 	                Set<User> clients = reservations.stream()
-	                    .map(Réservation::getUtilisateur)
+	                    .map(Reservation::getUtilisateur)
 	                    .filter(user -> user.getRoles().stream()
 	                        .anyMatch(role -> role.getName().equalsIgnoreCase("CLIENT")))
 	                    .collect(Collectors.toSet());
 
 	                // ✅ 4. Associer chaque client à sa liste de réservations
-	                Map<Long, List<Réservation>> reservationsMap = new HashMap<>();
+	                Map<Long, List<Reservation>> reservationsMap = new HashMap<>();
 	                for (User client : clients) {
-	                    List<Réservation> resClient = reservations.stream()
+	                    List<Reservation> resClient = reservations.stream()
 	                        .filter(r -> r.getUtilisateur().getId().equals(client.getId()))
 	                        .collect(Collectors.toList());
 	                    reservationsMap.put(client.getId(), resClient);
@@ -492,14 +492,14 @@ private PasswordEncoder passwordEncoder;
 
 	            // Récupérer toutes les réservations des voitures du propriétaire
 	            System.out.println("🔍 Appel de findReservationsByOwner avec ID...");
-	            List<Réservation> reservations = reservationService.findReservationsByOwner(proprietaire.getId());
-	            System.out.println("✅ Réservations trouvées: " + (reservations != null ? reservations.size() : "null"));
+	            List<Reservation> reservations = reservationService.findReservationsByOwner(proprietaire.getId());
+	            System.out.println("✅ Reservations trouvées: " + (reservations != null ? reservations.size() : "null"));
 	            
 	            // Debug détaillé des réservations
 	            if (reservations != null && !reservations.isEmpty()) {
 	                System.out.println("📋 Détail des réservations trouvées:");
-	                for (Réservation res : reservations) {
-	                    System.out.println("   - Réservation ID: " + res.getId() + 
+	                for (Reservation res : reservations) {
+	                    System.out.println("   - Reservation ID: " + res.getId() + 
 	                                     ", Client: " + (res.getClient() != null ? res.getClient().getEmail() : "NULL") +
 	                                     ", Utilisateur: " + (res.getUtilisateur() != null ? res.getUtilisateur().getEmail() : "NULL") +
 	                                     ", Locataire: " + (res.getLocataire() != null ? "présent" : "NULL") +
@@ -516,7 +516,7 @@ private PasswordEncoder passwordEncoder;
 
 	            // 🔥 CORRECTION : Récupérer les clients de différentes manières
 	            Map<Long, User> clientsMap = new HashMap<>();
-	            for (Réservation res : reservations) {
+	            for (Reservation res : reservations) {
 	                if (res != null) {
 	                    User client = null;
 	                    
@@ -575,7 +575,7 @@ private PasswordEncoder passwordEncoder;
 	                data.put("adresse", adresse);
 
 	                // Dernière réservation
-	                Réservation lastRes = null;
+	                Reservation lastRes = null;
 	                try {
 	                    // Essayer avec différentes méthodes
 	                    lastRes = reservationService.findLastReservationByClientAndOwner(client.getId(), proprietaire.getId());
@@ -801,7 +801,7 @@ private PasswordEncoder passwordEncoder;
 	        model.addAttribute("reservationsJson", jsonReservations);
 
 	        // 🔥 Utiliser l'ID du propriétaire, pas de l'utilisateur
-	        List<Réservation> reservations = reservationService.getReservationsByProprietaire(proprietaire.getId());
+	        List<Reservation> reservations = reservationService.getReservationsByProprietaire(proprietaire.getId());
 	        if (reservations == null) {
 	            System.out.println("⚠️ Liste de réservations est null !");
 	            reservations = new ArrayList<>();
@@ -811,8 +811,8 @@ private PasswordEncoder passwordEncoder;
 	        // Debug des réservations
 	        if (!reservations.isEmpty()) {
 	            System.out.println("🔍 Détail des réservations:");
-	            for (Réservation res : reservations) {
-	                System.out.println("   - Réservation ID: " + res.getId() + 
+	            for (Reservation res : reservations) {
+	                System.out.println("   - Reservation ID: " + res.getId() + 
 	                                 ", Client: " + (res.getUtilisateur() != null ? res.getUtilisateur().getEmail() : "null") +
 	                                 ", Voiture: " + (res.getVoiture() != null ? res.getVoiture().getMarque() + " " + res.getVoiture().getModele() : "null") +
 	                                 ", Statut: " + res.getStatut());
@@ -946,7 +946,7 @@ private PasswordEncoder passwordEncoder;
 	        }
 	        
 	        if (paiement.getReservation() != null) {
-	            Réservation reservation = paiement.getReservation();
+	            Reservation reservation = paiement.getReservation();
 	            
 	            // Créer le ReservationDTO spécifique
 	            ReservationDTO reservationDTO = new ReservationDTO();
@@ -1195,8 +1195,8 @@ private PasswordEncoder passwordEncoder;
 	                // TODO: sauvegarder le fichier sur disque ou cloud si besoin
 	            }
 	            reservationCreateDTO.setTypeReservation(TypeReservation.PRESENTIELLE);
-	            Réservation reservation = reservationService.createReservation(reservationCreateDTO);
-	            System.out.println("Réservation créée avec ID : " + reservation.getId());
+	            Reservation reservation = reservationService.createReservation(reservationCreateDTO);
+	            System.out.println("Reservation créée avec ID : " + reservation.getId());
 
 	            Facture facture = factureService.creerFactureDepuisReservation(reservation);
 	            System.out.println("Facture créée avec ID : " + facture.getId());
@@ -1210,7 +1210,7 @@ private PasswordEncoder passwordEncoder;
 
 	            return ResponseEntity.ok(new ReservationResponse(
 	                    reservation.getId(),
-	                    "Réservation créée avec succès.",
+	                    "Reservation créée avec succès.",
 	                    "/Siteoffeciel/factures/" + facture.getId() + "/pdf"
 	            ));
 
@@ -1282,7 +1282,7 @@ private PasswordEncoder passwordEncoder;
 			    // 3️⃣ Construire la map des états pour chaque voiture
 			    Map<Long, String> etats = new HashMap<>();
 			    for (Car voiture : voitures) {
-			        List<Réservation> reservations = voiture.getReservations() != null
+			        List<Reservation> reservations = voiture.getReservations() != null
 			                ? new ArrayList<>(Arrays.asList(voiture.getReservations()))
 			                : new ArrayList<>();
 			        etats.put(voiture.getId(), carService.getEtatActuel(voiture, LocalDate.now(), reservations));
@@ -1310,10 +1310,10 @@ private PasswordEncoder passwordEncoder;
 	            System.out.println("StatutTechnique initial = " + car.getStatutTechnique());
 
 	            // 2️⃣ Récupérer les réservations depuis le repository pour être sûr de les avoir toutes
-	            List<Réservation> reservations = reservationRepository.findByVoiture_Id(id);
+	            List<Reservation> reservations = reservationRepository.findByVoiture_Id(id);
 	            System.out.println("📘 Nombre de réservations trouvées : " + reservations.size());
 	            reservations.forEach(r -> {
-	                System.out.println("   - Réservation ID=" + r.getId() +
+	                System.out.println("   - Reservation ID=" + r.getId() +
 	                        " | Début=" + r.getDateDebut() +
 	                        " | Fin=" + r.getDateFin() +
 	                        " | Type=" + r.getTypeReservation() +
@@ -1413,9 +1413,9 @@ private PasswordEncoder passwordEncoder;
 	        List<Map<String, Object>> events = new ArrayList<>();
 
 	        // 1️⃣ Récupérer les réservations confirmées avec méthode de paiement
-	        List<Réservation> reservations = reservationRepository.findByVoiture_IdAndStatut(id, StatutReservation.CONFIRMEE);
+	        List<Reservation> reservations = reservationRepository.findByVoiture_IdAndStatut(id, StatutReservation.CONFIRMEE);
 
-	        for (Réservation r : reservations) {
+	        for (Reservation r : reservations) {
 	        	Paiement paiement = paiementRepository.findByReservationId(r.getId());
 	        	String statut;
 	        	if (paiement != null) {
@@ -2124,9 +2124,9 @@ private PasswordEncoder passwordEncoder;
 	        dto.setEnabled(client.isEnabled());
 
 	        try {
-	            // Réservations
-	            List<Réservation> reservations = Optional.ofNullable(client.getReservations()).orElse(Collections.emptyList());
-	            System.out.println("ℹ️ Réservations trouvées : " + reservations.size());
+	            // Reservations
+	            List<Reservation> reservations = Optional.ofNullable(client.getReservations()).orElse(Collections.emptyList());
+	            System.out.println("ℹ️ Reservations trouvées : " + reservations.size());
 
 	            List<ReservationDTO> reservationsDTO = reservations.stream()
 	                .filter(Objects::nonNull)
@@ -2152,9 +2152,9 @@ private PasswordEncoder passwordEncoder;
 
 	            // Litiges
 	            List<LitigeDTO> litigesDTO = new ArrayList<>();
-	            for (Réservation r : reservations) {
+	            for (Reservation r : reservations) {
 	                if (r == null) {
-	                    System.err.println("⚠️ Réservation null ignorée");
+	                    System.err.println("⚠️ Reservation null ignorée");
 	                    continue;
 	                }
 
@@ -2186,7 +2186,7 @@ private PasswordEncoder passwordEncoder;
 
 	            // Voitures réservées
 	            List<CarDTO> voituresDTO = reservations.stream()
-	                .map(Réservation::getVoiture)
+	                .map(Reservation::getVoiture)
 	                .filter(Objects::nonNull)
 	                .distinct()
 	                .map(v -> {
@@ -2292,8 +2292,8 @@ private PasswordEncoder passwordEncoder;
 	            System.out.println("🏠 Propriétaire trouvé : " + userPrincipal.getFirstName() + " " + userPrincipal.getLastName());
 
 	            // 3. Récupérer les réservations du propriétaire
-	            List<Réservation> reservations = reservationService.findReservationsByOwner(proprietaire.getId());
-	            System.out.println("📦 Réservations récupérées : " + reservations.size());
+	            List<Reservation> reservations = reservationService.findReservationsByOwner(proprietaire.getId());
+	            System.out.println("📦 Reservations récupérées : " + reservations.size());
 
 	            // 4. Extraire les clients distincts
 	            Set<User> clients = reservations.stream()
@@ -2347,7 +2347,7 @@ private PasswordEncoder passwordEncoder;
 	                data.put("adresse", adresse);
 
 	                // Dernière réservation
-	                Réservation lastRes = null;
+	                Reservation lastRes = null;
 	                try {
 	                    lastRes = reservationService.findLastReservationByClientAndOwner(client.getId(), proprietaire.getId());
 	                } catch (Exception e) {
@@ -2442,7 +2442,7 @@ private PasswordEncoder passwordEncoder;
 	        }
 
 	        System.out.println("Propriétaire connecté (username): " + username);
-	        List<Réservation> reservations = reservationService.findByProprietaireEmail(username);
+	        List<Reservation> reservations = reservationService.findByProprietaireEmail(username);
 
 	        if (reservations == null) {
 	            System.out.println("Aucune réservation trouvée pour l'utilisateur : " + username);
@@ -2457,12 +2457,12 @@ private PasswordEncoder passwordEncoder;
 
 	    @PostMapping("/reservation/updateStatus")
 	    @ResponseBody
-	    public Réservation updateReservationStatus(@RequestParam Long id, @RequestParam String status) {
+	    public Reservation updateReservationStatus(@RequestParam Long id, @RequestParam String status) {
 	        logger.info("Requête updateReservationStatus reçue avec id = {} et status = {}", id, status);
 
 	        try {
 	            StatutReservation statut = StatutReservation.valueOf(status);
-	            Réservation updatedReservation = reservationService.updateReservationStatus(id, statut);
+	            Reservation updatedReservation = reservationService.updateReservationStatus(id, statut);
 	            logger.info("Statut de réservation mis à jour avec succès pour id = {}", id);
 	            return updatedReservation;
 	        } catch (IllegalArgumentException e) {

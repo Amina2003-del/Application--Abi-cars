@@ -14,7 +14,7 @@ import com.itextpdf.text.pdf.*;
 
 import location_voiture.persistence.model.Facture;
 import location_voiture.persistence.model.Locataire;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import ma.abisoft.persistence.model.User;
 
 @Service
@@ -74,7 +74,7 @@ public class PdfFactureGenerator {
             invoiceCell.addElement(new Paragraph("FACTURE", headerFont));
             invoiceCell.addElement(new Paragraph("Numéro : " + (facture.getId() != null ? facture.getId().toString() : "N/A"), valueFont));
             invoiceCell.addElement(new Paragraph("Émise le : " + (facture.getDateEmission() != null ? sdf.format(facture.getDateEmission()) : "N/A"), valueFont));
-            Réservation reservation = facture.getReservation();
+            Reservation reservation = facture.getReservation();
             double prixTotal = reservation != null && reservation.getPrixTotal() != null ? reservation.getPrixTotal() : 0.0;
             invoiceCell.addElement(new Paragraph("Montant : " + String.format("%.2f €", prixTotal), valueFont));
             invoiceCell.addElement(new Paragraph("Échéance : " + (facture.getDateLimite() != null ? sdf.format(facture.getDateLimite()) : "N/A"), valueFont));

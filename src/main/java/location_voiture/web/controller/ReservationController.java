@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import location_voiture.persistence.dto.ReservationRequest;
 import location_voiture.persistence.model.Paiement;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import location_voiture.repository.PaiementRepository;
 import location_voiture.service.ReservationService;
 import ma.abisoft.persistence.dao.UserRepository;
@@ -48,7 +48,7 @@ public class ReservationController {
                 reservationRequest.getDateFin(),
                 utilisateur);
 
-        return ResponseEntity.ok(new ResponseMessage("Réservation réussie!"));
+        return ResponseEntity.ok(new ResponseMessage("Reservation réussie!"));
     }
 
 
@@ -98,11 +98,11 @@ public class ReservationController {
     }
   
     @GetMapping
-    public ResponseEntity<List<Réservation>> getAllReservationsWithFilter(
+    public ResponseEntity<List<Reservation>> getAllReservationsWithFilter(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String clientName) {
         try {
-            List<Réservation> reservations = reservationService.getReservationsWithFilter(status, clientName);
+            List<Reservation> reservations = reservationService.getReservationsWithFilter(status, clientName);
             return ResponseEntity.ok(reservations);
         } catch (Exception e) {
             e.printStackTrace(); // Debug dans console backend
@@ -113,8 +113,8 @@ public class ReservationController {
 
     // Récupérer une réservation par ID
     @GetMapping("/{id}")
-    public ResponseEntity<Réservation> getReservationById(@PathVariable Long id) {
-    	Réservation reservation = reservationService.getReservationById(id);
+    public ResponseEntity<Reservation> getReservationById(@PathVariable Long id) {
+    	Reservation reservation = reservationService.getReservationById(id);
         if (reservation != null) {
             return ResponseEntity.ok(reservation);
         }
@@ -126,7 +126,7 @@ public class ReservationController {
     public ResponseEntity<String> confirmReservation(@PathVariable Long id) {
         boolean isConfirmed = reservationService.confirmReservation(id);
         if (isConfirmed) {
-            return ResponseEntity.ok("Réservation confirmée.");
+            return ResponseEntity.ok("Reservation confirmée.");
         }
         return ResponseEntity.status(400).body("Erreur lors de la confirmation de la réservation.");
     }
@@ -136,17 +136,17 @@ public class ReservationController {
     public ResponseEntity<String> refuseReservation(@PathVariable Long id) {
         boolean isRefused = reservationService.refuseReservation(id);
         if (isRefused) {
-            return ResponseEntity.ok("Réservation refusée.");
+            return ResponseEntity.ok("Reservation refusée.");
         }
         return ResponseEntity.status(400).body("Erreur lors du refus de la réservation.");
     }
 
     // Modifier une réservation (mettre à jour les informations de la réservation)
     @PutMapping("/modify/{id}")
-    public ResponseEntity<String> modifyReservation(@PathVariable Long id, @RequestBody Réservation reservation) {
+    public ResponseEntity<String> modifyReservation(@PathVariable Long id, @RequestBody Reservation reservation) {
         boolean isModified = reservationService.modifyReservation(id, reservation);
         if (isModified) {
-            return ResponseEntity.ok("Réservation modifiée.");
+            return ResponseEntity.ok("Reservation modifiée.");
         }
         return ResponseEntity.status(400).body("Erreur lors de la modification de la réservation.");
     }

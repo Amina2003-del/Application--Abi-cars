@@ -11,10 +11,14 @@ WORKDIR /app
 COPY --from=build /app/target/*.war app.war
 EXPOSE 8082
 
-# Lire les variables d'environnement Render pour Spring Boot
-ENTRYPOINT ["sh", "-c", "java -jar app.war \
-  --spring.datasource.url=${SPRING_DATASOURCE_URL} \
-  --spring.datasource.username=${SPRING_DATASOURCE_USERNAME} \
-  --spring.datasource.password=${SPRING_DATASOURCE_PASSWORD} \
-  --server.port=8082"]
-
+ENTRYPOINT ["sh", "-c", "java -Xmx512m -Xms256m \
+  -XX:MaxMetaspaceSize=128m \
+  -XX:+UseG1GC \
+  -XX:ReservedCodeCacheSize=64m \
+  -jar app.war \
+  --spring.datasource.url=jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME} \
+  --spring.datasource.username=${DB_USER} \
+  --spring.datasource.password=${DB_PASS} \
+  --spring.jpa.database-platform=${HIBERNATE_DIALECT} \
+  --server.port=8082 \
+  --server.address=0.0.0.0"]

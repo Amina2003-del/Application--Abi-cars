@@ -32,7 +32,7 @@ public class Avis {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id", nullable = false)
-    private Réservation reservation;
+    private Reservation reservation;
  // Remplace reservationId Long par relation ManyToOne
     
     private Integer note;
@@ -49,7 +49,7 @@ public class Avis {
     }
 
     // Constructeur utile (optionnel)
-    public Avis(Car voiture, User auteur, Integer note, String commentaire, LocalDate date, Réservation reservation) {
+    public Avis(Car voiture, User auteur, Integer note, String commentaire, LocalDate date, Reservation reservation) {
         this.voiture = voiture;
         this.auteur = auteur;
         this.note = note;
@@ -92,11 +92,11 @@ public class Avis {
         this.utilisateur = utilisateur;
     }
 
-    public Réservation getReservation() {
+    public Reservation getReservation() {
         return reservation;
     }
 
-    public void setReservation(Réservation reservation) {
+    public void setReservation(Reservation reservation) {
         this.reservation = reservation;
     }
 

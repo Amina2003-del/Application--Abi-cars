@@ -39,11 +39,11 @@ public class Litige {
    // @JoinColumn(name = "administrateur_id")
    // private Administrateur administrateur;
 
-    // Relation avec Réservation (si nécessaire)
+    // Relation avec Reservation (si nécessaire)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id")
     @JsonBackReference // Prevents serialization of the reservation field
-    private Réservation reservation;
+    private Reservation reservation;
 
     // Constructeurs
     public Litige() {}
@@ -51,7 +51,7 @@ public class Litige {
        // this.administrateur = administrateur;
    // }
 
-    public Litige(String description, TypeLitige type, Réservation reservation) {
+    public Litige(String description, TypeLitige type, Reservation reservation) {
         this.description = description;
         this.type = type;
         this.reservation = reservation;
@@ -126,7 +126,7 @@ public class Litige {
    //     return administrateur;
    // }
 
-    public Réservation getReservation() {
+    public Reservation getReservation() {
         return reservation;
     }
     @Column(name = "attachment_path")
@@ -140,7 +140,7 @@ public class Litige {
         this.attachmentPath = attachmentPath;
     }
 
-    public void setReservation(Réservation reservation) {
+    public void setReservation(Reservation reservation) {
         this.reservation = reservation;
     }
 
@@ -163,7 +163,7 @@ public class Litige {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	public Optional<Réservation> getDocuments() {
+	public Optional<Reservation> getDocuments() {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -27,7 +27,7 @@ public class Facture {
 	    private User  utilisateur;
 	    @OneToOne
 	    @JoinColumn(name = "reservation_id", nullable = false)
-	    private Réservation reservation; // Relation avec l'entité Réservation
+	    private Reservation reservation; // Relation avec l'entité Reservation
 
 	    @Column(nullable = false)
 	    private Date dateEmission; // Date de création de la facture
@@ -69,11 +69,11 @@ public class Facture {
 	        this.id = id;
 	    }
 
-	    public Réservation getReservation() {
+	    public Reservation getReservation() {
 	        return reservation;
 	    }
 
-	    public void setReservation(Réservation reservation) {
+	    public void setReservation(Reservation reservation) {
 	        this.reservation = reservation;
 	    }
 

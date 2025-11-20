@@ -244,18 +244,13 @@ public class MvcConfig implements WebMvcConfigurer {
                         "classpath:/static/Admin/font-awesome/",
                         "classpath:/static/js/");
     }
+@Bean(name = "customLocaleResolver")
+public LocaleResolver localeResolver() {
+    SessionLocaleResolver localeResolver = new SessionLocaleResolver();
+    localeResolver.setDefaultLocale(Locale.FRENCH);
+    return localeResolver;
+}
 
-    @Bean
-
-    public LocaleResolver localeResolver(){
-
-        SessionLocaleResolver localeResolver = new SessionLocaleResolver();
-
-        localeResolver.setDefaultLocale(Locale.FRENCH);
-
-        return  localeResolver;
-
-    }
 
 
 
@@ -274,13 +269,10 @@ public class MvcConfig implements WebMvcConfigurer {
 
 
     @Override
+public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(localeChangeInterceptor());
+}
 
-    public void addInterceptors(InterceptorRegistry registry) {
-
-        registry.addInterceptor(localeChangeInterceptor());
-
-    }
-   
     
     
  /*   @Bean  

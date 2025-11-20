@@ -76,10 +76,14 @@ public class PersistenceJPAConfig {
         return new PersistenceExceptionTranslationPostProcessor();
     }
 
-    protected Properties additionalProperties() {
-        final Properties hibernateProperties = new Properties();
-        hibernateProperties.setProperty("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
-        return hibernateProperties;
-    }
+  protected Properties additionalProperties() {
+    final Properties hibernateProperties = new Properties();
+    hibernateProperties.setProperty(
+        "hibernate.hbm2ddl.auto",
+        env.getProperty("spring.jpa.hibernate.ddl-auto", "update")
+    );
+    return hibernateProperties;
+}
+
 
 }

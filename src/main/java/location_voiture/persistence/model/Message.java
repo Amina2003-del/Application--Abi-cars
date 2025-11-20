@@ -61,10 +61,10 @@ public class Message {
         this.destinataire = destinataire;
     }
 
-    // Relation avec Réservation (ManyToOne)
+    // Relation avec Reservation (ManyToOne)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id")
-    private Réservation reservation;
+    private Reservation reservation;
 
     @Enumerated(EnumType.STRING)
     private TypeMessage type; // INTERNE ou NOTIFICATION
@@ -85,7 +85,7 @@ public class Message {
     
     public Message() {}
 
-    public Message(String content, Réservation reservation) {
+    public Message(String content, Reservation reservation) {
         this.content = content;
         this.reservation = reservation;
     }
@@ -119,11 +119,11 @@ public class Message {
         this.lu = lu;
     }
 
-    public Réservation getReservation() {
+    public Reservation getReservation() {
         return reservation;
     }
 
-    public void setReservation(Réservation reservation) {
+    public void setReservation(Reservation reservation) {
         this.reservation = reservation;
     }
 

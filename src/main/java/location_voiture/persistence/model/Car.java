@@ -147,7 +147,7 @@ public class Car {
     private List<Gallery> images = new ArrayList<>();
 
     @OneToMany(mappedBy = "voiture", cascade = CascadeType.ALL)
-    private List<Réservation> reservations = new ArrayList<>();
+    private List<Reservation> reservations = new ArrayList<>();
 
     @OneToMany(mappedBy = "voiture")
     private List<Avis> avis = new ArrayList<>();
@@ -331,7 +331,7 @@ this.proprietaire=proprietaireId;
 	    // Et non quelque chose de compliqué qui pourrait retourner null par erreur :
 	    // if (someCondition) { return null; } else { return this.statutApprobation; }
 	}
-	public Réservation[] getReservations() {
+	public Reservation[] getReservations() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -348,7 +348,7 @@ this.proprietaire=proprietaireId;
 	
  
    
-    public void setReservations(List<Réservation> reservations) { this.reservations = reservations; }
+    public void setReservations(List<Reservation> reservations) { this.reservations = reservations; }
 
 
 	

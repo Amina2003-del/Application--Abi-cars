@@ -1,7 +1,7 @@
 package location_voiture.persistence.model;
 
 public enum TypeAlert {
-    RESERVATION("Réservation"),
+    RESERVATION("Reservation"),
     LITIGE("Litige"),
     PAIEMENT("Paiement"),
     ALERTE("Alerte"),

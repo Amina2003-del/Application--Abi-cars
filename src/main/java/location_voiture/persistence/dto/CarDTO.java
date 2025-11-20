@@ -5,7 +5,8 @@ import org.springframework.web.multipart.MultipartFile;
 import location_voiture.persistence.model.StatutApprobationVoiture;
 import lombok.Builder;
 import lombok.Data;
-
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class CarDTO {

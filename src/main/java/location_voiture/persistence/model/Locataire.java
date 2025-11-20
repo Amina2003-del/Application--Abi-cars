@@ -102,9 +102,9 @@ import ma.abisoft.persistence.model.User;
 	    /*public List<Location> getLocations() {
 	        return locations;
 	    }*/
-	 // Relation OneToMany avec Réservation
+	 // Relation OneToMany avec Reservation
 	    @OneToMany(mappedBy = "locataire", cascade = CascadeType.ALL, orphanRemoval = true)
-	    private List<Réservation> reservations = new ArrayList<>();
+	    private List<Reservation> reservations = new ArrayList<>();
 	    
 	    // Constructeurs
 	    
@@ -115,14 +115,14 @@ import ma.abisoft.persistence.model.User;
 	
 
 		 // Méthodes pour gérer la relation bidirectionnelle
-	    public void addReservation(Réservation reservation) {
+	    public void addReservation(Reservation reservation) {
 	        if (reservation != null && !reservations.contains(reservation)) {
 	            reservations.add(reservation);
 	            reservation.setLocataire(this);
 	        }
 	    }
 	    
-	    public void removeReservation(Réservation reservation) {
+	    public void removeReservation(Reservation reservation) {
 	        if (reservation != null && reservations.contains(reservation)) {
 	            reservations.remove(reservation);
 	            reservation.setLocataire((Locataire) null);
@@ -157,7 +157,7 @@ import ma.abisoft.persistence.model.User;
 	            paiements.remove(paiement);
 	            paiement.setReservations(null);
 	        }}
-	    public List<Réservation> getReservations() {
+	    public List<Reservation> getReservations() {
 	        return reservations;
 	    }
 	    // Relation avec Message (OneToMany)

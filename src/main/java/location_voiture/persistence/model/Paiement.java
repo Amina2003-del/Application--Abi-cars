@@ -33,14 +33,14 @@ public class Paiement {
     @Column(nullable = false)
     private StatutPaiement statut = StatutPaiement.EN_ATTENTE;
 
-    // Relation avec Réservation (ManyToOne)
+    // Relation avec Reservation (ManyToOne)
     @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "reservation_id", nullable = false)
-    private Réservation reservation;
+    private Reservation reservation;
 
     // Constructeurs
 
-    public Paiement(Double montant, String methode, Réservation reservation) {
+    public Paiement(Double montant, String methode, Reservation reservation) {
         this.montant = montant;
         this.methode = methode;
         this.reservation = reservation;
@@ -87,11 +87,11 @@ public class Paiement {
         this.statut = statut;
     }
 
-    public Réservation getReservation() {
+    public Reservation getReservation() {
         return reservation;
     }
 
-    public void setReservation(Réservation reservation) {
+    public void setReservation(Reservation reservation) {
         this.reservation = reservation;
     }
 

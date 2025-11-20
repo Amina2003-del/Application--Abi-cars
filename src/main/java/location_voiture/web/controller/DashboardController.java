@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import location_voiture.persistence.model.Avis;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import location_voiture.repository.AvisRepository;
 import location_voiture.repository.CarRepository;
 import location_voiture.repository.ReservationRepository;
@@ -48,7 +48,7 @@ public class DashboardController {
         List<Avis> derniersAvis = avisRepository.findTop5ByOrderByDateDesc();
 
         // 5. Dernières réservations
-        List<Réservation> dernieresLocations = reservationRepository.findTop5ByOrderByIdDesc();
+        List<Reservation> dernieresLocations = reservationRepository.findTop5ByOrderByIdDesc();
 
         // 6. Données pour le graphique (exemple simplifié)
         // Il serait plus utile de générer ces données dynamiquement depuis votre base de données

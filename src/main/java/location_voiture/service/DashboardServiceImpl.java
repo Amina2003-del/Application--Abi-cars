@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import location_voiture.persistence.dto.DashboardStatsDTO;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import location_voiture.persistence.model.StatutDemande;
 import location_voiture.persistence.model.StatutLitige;
 import location_voiture.persistence.model.StatutReservation;
@@ -36,7 +36,7 @@ public class DashboardServiceImpl implements DashboardService {
 	        }
 
 	        if (reservationRepository.countByStatut(StatutReservation.EN_ATTENTE) > 0) {
-	            taches.add("Vérifier Réservations en attente");
+	            taches.add("Vérifier Reservations en attente");
 	        }
 
 	        if (avisRepository.countByVoiture_ValideFalse() > 0) {
@@ -118,7 +118,7 @@ this.litigeRepository = litigeRepository;
                 + demandeRepository.countByStatut(StatutDemande.EN_ATTENTE)); 
 
         // Optional: If you plan to use the list of active reservations
-        List<Réservation> reservations = reservationRepository.findByStatut(StatutReservation.ACTIVE);  // Use enum value
+        List<Reservation> reservations = reservationRepository.findByStatut(StatutReservation.ACTIVE);  // Use enum value
         // You can process this list if needed, for example:
         // dto.setSomeField(reservations.size());
 

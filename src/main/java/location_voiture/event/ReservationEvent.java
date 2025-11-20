@@ -1,16 +1,16 @@
 package location_voiture.event;
 
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import org.springframework.context.ApplicationEvent;
 
 public class ReservationEvent {
-    private final Réservation reservation;
+    private final Reservation reservation;
 
-    public ReservationEvent(Réservation reservation) {
+    public ReservationEvent(Reservation reservation) {
         this.reservation = reservation;
     }
 
-    public Réservation getReservation() {
+    public Reservation getReservation() {
         return reservation;
     }
 }

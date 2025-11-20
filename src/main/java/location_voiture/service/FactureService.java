@@ -17,7 +17,7 @@ import location_voiture.persistence.model.Car;
 import location_voiture.persistence.model.Facture;
 import location_voiture.persistence.model.Paiement;
 import location_voiture.persistence.model.Propritaire;
-import location_voiture.persistence.model.Réservation;
+import location_voiture.persistence.model.Reservation;
 import location_voiture.repository.FactureRepository;
 import location_voiture.repository.PaiementRepository;
 import location_voiture.repository.ReservationRepository;
@@ -61,7 +61,7 @@ public class FactureService {
 
 	       
 
-	        public Facture creerFactureDepuisReservation(Réservation reservation) throws DocumentException, IOException {
+	        public Facture creerFactureDepuisReservation(Reservation reservation) throws DocumentException, IOException {
 	            LocalDate dateEmissionLocal = reservation.getDateDebut();  // Déplacé en dehors pour utilisation globale
 
 	            Optional<Facture> optFacture = factureRepository.findByReservationId(reservation.getId());
