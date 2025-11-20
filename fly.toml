@@ -1,5 +1,0 @@
-app = "application-abi-cars"
-primary_region = "par"
-
-[build]
-  image = "docker.io/abicars/abi-cars:latest"
