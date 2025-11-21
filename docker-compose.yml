@@ -8,6 +8,5 @@ services:
     container_name: spring-app
     env_file:
       - ./deploy/.env
-    ports:
-      - "8003:8082"
+    
     restart: always
