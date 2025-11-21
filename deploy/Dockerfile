@@ -11,14 +11,14 @@ WORKDIR /app
 COPY --from=build /app/target/*.war app.war
 EXPOSE ${PORT:-8082}
 
-#ENTRYPOINT ["sh", "-c", "java -Xmx512m -Xms256m \
- # -XX:MaxMetaspaceSize=128m \
-  #-XX:+UseG1GC \
-  #-XX:ReservedCodeCacheSize=64m \
-  #-jar app.war \
-  #--spring.datasource.url=jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME} \
-  #--spring.datasource.username=${DB_USER} \
-  #--spring.datasource.password=${DB_PASS} \
-  #--spring.jpa.database-platform=${HIBERNATE_DIALECT} \
-  #--server.port=${PORT} \
-  #--server.address=0.0.0.0"]
+ENTRYPOINT ["sh", "-c", "java -Xmx512m -Xms256m \
+  -XX:MaxMetaspaceSize=128m \
+  -XX:+UseG1GC \
+  -XX:ReservedCodeCacheSize=64m \
+  -jar app.war \
+  --spring.datasource.url=jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME} \
+  --spring.datasource.username=${DB_USER} \
+  --spring.datasource.password=${DB_PASS} \
+  --spring.jpa.database-platform=${HIBERNATE_DIALECT} \
+  --server.port=${PORT} \
+  --server.address=0.0.0.0"]
