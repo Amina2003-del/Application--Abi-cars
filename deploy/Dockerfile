@@ -22,3 +22,4 @@ ENTRYPOINT ["sh", "-c", "java -Xmx512m -Xms256m \
   --spring.jpa.database-platform=${HIBERNATE_DIALECT} \
   --server.port=${PORT} \
   --server.address=0.0.0.0"]
+
