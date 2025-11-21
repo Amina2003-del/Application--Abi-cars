@@ -9,7 +9,7 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:11-jre
 WORKDIR /app
 COPY --from=build /app/target/*.war app.war
-EXPOSE 8082
+EXPOSE ${PORT:-8082}
 
 ENTRYPOINT ["sh", "-c", "java -Xmx512m -Xms256m \
   -XX:MaxMetaspaceSize=128m \
