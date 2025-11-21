@@ -28,7 +28,7 @@ import location_voiture.service.CarService;
 
 @Controller // Utilise @Controller si tu sers aussi des vues Thymeleaf depuis ce contrôleur
 @RequestMapping("/api/cars") // Le préfixe global reste
-@CrossOrigin(origins = "http://localhost:8082") // Garde ta configuration CORS
+@CrossOrigin(origins = "") // Garde ta configuration CORS
 public class CarController {
 	
 	

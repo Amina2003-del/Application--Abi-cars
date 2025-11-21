@@ -28,10 +28,10 @@ public class PayPalService {
 
     private final PayPalHttpClient payPalHttpClient;
 
-    @Value("${paypal.cancel.url:http://localhost:8082/Clientes/paypal/cancel}")
+    @Value("${paypal.cancel.url:/Clientes/paypal/cancel}")
     private String cancelUrl;
 
-    @Value("${paypal.return.url:http://localhost:8082/Clientes/paypal/success}")
+    @Value("${paypal.return.url:/Clientes/paypal/success}")
     private String returnUrl;
 
     @Autowired

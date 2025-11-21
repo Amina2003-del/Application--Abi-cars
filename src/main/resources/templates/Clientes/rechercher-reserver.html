@@ -1976,7 +1976,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const formData = new FormData(form);
         console.log("Envoi de la requête à /Clientes/send avec JSESSIONID :", document.cookie);
 
-        fetch("http://localhost:8082/Clientes/send", {
+        fetch("/Clientes/send", {
             method: "POST",
             credentials: "include",
             body: formData
@@ -2015,7 +2015,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     console.log("Test de la session avec /Clientes/test-session");
-    fetch("http://localhost:8082/Clientes/test-session", { credentials: "include" })
+    fetch("/Clientes/test-session", { credentials: "include" })
         .then(res => {
             console.log("Statut de /Clientes/test-session :", res.status);
             return res.text();

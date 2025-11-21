@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             
             // Envoyer la requête Ajax
-            fetch('http://localhost:8082/api/cars/add', {
+            fetch('/api/cars/add', {
                 method: 'POST',
                 body: formData
             })

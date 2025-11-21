@@ -62,7 +62,7 @@ public class AdministrateurController {
             tokenRepository.save(myToken);
 
             // Construire le lien de réinitialisation
-            String resetLink = "http://localhost:8082/change-password?token=" + token;
+            String resetLink = "/change-password?token=" + token;
 
             // Envoyer l'email
             emailService.sendSimpleMessage(email, "Reset Password", 

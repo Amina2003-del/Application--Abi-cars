@@ -45,7 +45,7 @@ import ma.abisoft.persistence.model.User;
 
 @RestController
 @RequestMapping("/api/cars")
-@CrossOrigin(origins = "http://localhost:8082") // Ou "*" pour tout autoriser pendant le développement
+@CrossOrigin(origins = "") // Ou "*" pour tout autoriser pendant le développement
 public class CarApiController {
     private static final Logger logger = LoggerFactory.getLogger(CarApiController.class);
 
