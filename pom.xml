@@ -18,7 +18,7 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-<packaging>jar</packaging>
+<packaging>war</packaging>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
