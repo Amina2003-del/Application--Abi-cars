@@ -72,12 +72,7 @@
         </dependency>
 
         <!-- Cassandra Driver -->
-        <dependency>
-            <groupId>com.datastax.oss</groupId>
-            <artifactId>java-driver-core</artifactId>
-            <version>4.17.0</version>
-        </dependency>
-
+      
         <!-- Jackson JSR310 -->
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
