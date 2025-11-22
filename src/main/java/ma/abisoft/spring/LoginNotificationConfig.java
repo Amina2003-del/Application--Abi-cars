@@ -16,7 +16,7 @@ public class LoginNotificationConfig {
         return new Parser();
     }
 
-    @Bean
+    /*@Bean
     public DatabaseReader databaseReader() throws IOException {
         InputStream database = getClass().getClassLoader()
                 .getResourceAsStream("maxmind/GeoLite2-City.mmdb");
@@ -24,5 +24,5 @@ public class LoginNotificationConfig {
             throw new IOException("GeoLite2-City.mmdb not found in classpath");
         }
         return new DatabaseReader.Builder(database).build();
-    }
+    }*/
 }
