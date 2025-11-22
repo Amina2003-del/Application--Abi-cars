@@ -8,7 +8,7 @@ RUN mvn clean package -DskipTests
 # Étape 2 : Exécution du WAR avec JRE 11
 FROM eclipse-temurin:11-jre
 WORKDIR /app
-COPY --from=build /app/target/spring-security-login-and-registration.war
+COPY --from=build /app/target/spring-security-login-and-registration.war /app/
 EXPOSE ${PORT:-8082}
 
 ENTRYPOINT ["sh", "-c", "java -Xmx512m -Xms256m \
