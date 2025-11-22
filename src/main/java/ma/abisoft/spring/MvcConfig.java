@@ -186,10 +186,7 @@ public class MvcConfig implements WebMvcConfigurer {
         registry.addViewController("/qrcode.html");
     }
 
-    @Override
-    public void configureDefaultServletHandling(final DefaultServletHandlerConfigurer configurer) {
-        configurer.enable();
-    }
+    
 
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
@@ -321,7 +318,8 @@ public void addInterceptors(InterceptorRegistry registry) {
     
    @Override
 public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
-    configurer.enable("default"); // "default" est le nom du servlet Tomcat par défaut
+    // Active le servlet par défaut pour servir le contenu statique
+    configurer.enable("default"); 
 }
 
 
