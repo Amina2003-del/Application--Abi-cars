@@ -23,7 +23,8 @@ public class LoginNotificationConfig {
         if (database == null) {
             throw new IOException("GeoLite2-City.mmdb not found in classpath");
         }
-        return new DatabaseReader.Builder(database).build();
-    }*/
+        return new DatabaseReader.Builder(database).build();*/
    return null;
+
+    }
 }
