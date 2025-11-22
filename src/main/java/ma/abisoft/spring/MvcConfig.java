@@ -319,6 +319,10 @@ public void addInterceptors(InterceptorRegistry registry) {
         return validator;
     }*/
     
-   
+   @Override
+public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+    configurer.enable("default"); // "default" est le nom du servlet Tomcat par défaut
+}
+
 
 }
