@@ -20,6 +20,6 @@ ENTRYPOINT ["sh", "-c", "java -Xmx512m -Xms256m \
   --spring.datasource.username=${DB_USER} \
   --spring.datasource.password=${DB_PASS} \
   --spring.jpa.database-platform=${HIBERNATE_DIALECT} \
-  --server.port=${PORT} \
+  --server.port=8082 \
   --server.address=0.0.0.0"]
 
