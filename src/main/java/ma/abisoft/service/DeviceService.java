@@ -44,7 +44,7 @@ public class DeviceService {
     private MessageSource messages;
 
     public DeviceService(DeviceMetadataRepository deviceMetadataRepository,
-                         DatabaseReader databaseReader,
+                            @Nullable DatabaseReader databaseReader,
                          Parser parser,
                          JavaMailSender mailSender,
                          MessageSource messages) {

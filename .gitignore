@@ -24,6 +24,3 @@ target/
 .idea/
 *.iml
 *.iwssrc/main/resources/application.properties 
-
-# Ignorer secrets local
-src/main/resources/application.properties
