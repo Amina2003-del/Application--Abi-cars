@@ -19,7 +19,7 @@ ENTRYPOINT ["sh", "-c", "java -Xmx512m -Xms256m \
   --spring.datasource.url=jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME} \
   --spring.datasource.username=${DB_USER} \
   --spring.datasource.password=${DB_PASS} \
-  --spring.datasource.driverClassName=com.mysql.cj.jdbc.Driver \
+  --spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver \
   --spring.jpa.database-platform=${HIBERNATE_DIALECT} \
   --server.port=8082 \
   --server.address=0.0.0.0"]
