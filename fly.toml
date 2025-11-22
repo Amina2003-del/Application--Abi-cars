@@ -1,0 +1,15 @@
+app = "application-abi-cars"
+primary_region = "fra"
+
+[build]
+  dockerfile = "deploy/Dockerfile"
+
+[deploy]
+  release_command = ""
+
+[[services]]
+  internal_port = 8082
+  protocol = "tcp"
+
+  [[services.ports]]
+    port = 8082
