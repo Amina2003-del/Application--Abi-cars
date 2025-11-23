@@ -11,7 +11,7 @@ WORKDIR /app
 COPY --from=build /app/target/spring-security-login-and-registration.war /app/
 EXPOSE 8082
 
-ENTRYPOINT ["sh","-c","java -Xmx512m -Xms256m -XX:MaxMetaspaceSize=128m -XX:+UseG1GC -XX:ReservedCodeCacheSize=64m -jar spring-security-login-and-registration.war \
+ENTRYPOINT ["sh","-c","java -Xmx256m -Xms128m -XX:MaxMetaspaceSize=128m -XX:+UseG1GC -XX:ReservedCodeCacheSize=64m -jar spring-security-login-and-registration.war \
 --spring.datasource.url=jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME} \
 --spring.datasource.username=${DB_USER} \
 --spring.datasource.password=${DB_PASS} \
