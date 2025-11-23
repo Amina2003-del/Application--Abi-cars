@@ -7,6 +7,7 @@ services:
       dockerfile: deploy/Dockerfile
     container_name: spring-app
     env_file:
-      - ./deploy/.env
-    
+      - deploy/.env
+    ports:
+      - "8003:8082"   # mappe le port 8082 du conteneur vers le 8003 de l'hôte
     restart: always
