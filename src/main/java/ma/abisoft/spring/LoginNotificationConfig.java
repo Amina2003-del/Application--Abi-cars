@@ -4,6 +4,7 @@ import com.maxmind.geoip2.DatabaseReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ua_parser.Parser;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,12 +18,9 @@ public class LoginNotificationConfig {
     }
 
     @Bean
-    public DatabaseReader databaseReader() throws IOException {
-        InputStream database = getClass().getClassLoader()
-                .getResourceAsStream("maxmind/GeoLite2-City.mmdb");
-        if (database == null) {
-            throw new IOException("GeoLite2-City.mmdb not found in classpath");
-        }
-        return new DatabaseReader.Builder(database).build();
-    }
+public DatabaseReader databaseReader() throws IOException {
+    InputStream database = new ClassPathResource("maxmind/GeoLite2-City.mmdb").getInputStream();
+    return new DatabaseReader.Builder(database).build();
+}
+
 }
