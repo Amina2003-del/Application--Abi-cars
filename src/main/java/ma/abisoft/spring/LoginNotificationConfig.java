@@ -6,8 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import ua_parser.Parser;
 import org.springframework.core.io.ClassPathResource;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 @Configuration
 public class LoginNotificationConfig {
@@ -18,9 +17,25 @@ public class LoginNotificationConfig {
     }
 
     @Bean
-public DatabaseReader databaseReader() throws IOException {
-    InputStream database = new ClassPathResource("maxmind/GeoLite2-City.mmdb").getInputStream();
-    return new DatabaseReader.Builder(database).build();
-}
+    public DatabaseReader databaseReader() throws IOException {
+        // Charger depuis le classpath
+        ClassPathResource resource = new ClassPathResource("maxmind/GeoLite2-City.mmdb");
 
+        // Copier dans un fichier temporaire
+        File temp = File.createTempFile("GeoLite2-City", ".mmdb");
+        temp.deleteOnExit();
+
+        try (InputStream in = resource.getInputStream();
+             OutputStream out = new FileOutputStream(temp)) {
+
+            byte[] buffer = new byte[4096];
+            int bytes;
+            while ((bytes = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytes);
+            }
+        }
+
+        // DatabaseReader nécessite un File, pas InputStream
+        return new DatabaseReader.Builder(temp).build();
+    }
 }
